@@ -1,0 +1,19 @@
+id: C10
+name: Machine-readable device and readiness state
+tier: Important
+weight: 2
+effort: S
+summary:
+applicability:
+requirement: |-
+  The interface SHOULD expose a defined set of operational states (for example: idle, busy, error, maintenance, awaiting human intervention) and documented recovery transitions between them, so that an orchestrator can decide whether a device is ready, occupied, faulted, or requires operator action.
+grade_options:
+- Pass
+- Partial
+- Fail
+grading: |-
+  Pass requires both: a defined set of named operational states exposed through the API, and documented recovery transitions between them in machine-readable form. Partial covers named states exposed but recovery transitions not documented in machine-readable form; or a subset of the expected operational states exposed (e.g., idle and busy but no distinct error or maintenance state), even if transitions among the exposed states are documented. Fail covers no machine-readable state at all, or state reported only as a human-readable status message rather than a fixed state code. Such a message cannot be matched on reliably because its wording is not guaranteed to stay constant: it may be translated into another language, reworded by a firmware update, or include a changing detail such as a progress percentage. A fixed state code, an enumerated value such as idle, busy, or error, stays the same through all of these, so an orchestrator can recognize it directly instead of parsing display text.
+test: |-
+  Read the state after a cold boot, after an initialization command, during a long-running operation, and after an induced failure; verify that each transition produces a reproducible, defined state. Additionally verify that recovery transitions between all exposed states are documented in machine-readable or API-accessible form (for example, through the interface's introspection mechanism, a published state-transition table in the machine-readable contract, or equivalent); documentation available only in a vendor PDF or human-readable manual does not satisfy the machine-readable requirement for Pass.
+rationale: |-
+  Machine-readable device state is a prerequisite for autonomous scheduling and recovery. Observable command and property state (C7) covers in-flight command progress and live property and event streams; this criterion covers the instrument's operational state across commands. LADS includes explicit device and functional-unit state machines as part of its information model .

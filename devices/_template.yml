@@ -1,0 +1,50 @@
+# Device evaluation template.
+# Copy this file to  devices/<vendor>-<model>.yml  (lowercase, hyphenated) and fill it in.
+# You only assign grades and notes; the tooling computes totals and floor checks for you.
+# Run:  uv run python build/score_device.py --check
+#
+# Grade each criterion Pass / Partial / Fail (or N/A where the criterion allows it —
+# see criteria/CXX.yml `grade_options`). Provide `evidence` (a URL or doc reference)
+# wherever you can; it is what separates a useful evaluation from an opinion.
+
+device:
+  vendor: Example Vendor
+  model: Example Model 100
+  category: plate reader            # optional
+  interface: SiLA 2                 # protocol you evaluated
+  firmware_version: null            # optional
+  product_url: null                 # optional
+
+evaluation:
+  evaluator: your-name-or-handle
+  date: 2026-01-01
+  scorecard_version: 1.0.0          # which criteria set you scored against
+  deployment: standalone            # standalone | cell-integrated
+  evidence_basis: vendor-docs       # vendor-docs | hands-on-test | integrator-report
+  # verified: false                 # set by maintainers only
+
+scores:
+  C1:  { grade: Fail, note: "", evidence: null }
+  C2:  { grade: Fail }
+  C3:  { grade: Fail }
+  C4:  { grade: Fail }
+  C5:  { grade: Fail }
+  C6:  { grade: Fail }
+  C7:  { grade: Fail }
+  C8:  { grade: Fail }
+  C9:  { grade: Fail }
+  C10: { grade: Fail }
+  C11: { grade: Fail }
+  C12: { grade: Fail }
+  C13: { grade: Fail }
+  C14: { grade: Fail }
+  C15: { grade: Fail }
+  C16: { grade: Fail }
+  C17: { grade: Fail }
+  # Cell-integration tier — grade only if you evaluated cell deployment,
+  # otherwise use N/A (or omit if deployment: standalone).
+  C18: { grade: "N/A" }
+  C19: { grade: "N/A" }
+  C20: { grade: "N/A" }
+
+# vendor_response: null             # optional right-of-reply

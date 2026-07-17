@@ -1,0 +1,16 @@
+[project]
+name = "device-integration-scorecard"
+version = "1.0.0"
+description = "A procurement checklist for evaluating whether a laboratory instrument's control interface is ready for autonomous (self-driving-lab) integration."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "CC-BY-4.0 AND MIT" }
+dependencies = [
+    "pyyaml>=6",
+    "jsonschema>=4",
+    "openpyxl>=3",
+]
+
+# This repo is scripts + data, not an installable package.
+[tool.uv]
+package = false

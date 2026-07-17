@@ -1,0 +1,17 @@
+Copyright (c) 2026 the Device Integration Scorecard contributors.
+
+This work — the scorecard criteria, scoring model, and generated checklists — is
+licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+You are free to share and adapt the material for any purpose, including commercially,
+provided you give appropriate credit, link to the license, and indicate if changes were
+made.
+
+Human-readable summary:  https://creativecommons.org/licenses/by/4.0/
+Full legal code:         https://creativecommons.org/licenses/by/4.0/legalcode
+
+Suggested attribution:
+  "Device Integration Scorecard" by the Device Integration Scorecard contributors,
+  used under CC BY 4.0. Based on the accompanying paper (see CITATION / README).
+
+The Python code under build/ is additionally available under the MIT License.

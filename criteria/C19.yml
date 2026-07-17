@@ -1,0 +1,20 @@
+id: C19
+name: Automated load/unload
+tier: Cell-integration
+weight: 2
+effort: S
+summary:
+applicability:
+requirement: |-
+  The most basic precondition for cell integration is that a machine can load labware into the instrument and unload it without manual intervention. The instrument MUST provide an arm-reachable labware handoff position and an API-controlled access path for presenting, accepting, and releasing labware (for example commands to open a door, drawer, or shutter, to extend or retract a carrier or nest, and to engage or release a clamp or gripper), or a documented passive handoff in which the arm places directly into a fixed open position. Its geometry MUST be documented for integration: not only the coordinates and approach of the handoff position, but a CAD or 3D model of the instrument itself (a collision model at minimum), so integrators can place it in the cell and plan collision-free arm trajectories around it. It MUST expose a machine-readable handoff-ready or load-complete indication so the arm knows when it may place or pick labware and when the instrument has secured or released it. The instrument is not required to carry labware identity or any internal labware-tracking state; that is owned by the orchestrator and the LIMS (C5 covers execution-identifier traceability), and labware presence at expected positions is reported under C20. This criterion is not applicable to instruments that do not receive machine-loaded labware in the cell (inline pumps, flow cells, fixed environmental sensors, and similar).
+grade_options:
+- Pass
+- Partial
+- Fail
+- N/A
+grading: |-
+  Pass requires a documented arm-reachable handoff position, documented instrument geometry (the handoff position and a CAD or collision model of the instrument), an API-controlled (or documented passive) load and unload path, and a machine-readable handoff-ready or load-complete indication, with no manual step in routine load or unload. Partial covers an automatable mechanism that is API-addressable but missing the handoff-ready or load-complete indication, requiring a documented manual-assist step, or with incomplete geometry documentation (the handoff position or an instrument collision model undocumented). Fail covers instruments that cannot be loaded or unloaded by a machine without manual intervention. For instruments that do not receive machine-loaded labware, the criterion is graded N/A and the cell-integrated total is computed over the remaining criteria.
+test: |-
+  Drive the instrument through a complete automated load and unload cycle through the API: open or present the access path, confirm a documented arm-reachable handoff position, place labware (physically or in simulation), command the instrument to accept and secure it, verify the handoff-ready or load-complete indication, then command release and unload. Confirm that routine load and unload require no manual step, and that the instrument's geometry is documented: the handoff position and a CAD or collision model of the instrument for cell layout and trajectory planning.
+rationale: |-
+  Integrators are routinely asked to integrate instruments that cannot be machine-loaded at all, which is a hard blocker no orchestrator software can solve and the most common reason an otherwise capable instrument cannot enter a cell. This is why the cell-integration floor requires at least Partial here. Because a robot must approach the instrument and reach into it, the instrument's geometry is part of the integration contract: without a model of it, an integrator cannot lay out the cell or plan collision-free trajectories. The criterion deliberately does not ask the instrument to carry labware identity or maintain internal labware state: labware tracking is owned by the orchestrator and the LIMS. Physical labware presence, where the instrument can sense it, is reported as a readiness state under C20; linking results to samples is handled by execution identifiers under C5.

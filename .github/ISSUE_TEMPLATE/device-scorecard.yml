@@ -1,0 +1,67 @@
+name: Contribute a device evaluation
+description: Submit a scorecard for an instrument you have evaluated (no Git required — a maintainer will convert this into a devices/*.yml file).
+title: "[device] <vendor> <model>"
+labels: ["device-evaluation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing an evaluation. Grade each criterion **Pass / Partial / Fail**
+        (or **N/A** where the criterion allows it). See `scorecard.md` for the full criteria and
+        grading rules. You do not need to compute any totals — a maintainer will run the tooling.
+        Evaluations are contributor assessments, not endorsements; please base grades on public
+        documentation or your own testing and add evidence links where you can.
+  - type: input
+    id: vendor
+    attributes: { label: Vendor }
+    validations: { required: true }
+  - type: input
+    id: model
+    attributes: { label: Model }
+    validations: { required: true }
+  - type: input
+    id: interface
+    attributes: { label: Interface evaluated, description: "e.g. SiLA 2, OPC UA/LADS, REST" }
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment evaluated
+      options: [standalone, cell-integrated]
+    validations: { required: true }
+  - type: dropdown
+    id: evidence_basis
+    attributes:
+      label: Evidence basis
+      options: [vendor-docs, hands-on-test, integrator-report]
+    validations: { required: true }
+  - type: textarea
+    id: scores
+    attributes:
+      label: Grades (C1–C20)
+      description: One per line as "Cn: Grade — note (evidence url)". N/A is fine for the cell tier if not evaluated.
+      value: |
+        C1:
+        C2:
+        C3:
+        C4:
+        C5:
+        C6:
+        C7:
+        C8:
+        C9:
+        C10:
+        C11:
+        C12:
+        C13:
+        C14:
+        C15:
+        C16:
+        C17:
+        C18:
+        C19:
+        C20:
+    validations: { required: true }
+  - type: input
+    id: evaluator
+    attributes: { label: Attribution, description: "name, org, or handle to credit (may be a pseudonym)" }
+    validations: { required: true }

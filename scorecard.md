@@ -1,0 +1,619 @@
+# Device Integration Scorecard
+
+A procurement checklist for evaluating whether a laboratory instrument's control interface is ready for autonomous (self-driving-lab) integration. Each criterion is graded **Fail / Partial / Pass** (some also **N/A**); the grade is multiplied by the criterion weight. This file is **generated** from `criteria/*.yml` and `meta.yml` — do not edit it by hand (see `README.md`).
+
+## Scoring
+
+Grade values: Pass = 1.0, Partial = 0.5, Fail = 0.0, N/A = excluded from the applicable maximum.
+
+- **Standalone total** over C1-C18: max **46**.
+- **Cell-integrated total** over C1-C21: max **52**.
+
+The weighted total is a *ranking* figure among vendors that already clear the floors; eligibility is decided by the floors below, not by the number.
+
+### Pass floors
+
+- **Critical floor.** At most one Critical criterion at Partial, with all others Pass; any Fail on a Critical criterion disqualifies regardless of the weighted total. A Critical Partial may be accepted with a written remediation commitment and target date (twelve-month ceiling recommended).
+- **Important floor.** Failed Important criteria may not exceed four weighted points in total. C15 may not Fail for instruments operating unattended with active physical hazards unless an external mitigation is documented. C7 has a conditional floor (see C7). No Important criterion may be failed without a documented institutional gap-acceptance decision.
+- **Cell-integration floor.** For cell-integrated procurement, C19 (automated load/unload) must score at least Partial when a machine loads/unloads the instrument; a Fail disqualifies from cell-integrated deployment. Buyers may make C20 and/or C21 local floors for hazardous or robot-envelope instruments.
+
+## Summary
+
+| # | Criterion | Tier | Weight | Grade |
+|---|---|---|---|---|
+| C1 | Orchestrator-reachable programmatic control | Critical | 3 | ☐ Pass ☐ Partial ☐ Fail |
+| C2 | Strong typing with units and constraints | Critical | 3 | ☐ Pass ☐ Partial ☐ Fail |
+| C3 | Structured error reporting | Critical | 3 | ☐ Pass ☐ Partial ☐ Fail |
+| C4 | Open API access | Critical | 6 | ☐ Pass ☐ Partial ☐ Fail |
+| C5 | Control-accessible result retrieval | Critical | 3 | ☐ Pass ☐ Partial ☐ Fail ☐ N/A |
+| C6 | Runtime self-description | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C7 | Observable command and property state | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C8 | Reference client implementation provided | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C9 | Concurrent-access discipline | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C10 | Machine-readable device and readiness state | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C11 | Result addressability and durability | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C12 | Instrument self-state | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C13 | Versioning discipline | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C14 | Simulation or emulation mode | Important | 3 | ☐ Pass ☐ Partial ☐ Fail |
+| C15 | Control-loss observability and safe-state support | Important | 3 | ☐ Pass ☐ Partial ☐ Fail |
+| C16 | Error recovery taxonomy | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C17 | Conformance and certification | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C18 | Operating-system independence | Important | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C19 | Automated load/unload | Cell-integration | 2 | ☐ Pass ☐ Partial ☐ Fail ☐ N/A |
+| C20 | Access and motion-readiness coordination | Cell-integration | 2 | ☐ Pass ☐ Partial ☐ Fail |
+| C21 | Safety-event participation | Cell-integration | 2 | ☐ Pass ☐ Partial ☐ Fail ☐ N/A |
+| | **Standalone max (C1–C17)** | | **46** | |
+| | **Cell-integrated max (C1–C20)** | | **52** | |
+
+## Criteria
+
+### C1 — Orchestrator-reachable programmatic control
+*Critical · weight 3 · effort M/L*
+
+**Requirements**
+
+- [ ] The autonomous control endpoint, whether native to the instrument or provided through a vendor-supported edge controller, **MUST** expose documented programmatic control through a network-reachable application protocol over a standard network transport (in practice TCP/IP; current examples include HTTPS, gRPC over HTTP/2, and OPC UA UA-TCP), with documented authentication, session management, and documented behavior when the control connection is lost or interrupted mid-session (the reconnect behavior specified below).
+- The cybersecurity baseline is required as a deployment precondition (enumerated with the other deployment preconditions in the main text) and is not re-scored here.
+- Pass-grade reconnect behavior is one of: successful resumption with state recovery (the server brings the reconnecting client back in sync with the still-running command), clean abort with reported state and defined execution error, or wait-for-explicit-clearance from the reconnecting client.
+- [ ] In all three cases, the reconnect response **MUST** allow the reconnecting client to determine unambiguously—using only a state token exchanged at reconnect time (a command identifier, operation identifier, monotonic state revision, or equivalent value the client compares against its last-known value), without requiring inference from subsequent events or a polling loop after reconnection—whether the previously interrupted command is still active, has completed, has aborted, or is awaiting clearance.
+- A reconnect response that conveys only a human-readable status string is not sufficient, because it does not let the client distinguish "the command you are asking about" from "a different command that happens to be in the same state." For example, an instrument in this mode that is disconnected mid-run holds in a safe state and, on reconnect, neither resumes nor aborts on its own; it waits until the reconnecting orchestrator explicitly commands resume or abort, preventing an unattended disconnect from silently restarting a hazardous step.
+- Two architectural paths can satisfy this functional requirement, with different operational profiles:
+  - Native endpoint: the instrument or its embedded controller exposes the network interface directly, without requiring an external host running vendor software to mediate.
+  - Vendor-supported edge controller meeting the integration-grade bar: a vendor PC, embedded appliance, or workstation that mediates network control, where all of the following are documented and operationally acceptable:
+  - supported operating system with a published support window of at least five years from instrument purchase, with a documented path to extend security support for the expected validated lifetime of the instrument (regulated and pharma settings should target seven to ten years or include a migration or upgrade commitment);
+  - edge-controller watchdog and recovery behavior: a watchdog timer or supervisory process running on the edge controller itself that automatically detects a crashed or hung control service and triggers a defined recovery action (service or process restart, controller reboot, or failover), as opposed to an external or fleet-monitoring tool; the instrument-side response while the controller is unavailable is covered in item (e);
+  - a failure-mode table covering at least edge-controller crash, edge-controller hang, network loss between edge and orchestrator, network loss between edge and instrument, and license-server unavailability;
+  - licensing terms disclosed and evaluated under criterion 4 rather than re-scored here;
+  - instrument-side behavior on edge-controller failure consistent with the control-loss handling defined in C15.
+- [ ] The architecture path **MUST** be recorded in the scorecard alongside the C1 entry (as a separate architecture-type annotation,
+- not folded into the numeric C1 grade) as Native endpoint, Vendor edge-controller, or Third-party gateway.
+- A third-party gateway may be recorded as an accepted external mitigation but does not constitute vendor compliance with C1 unless the vendor supports, documents, and validates that gateway as part of the delivered control surface.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires (i) reconnect mode and identifier mechanism documented clearly enough to implement against them without trial-and-error, and (ii) for edge-controller architectures, items (a)–(e) above documented and operationally acceptable. Partial covers reconnect behavior documented but ambiguous (e.g., described as "best-effort" or "graceful" without specifying which Pass-grade mode the implementation provides, or without specifying how the client correlates pre- and post-reconnect state), or edge-controller architectures that document the bar above but fall short on one or more elements (support window shorter than the requirement above, license server is a single point of failure with no documented degraded-mode behavior). Fail covers no documentation of reconnect behavior at all, or undocumented, unsupported, GUI-bound, or contractually restricted gateways. (Absence of control-loss observability is a separate question evaluated under criterion 15; it does not belong in the C1 Fail definition because a vendor with correct reconnect semantics but no control-loss observability should Fail C15, not C1.)
+
+**Test.** From a machine that is not the vendor-supplied workstation, open a connection, issue a documented command, then sever and re-establish the network link mid-session, and verify that the reconnect behavior is one of the three Pass-grade modes above. For edge-controller architectures, additionally request the documentation covering items (a)–(e); verify that the support window, watchdog and recovery behavior, failure-mode table, licensing model, and instrument-side operational response behavior are documented and acceptable.
+
+**Rationale.** Remote programmatic control is the baseline condition for participation in a multi-device orchestrator; closed-loop operation is not possible without it . Native endpoints reduce lifecycle surface, simplify patch management, avoid the physical footprint and license-server dependencies of an external host, and have a smaller failure perimeter. Vendor-supported edge controllers may nevertheless be the only realistic route for high-end analytical instruments whose validated control stack is architecturally inseparable from the vendor workstation (HPLC, GC, mass spectrometers, NMR, electron microscopes). Buyers SHOULD record the endpoint architecture separately from the C1 score and prefer native endpoints when two offerings are otherwise equivalent.
+
+---
+
+### C2 — Strong typing with units and constraints
+*Critical · weight 3 · effort S*
+
+**Requirements**
+
+- [ ] Parameters and return values **MUST** have declared types.
+- [ ] Physical quantities **MUST** use a declared unit vocabulary (UCUM, SI-derived identifiers, QUDT, SiLA 2's FDL Unit constraint — which defines each unit as a machine-readable decomposition into SI base units with a conversion factor and offset — OPC UA EUInformation mapped to UNECE unit codes, or another documented equivalent whose unit identifiers are unambiguous and machine-readable); free-text unit strings disqualify, and so does declaring a type or unit only in human-facing documentation (a datasheet or integration manual) instead of in the machine-readable interface contract.
+- Here, machine-readable means retrievable through the endpoint's introspection or schema by a generic client at runtime; a value stated only in prose documentation is not introspectable, not enforceable, and not part of the typed contract.
+- [ ] Precision and resolution **MUST** be machine-readable; rounding behavior SHOULD be machine-readable where the interface format provides a dedicated field for it.
+- [ ] Dimensional compatibility and allowed conversions **SHOULD** be machine-readable where the declared vocabulary encodes dimensional relationships (e.g., QUDT-backed dimensional analysis); where the chosen vocabulary does not encode those relationships, the interface is not penalized for their absence, provided the declared unit identifier is unambiguous: an unambiguous identifier still lets a client application or agent resolve the unit's dimension and conversion factors (from the declared vocabulary or a standard unit reference) and apply conversions reliably, dynamically, and generically.
+- The interface therefore does not have to carry the unit's dimensional decomposition itself, as SiLA 2's FDL does; an unambiguous identifier the client can resolve is sufficient.
+- [ ] Constraints (ranges, enumerations, nullability, regular expressions) **MUST** be machine-readable, and the interface MUST also validate them at runtime: an input that violates a declared type, range, enumeration, or unit constraint MUST be rejected with a typed error rather than silently coerced, truncated, or accepted.
+- [ ] For instruments whose operations involve spatial positioning of labware or samples (carousels, racks, plate hotels, autosamplers, robot-served instruments), coordinate frames and the positions of the instrument's carrier sites or nests (the fixed locations where labware is held, such as deck positions or carousel slots) **SHOULD** be declared with the same machine-readable discipline as units.
+- [ ] The instrument MAY be agnostic to the labware itself, including its identity and dimensions, but **SHOULD** expose where each carrier site or nest is located.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires all MUSTs satisfied: declared types for all parameters and return values; unit identifiers from the declared vocabulary (no free-text strings); machine-readable precision and resolution; machine-readable constraints (ranges, enumerations, nullability); where the interface format provides a dedicated field for it, machine-readable rounding behavior; and runtime validation of declared constraints, demonstrated by an invalid input being rejected with a typed error rather than silently coerced, truncated, or accepted. Partial covers declared types and unit vocabulary present, but one or more of the following not machine-readable: precision or resolution; range constraints; enumeration or nullability constraints. A vendor who meets types and units but exposes constraints only in free-text documentation scores Partial, as does a vendor whose constraints are machine-readable but not enforced at runtime (invalid inputs are silently coerced, truncated, or accepted rather than rejected with a typed error). Fail covers absent or free-text unit identifiers, types or unit identifiers declared only in documentation rather than in the machine-readable contract, no declared types, or no machine-readable contract at all.
+
+**Test.** Use the endpoint's introspection mechanism or machine-readable contract to retrieve metadata for at least one input parameter and one response value that each carry a unit (i.e. represent physical quantities) and verify the metadata includes declared type, unit identifier from the declared vocabulary, numeric range, resolution or precision, and nullability or enumeration constraints; additionally verify rounding behavior is machine-readable where the interface format provides a dedicated field for it. Then submit an input that violates a declared constraint (an out-of-range numeric value or an invalid enumeration member) and verify it is rejected with a typed error rather than silently coerced, truncated, or accepted.
+
+**Rationale.** Autonomous orchestrators generate experiment parameters algorithmically, and silent truncation or undefined behavior on invalid inputs leads to wasted experiments or hardware damage . Machine-readable declaration does not by itself guarantee enforcement: SiLA 2 and OPC UA LADS standardize the declaration of types, units, and constraints, but neither requires the server to validate those declarations at runtime or to reject a violating input with a typed error, and generated server stubs do not necessarily do so. A fully standards-conformant interface can therefore still be sloppy, declaring constraints and units it does not enforce, which is why enforcement is tested directly rather than assumed; an interface that declares but does not enforce is a remediation target (a Partial), not an automatic disqualification (a Fail). SiLA 2's FDL Unit constraint and OPC UA's EUInformation structure mapped to UNECE unit codes are accepted equivalents under this criterion, but they differ in how much they encode. SiLA 2 defines each unit by decomposition into SI base units (an integer exponent on each base unit, plus a conversion factor and offset), so the dimensional signature and the unit conversions are themselves machine-readable, and the dimensional-compatibility SHOULD does apply to SiLA 2 endpoints. OPC UA's EUInformation, by contrast, references a flat UNECE code list with no dimensional decomposition, so the dimensional-compatibility SHOULD does not apply to endpoints relying on it alone .
+
+---
+
+### C3 — Structured error reporting
+*Critical · weight 3 · effort S*
+
+**Requirements**
+
+- [ ] Failures **MUST** surface as typed errors carrying: (a) a stable machine-readable error identifier or class (beyond a free-text message);
+- (b) a human-readable message;
+- (c) at least one structured context field relevant to the failure, such as affected parameter name and value, affected resource or functional unit, device state at fault, violated constraint, command identifier, or sensor or channel identifier; and (d) a timing record satisfying one of: (d1) a device-local timestamp with time zone and documented clock-source metadata (for example, NTP-synchronized, GPS-disciplined, or hardware RTC with documented drift bound); or (d2) a monotonic event-sequence identifier with a documented epoch and monotonicity guarantee, combined with a timestamp appended by the trusted control gateway or server, which must document its own clock source and synchronization method.
+- [ ] Where neither device-local timestamps nor gateway timestamp appending is available (for example, microcontroller-class hardware without NTP synchronization and without a connected gateway that can append timestamps), the vendor **MUST** document why and MUST provide a bare event-sequence identifier as a substitute; a general assertion that timestamps are unavailable without documented rationale does not satisfy this sub-requirement.
+- Undocumented or unsynchronized device-local clocks without clock-source metadata do not satisfy (d1).
+- GUI-only dialogs, log-file-only diagnostics, and silent failures disqualify.
+- [ ] The set of errors a command or endpoint can raise **MUST** be declared as part of the machine-readable interface contract (its error catalog; for example, SiLA 2's defined errors in the FDL, or a documented error list for an OPC UA or REST endpoint), so a client can know in advance which errors a call may return rather than discovering them at runtime.
+- [ ] Errors **MUST** also be logged or persisted (by the instrument, or by the trusted gateway or server that fronts it) so that they remain retrievable after delivery, not only surfaced transiently in the response.
+- [ ] They **SHOULD** additionally be documented in the integration manual, ideally with a description of the internal state machines that govern when each error can arise.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires all four sub-requirements present in the error payload: a typed error identifier (a), a human-readable message (b), at least one structured context field (c), and a timing record meeting sub-requirement (d). Sub-requirement (d) is satisfied at Pass grade by either path: (d1) a device-local timestamp with time zone and documented clock-source metadata, or (d2) a monotonic event-sequence identifier with documented epoch and monotonicity guarantee combined with a gateway-appended timestamp with documented clock source and synchronization method. An undocumented or unsynchronized device clock without clock-source metadata does not satisfy (d1) and does not qualify for Pass. Partial covers any of the following cases: (i) typed error identifier and human-readable message (a and b) present, but no structured context field (c) present, regardless of whether a timing record (d) is also present — so (a+b) without (c), and (a+b+d) without (c), both score Partial; (ii) all of (a), (b), and (c) present, and only a bare event-sequence identifier (without a gateway-appended timestamp and without documented clock-source metadata on the device) is provided, with vendor documentation explaining why neither (d1) nor (d2) is available; a bare event-sequence identifier fully satisfies the MUST for constrained hardware but caps at Partial because it lacks an absolute time reference. The absence of any timing record when (a), (b), and (c) are present is Fail, not Partial, because the requirement states that the vendor MUST provide at least a bare event-sequence identifier when timestamps are unavailable. Fail covers errors surfaced only as free-text messages or human-readable strings without a stable machine-readable identifier, GUI-only error dialogs, log-file-only diagnostics, silent failure with no error payload at all, or errors carrying a typed identifier (a), message (b), and structured context field (c) but no timing record of any kind when the vendor has not documented why both (d1) and (d2) are unavailable. Independently of the payload sub-requirements, an endpoint that reports typed errors at runtime but does not declare its error catalog in the machine-readable contract, or whose errors are not logged or persisted anywhere retrievable after delivery, caps at Partial; integration-manual documentation of the errors and their state machines is a SHOULD and does not affect the grade.
+
+**Test.** Induce failures from at least two different categories: one operational or environmental fault (such as missing sample, sensor out of range, or door open) and one command, parameter, or constraint-violation error (such as an out-of-range input, invalid state for the requested command, or missing required parameter); inspect each returned error payload and verify it contains an error class or code, a human-readable message, and at least one structured key-value context field sufficient for an orchestrator to branch without parsing free text. Testing a single failure type is insufficient for a Critical criterion with four sub-requirements, across which error payload structure may vary by fault category.
+
+**Rationale.** A closed-loop orchestrator must detect and respond to failure programmatically . The timing record is not a duplicate of the consumer's own receipt log: the consumer already timestamps when it receives the error, and a device-anchored time or monotonic sequence in the payload is the other half of the pair, so comparing the two exposes a network stall, a high-latency link, or a device that stopped before its message arrived. This is also why a monotonic event-sequence suffices where a device cannot keep a real clock, while an undocumented free-running clock does not. The Critical bar covers basic typed reporting, which SiLA 2's defined-error mechanism and LADS's alarm model both deliver. The fuller recovery taxonomy (transient versus permanent classification, execution-effect status, post-error device state, recovery class) is a separate Important criterion (C16) so that the procurement floor reflects what current standards can already produce.
+
+---
+
+### C4 — Open API access
+*Critical · weight 6 · effort M/L*
+
+**Requirements**
+
+- [ ] Full programmatic access **MUST** be available under commercial and licensing terms that permit autonomous operation; here, "contract" means the procurement package, service contract, and end-user or API license, not the technical interface contract.
+- Three sub-tests apply.
+- Sub-test (a) No hidden service- or add-on contract paywall.
+- [ ] API access required for the buyer's intended autonomous operation **MUST** be included in the quoted procurement package, with no post-purchase gating of capabilities advertised at the time of purchase.
+- This sub-test targets gating of that baseline autonomous access; it does not prohibit separately priced optional services that leave the baseline intact, such as a regulated-environment support and validation package (GxP, IVD) under which the vendor assumes liability, optional feature updates or upgrades, or a third-party-supplied interface where the vendor itself offers none.
+- Such services may carry a fee, provided the autonomous access included in the quoted package is not itself withheld behind them; per-deployment royalties on that baseline access remain disqualifying.
+- Sub-test (b) License permits ecosystem use.
+- [ ] The API license **MUST** permit publication and reuse of buyer-written integration or adapter code (excluding redistribution of vendor confidential source code, proprietary binaries, or confidential documentation), third-party orchestration, and use without per-deployment royalty.
+- Field-of-use restrictions that prevent reusable buyer-written integration code, restrict multi-tenant deployment, or impose per-deployment royalties are disqualifying.
+- Sub-test (c) Integration documentation included.
+- [ ] The procurement package SHOULD include the integration manual and interface documentation at no additional cost, and **MUST** include them at no additional cost where the interface is not self-descriptive at runtime (criterion C6), since such an interface cannot be integrated without them.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires sub-tests (a) and (b) to pass, with the procurement package and license terms explicit at bid time; where the interface is not self-descriptive at runtime, sub-test (c) is also required, and an integration manual that is absent or available only for an extra fee is then a Fail, because the interface cannot be integrated without it. Where the interface is self-descriptive, sub-test (c) is a SHOULD: a paywalled or missing manual is recorded as a gap but does not by itself Fail C4. Partial is reserved for cases in which ambiguous clauses exist but the vendor provides a written contract amendment before purchase. A clause is ambiguous within the meaning of this criterion only when its scope is genuinely unclear and the restriction, if the clause were interpreted most broadly, would not independently qualify as a Fail condition. A clause that, under any plausible interpretation, imposes one or more Fail conditions — field-of-use restriction on buyer-written integration code, per-deployment royalties, or restriction to vendor-approved integrations — is Fail regardless of a vendor's offered amendment, unless the amendment fully removes the clause rather than merely clarifying its scope. Fail covers any of: API access unavailable for the intended workflow, gating after purchase, restriction to vendor-approved integrations, per-deployment royalties, or prohibition on publication or reuse of integration code.
+
+**Test.** Review the end-user license and service contract for paywall clauses (sub-test a) and for field-of-use, redistribution, and publication clauses (sub-test b); require a written exception from the vendor for any clause that restricts either.
+
+**Rationale.** Contractual gating effectively removes the instrument from the open SDL ecosystem; Abolhasani et al.\ identify this as a specific obstacle . C4 carries the highest weight (6) because contractual restriction cannot be remedied by engineering work after purchase.
+
+---
+
+### C5 — Control-accessible result retrieval
+*Critical · weight 3 · effort S*
+
+**Requirements**
+
+- [ ] The programmatic interface **MUST** provide a documented, headless path by which an external orchestrator or analysis pipeline can retrieve measurement results and metadata.
+- [ ] If vendor libraries, services, edge-controller software, or data brokers are required to decode or serve the result, they **MUST** be licensed for autonomous use, callable without GUI interaction, versioned, documented, and deployable under the buyer's IT and validation constraints.
+- GUI-only export, encrypted files readable only through interactive software, and automation-prohibitive license terms are disqualifying.
+- [ ] Result metadata **MUST** include, at minimum: command or execution identifier; instrument identifier with firmware and software versions; method or program identifier and version; sample or labware identifier where the instrument is passed or senses one; start and end timestamps with time zone; the authenticated caller identity (the client or orchestrator ID or UUID, or, in regulated deployments, the credential the call authenticated with) and a human-in-the-loop indicator where the instrument is aware of manual intervention; status (complete, partial, failed, aborted); units; result payload type or format identifier; result schema or data-model version for opaque result payloads where schema evolution is possible; and quality flags (warnings, saturation, integration errors, out-of-range indicators).
+- Sample and labware identity is owned by the orchestrator and LIMS, not the instrument: the command or execution identifier already correlates a result to the orchestrator's record of what was run, so an instrument that neither receives a labware or sample identifier nor senses one itself is not required to report one.
+- The same applies to operator and user attribution: it is owned by the orchestrator, scheduler, and LIMS, and the instrument attaches only the caller identity it authenticated, plus a human-in-the-loop indicator where it is aware of one, not the human operator behind the call, which it may not know.
+- [ ] All of this metadata **MUST** be retrievable from the interface and unambiguously bound to the result through a stable key, typically the command or execution identifier; it need not be embedded in the result payload and may instead be exposed through separate machine-readable properties or endpoints (for example, a serial-number property or a current-user query) that a client fetches and correlates.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+- [ ] **N/A**
+
+> Pass requires headless, programmatic retrieval of the result data (the measurement payload itself) and all mandatory metadata fields, linked to the control interface. Partial requires a headless retrieval path and at minimum the traceability set (command or execution identifier, instrument identifier, status, units, and start timestamp with time zone), with no more than two other applicable metadata fields missing.
+>
+> For the purpose of the Partial grade, the applicability of metadata fields is classified as follows. Always applicable (missing any disqualifies Partial): command or execution identifier; instrument identifier; status; units; and start timestamp with time zone. Instrument-class-conditional (applicable when the instrument class supports it): method or program identifier and version (instruments that execute parametric methods: HPLCs, plate readers, incubators, liquid handlers, centrifuges with programmable protocols; not applicable to fixed single-mode instruments such as dispensers, sealers, balances, basic spectrophotometers, pH meters); sample or labware identifier (only instruments that echo an identifier they were given or sense one themselves, such as barcode- or RFID-equipped plate hotels, incubators, biobank stores, or autosamplers); schema or data-model version (required only where the result is delivered as an opaque payload, such as a binary blob, JSON dump, or XML dump, that the interface contract does not type; where the result is typed by the interface's own machine-readable definition, such as a SiLA Feature or an OPC UA module or information model, that definition's version already serves as the schema version and no separate field is required. For an opaque payload whose schema can evolve, a vendor may declare the schema fixed and non-evolving only with a published, versioned schema document and a documented policy stating the schema is frozen, in which case the version field may be omitted but the full schema MUST be referenced by a stable, resolvable identifier in the result metadata); and quality flags (instruments that can detect saturation, integration errors, or out-of-range conditions). Deployment-conditional: authenticated caller identity (client or orchestrator ID/UUID, or the authenticating credential in regulated deployments) and a human-in-the-loop indicator where applicable (multi-user or regulated deployments); end timestamp (where the instrument reports completion time separately from start time). The two-field ceiling for Partial applies only to instrument-class-conditional and deployment-conditional fields that are applicable to the instrument under evaluation; missing always-applicable fields falls to Fail regardless of count. Fail covers GUI-only retrieval, manual-export-only workflows, or the minimum traceability identifiers not being obtainable from the interface and bindable to the result.
+
+**Test.** Retrieve a representative result through the control interface from a non-vendor host using only programmatically callable, license-compliant tooling. If vendor libraries or services are involved, verify that they can be invoked headlessly under the buyer's IT and validation constraints. Inspect the metadata against the mandatory list above, whether it is returned with the result or fetched from separate interface properties or endpoints and correlated to the result.
+
+**Rationale.** Autonomous analysis pipelines must retrieve instrument output through a documented, headless, programmatically addressable path linked to the command or execution identifiers used by the control interface; Abolhasani et al.\ flag proprietary, encrypted exports as an obstacle to autonomous operation .
+
+---
+
+### C6 — Runtime self-description
+*Important · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] The instrument **MUST** expose its command surface, parameter types, and currently available state at runtime so that a generic client can build a technical control interface with minimal device-specific driver code.
+- Scientific use still requires method documentation, calibration context, and safety constraints.
+- Two sub-tests apply, separating whether a generic client can discover the interface (a) from whether what it discovers is faithful to this particular unit (b).
+- Sub-test (a) Capability introspection.
+- [ ] A generic client **MUST** be able to introspect the command surface, parameter types, return types, units, and constraints implemented by this firmware on this hardware.
+- Sub-test (b) State-aware availability.
+- [ ] The endpoint **MUST** expose the operations valid for the instrument's actual hardware and module configuration, resolved at startup, so that a generic client sees only the capabilities the deployed configuration supports rather than operations that absent or unconfigured modules cannot perform.
+- [ ] The endpoint **SHOULD** further reflect transient, state-dependent unavailability where the device can determine it (an open door, a held lock, an in-progress operation, or expired calibration), so that a client can hide or disable those operations rather than fail at call time; where it cannot, such conditions surface as typed errors at call time (criterion C3).
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires both sub-tests. Partial covers either (a) without (b), or static contract description (OpenAPI, JSON Schema, or IDL) without runtime introspection. These two Partial cases represent substantially different integration burdens and should not be treated as equivalent: a vendor with runtime-capable introspection but without state-aware availability (sub-test (a) without (b)) provides a programmable, discoverable control surface whose state-gating failures surface at call time; a vendor with only a static contract description requires integration engineers to transcribe the interface from documentation with no programmatic introspection. When two vendors both score Partial on C6, buyers should record which of the two cases applies and note it in the evaluation record. Fail covers no machine-readable contract at all.
+
+**Test.** For (a), connect a generic client (SiLA Browser [TODO: add proper refs to: https://www.unified-automation.com/downloads/opc-ua-clients.html, https://gitlab.com/unitelabs/sila2/sila-browser], UaExpert, or the vendor's own reference client) and introspect the interface; verify that the commands, types, return types, units, and constraints are reported. For (b), test configuration-aware exposure by detaching or disabling a module (or by evaluating a unit delivered in a different module configuration) and power-cycling, then confirming the endpoint exposes only the operations valid for the resulting configuration and not those of the now-absent module. Transient, state-dependent reporting (operations momentarily blocked by an open door, a held lock, or an in-progress operation) is a SHOULD; where the device supports it, drive it into such a state and verify the affected operations are reported as unavailable, but its absence does not lower the (b) grade.
+
+**Rationale.** Runtime self-description is the central design goal of SiLA 2's Feature Definition Language and of LADS's Information Model . SiLA 2 and OPC UA with LADS provide the foundation for Pass-level capability introspection by design; Pass-level state-aware availability additionally requires that the exposed surface reflect the instrument's actual module configuration rather than a generic superset; reflecting transient, live device state (locks, open doors, in-progress operations) is a further, more demanding SHOULD. A REST-plus-OpenAPI interface can pass sub-test (a) when the OpenAPI document is served by the running controller and accurately lists the command surface and types the deployed firmware exposes. Sub-test (b) is the stricter condition: that served document must be scoped to the instrument's actual module configuration, listing only the operations its installed modules support rather than a generic product-family superset; a firmware-accurate document that still advertises endpoints for modules the unit does not have passes (a) but not (b).
+
+---
+
+### C7 — Observable command and property state
+*Important · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] At minimum, a long-running command's execution state **SHOULD** be observable as a coarse status (for example, running, idle, complete, or failed) that a client can query concurrently while the command is in progress, without blocking the query until command completion.
+- [ ] Beyond this baseline, and where the instrument can provide it, the interface **SHOULD** additionally expose finer phase or progress, intermediate values, and—only where the instrument can compute it meaningfully—estimated remaining time and/or progress, through a subscription mechanism rather than only a terminal return value.
+- [ ] Estimated remaining time is optional: where it cannot be meaningfully computed (equilibration, adaptive imaging, temperature stabilization), the interface **SHOULD** report it as unknown rather than fabricate a value, and the absence of a time estimate is never penalized.
+- [ ] For instruments whose operations involve hazardous actuation or block shared resources—including, as a practical heuristic, operations that routinely run beyond approximately 60 seconds—C7 **MUST** score at least Partial; the minimal concurrent running/idle status above is sufficient to meet this floor, and richer progress reporting earns Pass.
+- The 60-second value is a heuristic, not a principled threshold: the property that actually drives the local floor is whether the call blocks a shared resource or involves hazardous actuation, not duration alone.
+- [ ] The same subscription discipline **SHOULD** extend beyond commands: continuously varying or sensor-like values the instrument exposes (temperatures, pressures, levels, positions) and asynchronous conditions (alarms, notifications, state changes) SHOULD be observable through a subscription, server-pushed on change or at a configurable interval, rather than requiring client-side polling.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires both sub-requirements: subscription-based progress reporting during long-running commands, and concurrent status queries that return within the documented response interval without blocking on command completion. A coarse but concurrently queryable running/idle/complete status satisfies the second sub-requirement on its own and earns at least Partial. Partial covers either sub-requirement satisfied but not both. Fail covers neither sub-requirement: no progress reporting and no ability to issue non-blocking status queries while a command is running.
+
+**Test.** Invoke a multi-step command (a temperature ramp, a plate scan, or equivalent) and verify that progress updates stream to the client. While the command is in progress, issue a concurrent status query from the same client session, or, for endpoints that advertise multi-client support, from a second client, and verify that the query returns within the documented response interval rather than blocking until the long-running command completes. Where the instrument exposes an observable property (a sensor reading such as temperature or pressure), subscribe to it and verify it pushes updates on change or at a configurable interval while the subscription is active, rather than requiring the client to poll.
+
+**Rationale.** Subscription-based state makes orchestrators more efficient by allowing decisions during an experiment rather than after it completes, a feature that SiLA 2 formalizes in its observable commands and that OPC UA supports through subscriptions on any exposed variable, including command or program status. Client-side polling of a terminal return value can substitute at higher resource cost, which is why this is Important rather than Critical. Because the criterion is graduated, an instrument exposing only a coarse, concurrently queryable state still earns partial credit; full progress streaming distinguishes Pass and is an orchestration convenience, not a procurement floor. The same efficiency argument extends to properties and events: subscribing to sensor values, alarms, and notifications avoids the cost and integration burden of client-side long-polling, and both SiLA 2 (observable properties) and OPC UA (subscriptions, events, and alarms) support it natively. Like the richer command reporting, this is a SHOULD rather than a procurement floor and does not gate the criterion.
+
+---
+
+### C8 — Reference client implementation provided
+*Important · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] The vendor **SHOULD** ship a reference client library, as readable source code rather than only a compiled binary, that is at least one of: a Python or C/C# reference client; a client generated from an open IDL or information model (SiLA FDL, OPC UA NodeSet, OpenAPI, or equivalent); or language-neutral protocol examples sufficient to implement a client without vendor binaries.
+- Because the reference client is example and integration code rather than the vendor's proprietary core, its source can be shipped even where the vendor's own implementation source remains confidential (criterion C4).
+- [ ] The client **MUST** run from a buyer-controlled host, not only from the vendor-supplied workstation.
+- [ ] The reference package **SHOULD** include documented installation steps, working "hello world" example code, and at least one worked example for a nontrivial workflow representative of the instrument class (for a plate reader, load rightarrow kinetic absorbance series rightarrow result retrieval; for an HPLC, method load rightarrow single injection run rightarrow chromatogram result retrieval; for a robot arm, pick-place-handoff to a downstream device).
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires both examples reaching their documented end state. Partial covers a working "hello world" without a nontrivial worked example, or a worked example that does not reach its documented end state on a fresh machine. Fail covers no reference package, no generated-client path, and no documented protocol examples sufficient to implement a client without vendor binaries.
+
+**Test.** Follow both the "hello world" and the nontrivial worked example on a fresh machine and verify that each reaches its documented end state.
+
+**Rationale.** A working client library plus a representative worked example often turns first integration from a protocol-engineering task into an installation-and-example task .
+
+---
+
+### C9 — Concurrent-access discipline
+*Important · weight 2 · effort M*
+
+**Requirements**
+
+- [ ] The interface **SHOULD** expose device-local lockable resources or functional units, with: (a) atomic acquire/release operations;
+- (b) queryable lock state and owner or session identity;
+- (c) documented lease and reconnect behavior, specifying whether the lock releases on TCP drop, after a configured grace period, or only on explicit release; and (d) a documented preemption or administrative-clear mechanism by which an authorized higher-priority client can interrupt a held lock.
+- [ ] For instruments with independent functional units (e.g., a liquid handler's deck transport and plate hotel, or a multi-module robotic workcell with independently commanded arms), each independently controllable unit **SHOULD** be lockable separately.
+- (Instruments in which the vendor's session model explicitly prevents concurrent multi-client access to individual modules—such as most commercial HPLC systems—are not examples of independently lockable units and should be evaluated as single-controller devices under the alternative path.) Composite reservations **MAY** be exposed by the vendor, but multi-device reservation, global lock graphs, deadlock detection, priority scheduling, and fairness are orchestrator-layer responsibilities and are out of scope for this criterion.
+- [ ] Where the instrument is a single-controller device by design, the API MAY explicitly reject multi-client connections in lieu of (a)–(d), provided the endpoint still exposes busy and owned state, lease and reconnect behavior, and, where a privileged administrative-clear path exists, a role-gated one; the rejection mechanism itself **MUST** be documented.
+- [ ] It **SHOULD** additionally expose owner or session identity (or at least an opaque owner token) and read-only monitoring access, so that a second client can see that the device is in use and by whom.
+- [ ] Any preemption or administrative-clear path **MUST** be role-gated.
+- [ ] The action **SHOULD** be attributable, meaning the API reports the preempting client's identity or session token, the affected lock or resource, the timestamp, and the reason code where available, so that the integration layer or scheduler can record it; the persistent audit log is that layer's responsibility, not the device's, and an on-device audit log is not required.
+- Even under 21 CFR Part 11 the audit trail is an obligation of the controlling software (the integration layer, scheduler, or LIMS), not the instrument firmware, and buyers should evaluate it in their deployment-level Computer Systems Validation (CSV) process rather than as a vendor scorecard criterion.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires documented behavior on (a)–(d), or, for declared single-controller devices, documented rejection behavior plus busy and owned state and lease and reconnect behavior, with owner identity or token and read-only monitoring access exposed where the device supports them. Any preemption or administrative-clear path MUST be role-gated. Partial covers documented behavior on a subset of (a)–(d), a documented LockController-style primitive without sub-criterion-level detail, a single-controller declaration missing owner-identity or monitoring exposure, or a role-gated preemption path whose actions the API does not make attributable. Fail covers no documented concurrency model at the device level, or an ungated preemption or administrative-clear path by which any client can force-clear another's lock.
+
+**Test.** For multi-client endpoints: (a) connect two clients, acquire a lock from the first, and verify the second can read the lock state, and the owner identity where the device exposes it; additionally verify atomic acquire semantics by issuing simultaneous lock-acquire requests from two clients using separate threads or processes with synchronized start times, and verify that exactly one receives a success response and the other receives a typed rejection error; a race condition that allows both clients to succeed concurrently is a Fail on sub-criterion (a) regardless of sequential lock-state visibility. (b) Acquire a lock, drop the TCP connection, reconnect, and verify the documented behavior matches what the vendor specifies. (c) With a lock held by one client, issue a privileged preemption or administrative-clear command from a second client and verify the documented path. (d) For instruments with multiple independently controllable functional units, acquire locks on each unit independently. For declared single-controller devices, verify the documented rejection behavior, busy and owned state, lease and reconnect behavior, the read-only monitoring path and owner identity or token where available, and, for any privileged administrative-clear path, that it is role-gated and its actions are attributable through the API, rather than the multi-client lock test.
+
+**Rationale.** A single integration layer that owns a device can serialize access to it, and in most deployments that is where concurrency coordination, preemption policy, and audit belong. Device-local support still earns its place for two reasons: an instrument may be reached by more than one client at once (several orchestrators, ad-hoc scripts, or AI agents alongside the scheduler), and even a single scheduler benefits from seeing that a device is busy and who holds it, and from atomic acquire/release that prevents a race if two clients arrive together. The point of C9 is that the device exposes enough concurrency state to support the integration layer, not that it reimplements the layer's job: multi-device reservation, global lock graphs, deadlock detection, priority, fairness, and the persistent audit log are all integration-layer responsibilities. SiLA 2 includes a LockController Standard Feature and OPC UA supports access control as part of LADS , but neither standardizes lock state and ownership reporting or lease/reconnect behavior in the depth production deployments benefit from.
+
+---
+
+### C10 — Machine-readable device and readiness state
+*Important · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] The interface **SHOULD** expose a defined set of operational states (for example: idle, busy, error, maintenance, awaiting human intervention) and documented recovery transitions between them, so that an orchestrator can decide whether a device is ready, occupied, faulted, or requires operator action.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires both: a defined set of named operational states exposed through the API, and documented recovery transitions between them in machine-readable form. Partial covers named states exposed but recovery transitions not documented in machine-readable form; or a subset of the expected operational states exposed (e.g., idle and busy but no distinct error or maintenance state), even if transitions among the exposed states are documented. Fail covers no machine-readable state at all, or state reported only as a human-readable status message rather than a fixed state code. Such a message cannot be matched on reliably because its wording is not guaranteed to stay constant: it may be translated into another language, reworded by a firmware update, or include a changing detail such as a progress percentage. A fixed state code, an enumerated value such as idle, busy, or error, stays the same through all of these, so an orchestrator can recognize it directly instead of parsing display text.
+
+**Test.** Read the state after a cold boot, after an initialization command, during a long-running operation, and after an induced failure; verify that each transition produces a reproducible, defined state. Additionally verify that recovery transitions between all exposed states are documented in machine-readable or API-accessible form (for example, through the interface's introspection mechanism, a published state-transition table in the machine-readable contract, or equivalent); documentation available only in a vendor PDF or human-readable manual does not satisfy the machine-readable requirement for Pass.
+
+**Rationale.** Machine-readable device state is a prerequisite for autonomous scheduling and recovery. Observable command and property state (C7) covers in-flight command progress and live property and event streams; this criterion covers the instrument's operational state across commands. LADS includes explicit device and functional-unit state machines as part of its information model .
+
+---
+
+### C11 — Result addressability and durability
+*Important · weight 2 · effort M*
+
+**Requirements**
+
+- C11 concerns the instrument's delivered results, meaning the data products it is built to output.
+- It does not require the instrument to also expose internal or raw working data that is not part of that delivered result, for example the raw detector trace behind a plate reader's processed absorbance values, the raw detector counts behind an HPLC or mass-spectrometer chromatogram, or the raw imaging data behind a sequencer's base calls; programmatic retrieval of the delivered result itself is still required under C5.
+- [ ] Each result **SHOULD** carry a stable identifier and be linked to the command that produced it.
+- [ ] At minimum, the most recent result **SHOULD** remain retrievable by that identifier across a client or instrument restart; instruments are not expected to retain their full result history, and whatever retention window they provide SHOULD be documented, with persistent storage of all results being the responsibility of the orchestrator, LIMS, or data store rather than the instrument.
+- [ ] For instruments that produce results incrementally (a plate reader measuring well by well, an HPLC building a chromatogram point by point, an NMR accumulating scans, or a sequencer producing reads), each increment **MUST** become available through the API as soon as it is produced, ideally through a subscription the orchestrator can consume rather than by repeated polling, so that the orchestrator can act on early data, for example aborting a run once enough wells are read or a chromatographic peak has eluted, to save time and consumables.
+- [ ] Results from a failed or aborted run **MUST** be retrievable up to the point of failure.
+- An instrument that by design returns only a final or processed result is a legitimate run-completion-category instrument, scored on the addressability and durability of that final result alone and not penalized for withholding intermediate data; this category includes instruments that return a single instantaneous measurement (such as a balance reading) and instruments that perform on-board processing and surface only the processed signal rather than the underlying raw stream.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires that a result is addressable by a stable identifier and remains retrievable by that identifier after the client restarts and after the instrument itself restarts; for instruments that produce intermediate or progressive results, in-flight access to those increments (by subscription or polling) is additionally required. Partial covers stable-identifier addressability that does not survive a restart; or in-flight increment access for an applicable instrument class delivered without command-result linkage; or stable-identifier addressability that survives restarts but provides no in-flight access to increments for an instrument in the intermediate-or-progressive-results category. (This third case is the most common real-world gap: instruments such as plate readers and NMRs that expose stable, durable result identifiers but no way to read increments while the run is still running.) Fail covers no stable-identifier addressability at all.
+
+**Test.** Applicability depends on instrument class. An instrument is in the "intermediate or progressive results" category when it can expose intermediate data values through the API during command execution — not only as a terminal payload at run completion; instruments that return a single result payload only after the run ends are in the run-completion category. For instruments in the intermediate or progressive results category (e.g., plate readers doing a kinetic absorbance series, NMRs accumulating FIDs during a multi-hour 2D experiment, HPLCs streaming a UV trace during a gradient run), start a multi-step run and verify that increments become available through the API as they are produced, by subscription where the instrument supports one and otherwise by polling; then kill the orchestrator client mid-run, restart the client, and retrieve the partial result by its identifier. For instruments that produce results only at run completion, execute a run, restart the orchestrator process between run completion and retrieval, and retrieve the result by its identifier from a fresh client. Additionally, for both instrument categories, power-cycle the instrument after a completed run and verify that the result remains retrievable by its identifier from a fresh client session after the instrument restarts. Where power-cycling the instrument pre-purchase is not feasible, the evaluator SHOULD request documentation of the instrument's result-storage architecture (volatile versus non-volatile) and treat the absence of non-volatile result storage as a documented gap contributing to Partial rather than Pass.
+
+**Rationale.** Programmatic retrievability (C5) is necessary but not sufficient. The orchestrator needs to correlate commands with their results, read long acquisitions in flight (by subscription where the instrument supports one, otherwise by polling), and recover the output of an interrupted run through the API rather than by hand. LADS defines program and result management in its information model , but these are optional model elements rather than enforced requirements, so procurement still has to verify that a device actually implements them and check the operational details. Exposing in-flight increments is expected only where it is part of the instrument's intended output model; an instrument that surfaces only a final or processed result, whether by design or because of on-board processing, is scored on that result alone.
+
+---
+
+### C12 — Instrument self-state
+*Important · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] The interface **SHOULD** expose, via the same API surface as commands: last calibration date and certificate reference; calibration validity flag; qualification status, given as IQ/OQ/PQ for regulated work, or, for non-regulated deployments, a documented self-qualification or readiness check against vendor-defined specifications, including date, result, responsible actor or system, and validity state; in-spec/out-of-spec flag for any monitored parameter (for example a temperature, pressure, vacuum, or flow reading outside its specified range); firmware version, hardware revision, and installed options; and usage and maintenance counters (lamp hours, cycle or spin counts, run time, read or injection counts, septum or syringe cycles) where applicable.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires live or triggerable evidence that calibration, qualification or readiness, usage, or out-of-spec state changes update the exposed self-state fields through the same API surface. Partial covers documented payloads, static factory evidence, or simulator evidence without triggerable state changes. Fail covers no machine-readable self-state, stale or hard-coded self-state, or GUI-only state.
+
+**Test.** Read the self-state property after triggering a calibration, qualification, or readiness-state change where practical, or by exercising state-change events through the vendor simulator, service mode, or factory-acceptance environment. For out-of-spec behavior, induce a safe simulated or non-hazardous out-of-spec condition where available. Where live or triggerable state changes are not accessible to the evaluator, fall back to verifying the documented payload structure against vendor-provided evidence (example payloads, simulator dumps, factory-acceptance records). Note: this fallback path corresponds to at most Partial under the grading rule below, regardless of documentation quality; Pass requires live or triggerable evidence.
+
+**Rationale.** A LIMS or asset-management system is usually the system of record for calibration and qualification history, and C12 does not ask the instrument to replace it. Two things nonetheless keep self-state reporting on the device. The usage and wear counters (lamp hours, cycle and spin counts) and the live in-spec/out-of-spec conditions are device-unique: no higher-level system can reconstruct them without the instrument reporting them. And even the calibration and qualification record is only as current as what the instrument exposes. Without a machine-readable path to this state, an orchestrator falls back on operator intervention for trust and maintenance decisions about instrument output, which raises integration and operating cost over the instrument's lifetime. SiLA 2's Standard Features do not cover this; LADS's Hardware View already covers parts of this space, including nameplate information, condition monitoring, and calibration/validation status .
+
+---
+
+### C13 — Versioning discipline
+*Important · weight 2 · effort S/M*
+
+**Requirements**
+
+- [ ] The interface **SHOULD** follow a published versioning policy (semantic versioning is the practical default) with a published long-term-support commitment.
+- [ ] The property that matters most to a deployment is that a working integration can stay on the interface version it validated: the vendor **SHOULD NOT** force a breaking change onto a running deployment, whether by a mandatory update or by a server-side or cloud change a pinned client cannot decline, and breaking changes SHOULD instead land in new versions the user opts into.
+- A vendor may release breaking changes at any pace as long as deployments can remain on their validated version.
+- Advance notice is needed for the case that removes that option, namely the vendor ending support for or requiring migration off a running version: for research-only deployments, a deprecation notice at least one minor release ahead; for regulated or validated deployments, at least 12 months' notice, a supported overlap period during which both the old and new interface remain available, and a documented migration and validation guide, so the deployment can plan and re-validate.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires a published versioning policy, a changelog, a deprecation policy, and that a deployment can remain on the interface version it validated rather than being forced to adopt breaking changes. Where the vendor ends support for or requires migration off a running version, research-only deployments additionally require at least one minor release of notice, and regulated or validated deployments additionally require a long-term-support commitment, at least 12 months' notice, an overlap period during which old and new interfaces remain available, and a documented migration and validation guide. Partial covers a policy that lets a deployment pin its version but lacks the long-term-support commitment, overlap period, or migration guide for forced-migration events. Fail covers no published versioning or deprecation policy, or a vendor that forces breaking changes onto running deployments through mandatory updates or undeclinable server-side changes.
+
+**Test.** Check the vendor's published changelog and deprecation policy, and whether a deployment can remain on a validated interface version, that is, whether the vendor imposes mandatory updates or undeclinable server-side changes that would force a running integration to adopt breaking changes.
+
+**Rationale.** Abolhasani et al.\ list "backward compatibility, stable versioning, long-term support" as components of a mature autonomous-instrument industry . The risk to a production deployment is not that a vendor releases breaking changes but that it forces them onto a running, validated integration. In regulated settings a working setup is often frozen and never updated, so a vendor can iterate freely as long as the deployment can stay on the version it validated; what blocks production is a vendor that ends support for or pushes breaking changes onto that version with no option to remain and no time to plan a re-validated migration.
+
+---
+
+### C14 — Simulation or emulation mode
+*Important · weight 3 · effort M*
+
+**Requirements**
+
+- [ ] The instrument **SHOULD** ship with a simulator or emulator (a virtual device) that exposes the same programmatic interface as the physical device, with: (a) configurable failure injection that exercises each top-level documented error class and a representative set of instrument-class-specific faults agreed during procurement;
+- [ ] (b) deterministic event-ordering semantics: command-state revisions, event-sequence identifiers, and progress values **MUST** be non-decreasing over the lifetime of a command; for multi-phase commands (e.g., an HPLC running equilibration then gradient, or a plate reader running autofocus then kinetic acquisition), the declared progress dimension MUST be monotonic across the entire command lifetime; if the vendor instead reports per-phase progress that resets between phases, each phase MUST be declared as a named, separately observable sub-unit with its own independent progress sequence;
+- (c) state-machine fidelity for door, access, and motion operations; and (d) a drop-in interface that can replace the physical instrument without changes to client code.
+- Timing fidelity is not required.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires (a)–(d). Partial covers a drop-in simulator (d) that can be made to fail, whether through configurable injection (a) or only by feeding it invalid inputs or invalid command sequences, but that does not meet all of (a)–(d); where configurable injection is absent, note that as the specific gap. Fail covers no simulator, a simulator that is not a drop-in replacement, or one that only ever returns success and cannot be made to fail.
+
+**Test.** Drive the simulator through a representative workflow that includes at least one induced failure, and verify that the simulator reports the failure with the same payload structure the physical instrument would. Where the simulator does not support configurable failure injection, the test reduces to: drive the simulator through a representative successful workflow and verify the drop-in interface is correct; check whether failures can still be provoked by feeding the simulator invalid inputs or invalid command sequences (for example an out-of-bounds parameter or a state-machine violation); note the absence of configurable failure injection as the documented basis for Partial rather than Pass. A simulator that cannot be made to fail at all is Fail.
+
+**Rationale.** Simulator provision is a gateway to the emerging practice of digital twins for autonomous laboratories . A simulator that always returns success is worse than no simulator: it gives developers false confidence that integration is correct when no failure path has been exercised. Concrete simulator affordances exist across the landscape: SiLA 2 defines a SimulationController Standard Feature ; the UniteLabs Platform and Connector Development Kit ship a device mock in the client-side Python SDK and a simulator on the connector side ; PyLabRobot exposes a browser-based simulator ; and Opentrons provides a simulator mode and a full hardware emulator .
+
+---
+
+### C15 — Control-loss observability and safe-state support
+*Important · weight 3 · effort M/L*
+
+**Requirements**
+
+- [ ] When the control session is lost, meaning the control client stops sending heartbeats or commands for a configurable interval, the instrument **MUST** make that loss observable: it detects the timeout and exposes a control-session-lost status through the normal status channel, so that the orchestrator or a middle-layer controller can decide on and drive the appropriate response.
+- The safe-state decision itself is owned by the orchestrator and the cell layer, not the instrument, because the correct response on control loss depends on the experiment phase, the state of neighboring devices, and the hazard (stopping a pump protects an overfilling reactor but can endanger a furnace that relies on it), none of which the instrument can determine on its own.
+- [ ] Where the vendor can declare a default that is safe regardless of context for a given functional unit, the instrument SHOULD support it as a configurable, orchestrator-enabled option; such a default may be a controlled stop, hold, ramp-down, depressurization, valve closure, or continued operation, and **MUST** be vendor-declared and validated for the deployment.
+- [ ] The instrument **MUST NOT** impose an autonomous safe-state response that the orchestrator cannot disable or override.
+- [ ] Reconnect semantics **SHOULD** be explicit: whether the instrument resumes, holds, or waits for explicit clearance once the session is re-established.
+- C15 is non-safety-rated; safety-rated stop functions and certified safety responses are out of scope and belong to the cell-level safety architecture and to C20.
+- [ ] For instruments operating unattended with active physical hazards, buyers **MUST** treat C15 as a local pass floor: control-session loss must at least be observable, and a Fail is acceptable only where the loss is handled by a documented external mechanism such as a cell-level watchdog, hardwired interlock, supervisory power-cutoff, or orchestrator-side control-loss handling.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires that control-session loss is detected and made observable through the API, that any vendor-provided safe default is configurable and orchestrator-overridable rather than imposed, and that reconnect semantics are explicit. Partial covers control-loss observability without a configurable safe default, or without explicit reconnect semantics, or a safe default the orchestrator cannot disable. Fail covers control-session loss that the instrument neither detects nor exposes, or an undocumented autonomous response on disconnect.
+
+**Test.** Establish a control session, sever the network connection while a long-running operation is in progress, and verify that the instrument detects the loss within the configured interval and exposes a control-session-lost status through the API on reconnect or through a side channel. Where the vendor declares a configurable safe default, verify that the orchestrator can enable and disable it, that it reaches the declared state when enabled, and that the instrument does not impose it when disabled. Verify that the reconnect semantics, whether resume, hold, or wait-for-clearance, are documented and observable.
+
+**Rationale.** In long-running unattended experiments the control client can crash or disconnect while hardware is active. The instrument cannot reliably decide what is safe in that moment, because the safe response depends on the experiment phase, the surrounding devices, and the hazard, all of which live in the orchestrator and the cell layer rather than in the instrument. What the instrument can reliably contribute is to make the loss observable so the orchestrator or a middle-layer controller can act, and, where a genuinely context-free safe default exists, to offer it as an option the orchestrator can enable. Imposing a fixed device-side response is as likely to cause harm as to prevent it, since stopping a pump can protect a reactor but disable a furnace's cooling. C15 is therefore scoped to observability and optional, overridable support, and is non-safety-rated; coordinated cell-wide shutdown is handled by C20 and the cell's safety-rated infrastructure. A reliable local network is assumed: control-session loss is an operational exception to be observed and handled, not a routine event to design elaborate device autonomy around.
+
+---
+
+### C16 — Error recovery taxonomy
+*Important · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] On top of the basic error reporting required by C3, the interface SHOULD report, for each error: a transient-versus-permanent classification (retry advisable versus abort required); an execution-effect status, indicating what the device can determine about the physical effect of the failed operation (not started or no physical effect, completed, partially executed, completed-but-not-acknowledged, or effect unknown), and where the extent of execution cannot be sensed, the interface **MUST** report the limit of vendor knowledge rather than fabricating precision; the post-error device state; and a recovery class (programmatic-retry, programmatic-recovery, or human-intervention-required).
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires all four taxonomy fields (transient/permanent classification, execution-effect status, post-error device state, recovery class) on every induced error class, including at least one representative from each additional top-level category listed in the vendor's published error taxonomy beyond the three minimum categories specified in the test; taxonomy present on the minimum three induced classes but absent or unverifiable on other documented categories is Partial. Partial covers a subset of the taxonomy fields, or full taxonomy on some error classes but not all. Fail covers typed errors without any recovery taxonomy beyond the basic identifier and message.
+
+**Test.** Before inducing failures, the evaluator SHOULD review the vendor's complete published error class list and identify at least one failure from each top-level error category listed therein; where a vendor's error taxonomy is unpublished or unavailable upon request, the evaluator should note this and treat the absence as a grading consideration. From the identified failures, induce at least three classes covering: a transient recoverable condition (e.g., temporary sensor or barcode-read failure); a hard hardware or firmware fault (e.g., motor fault, overpressure abort, detector fault, or temperature-control failure); and a mid-operation physical-process fault (e.g., sample-detection failure mid-scan, blocked movement, aspirate or dispense fault, or method abort). The exact induced failures MUST be safe to trigger in a pre-purchase or factory-acceptance setting; for instrument classes where inducing certain fault categories safely pre-purchase is not feasible, the evaluator SHOULD document which categories were untestable and the reason, SHOULD require simulator-based evidence or factory-acceptance records demonstrating taxonomy coverage for those categories, and SHOULD note untested categories as an explicit grading caveat. If the vendor's error taxonomy contains additional top-level categories not covered by the induced failures, select one representative failure from each additional category and verify taxonomy coverage there too.
+
+**Rationale.** A typed error without recovery information leaves every orchestrator to invent its own per-instrument error-class table, which is a substantial fraction of the actual integration work. The taxonomy converts "the call failed" into a programmatic decision. SiLA 2's defined-error mechanism and LADS's alarm model do not currently standardize this, which is why it is a forward-looking ask rather than a procurement floor.
+
+---
+
+### C17 — Conformance and certification
+*Important · weight 2 · effort S/M*
+
+**Requirements**
+
+- [ ] Conformance evidence **SHOULD** cover two distinct dimensions: (i) base-protocol conformance — independent certification or test-scenario evidence for the communication and protocol layer (e.g., OPC Foundation server certification for OPC UA endpoints;
+- SiLA Consortium self-certification test results for SiLA 2 endpoints); and (ii) laboratory-device semantic conformance — version-tied evidence that the implemented companion specification or Feature set covers the shipped instrument (e.g., documented LADS NodeSet, profiles, facets, and functional coverage; or a versioned SiLA 2 Feature set with test evidence).
+- Base-protocol certification alone is insufficient if the exposed laboratory-device model is incomplete or undocumented.
+- Vendor-specific Features and NodeSets are expected and legitimate, not a deficiency: these standards define how a device model is built and communicated, not which capabilities a device must expose, so a vendor's own Features are the intended way to surface functionality the standard does not enumerate.
+- What C17 asks is that the model, whether standard or vendor-specific, be documented and conformant.
+- Where the chosen protocol has no established third-party certification scheme or consortium self-certification suite (for example, a documented vendor protocol, REST, or bare gRPC), the base-protocol dimension is satisfied by documented, versioned, and reproducible vendor conformance-test evidence rather than by formal certification; the absence of an external certification body or institution is not itself a deficiency.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass: documented conformance evidence for the base-protocol layer (independent third-party certification, such as an OPC UA server tested by an OPC Foundation accredited lab and published as OPC Certified; consortium conformance testing, such as SiLA 2's test scenarios run as self- or accredited certification; or, for a protocol with no certification program of its own, documented and reproducible vendor conformance-test evidence tied to the shipped firmware and standard version) together with version-tied conformance evidence for the implemented laboratory-device companion specification or feature set (a documented LADS NodeSet with profiles, facets, conformance units, and shipped firmware coverage, or a versioned SiLA 2 Feature set with test evidence). Base-protocol evidence alone does not establish laboratory-device semantic conformance: an endpoint whose companion-specification or Feature-set depth is undocumented caps at Partial (P-UNDOC). Partial: base-protocol conformance present, but the laboratory-device semantic layer is incomplete, undocumented, or version-mismatched, or the certification covers an older version of the standard with a published re-certification roadmap and target date. A Partial grade MUST be annotated with one of the following reason codes: P-OLD (certification covers an older version), P-GAP (implementation or test-coverage gap), or P-UNDOC (evidence exists but is insufficiently tied to shipped firmware, or the companion-specification depth is undocumented). When comparing two Partial vendors on C17, a P-OLD Partial is generally less concerning than a P-GAP or P-UNDOC Partial, which indicates an implementation or documentation gap that may affect integration reliability. Fail: self-declared compliance without supporting evidence or test-scenario coverage of any kind. The absence of a third-party or consortium certification for the chosen protocol is not itself a Fail; what C17 requires is documented, reproducible conformance evidence appropriate to that protocol's ecosystem.
+
+**Test.** (a) Request evidence for the communication protocol itself: for OPC UA endpoints, the OPC Foundation certification (or Compliance Test Tool report); for SiLA 2 endpoints, the consortium's conformance test-scenario results; and otherwise (REST, gRPC, or a documented vendor protocol) the vendor's own documented conformance-test results. Verify the evidence names the specific standard version and the shipped firmware version. (b) Request evidence for the laboratory-device model layered on top: for OPC UA / LADS endpoints, the implemented NodeSet file, the declared LADS profiles and facets (the named conformance groups, in OPC UA's Profile and Facet terms, that the server claims to support), and documentation of functional coverage against the shipped instrument; for SiLA 2 endpoints, the versioned Feature Definition Language files and their test output. Verify this evidence is tied to the shipped firmware and covers the functions the buyer intends to use. An endpoint that supplies (a), the protocol-layer evidence, but not (b), the device-model evidence, caps at Partial and is annotated P-UNDOC.
+
+**Rationale.** For the buyer, conformance evidence is what makes this scorecard cheaper to apply. A certified or conformance-tested interface has already been exercised against the standard by someone else, so the buyer does not have to re-test the whole protocol surface, gets independent quality control from a body or consortium that other integrators also trust, and has reasonable assurance the interface will interoperate with other standard-compliant, certified software rather than only the vendor's own stack. The form the evidence takes depends on the protocol: a third-party or consortium certification where the standard offers one, and otherwise documented, reproducible vendor test evidence that serves the same purpose, so the criterion does not penalize protocols that lack an external certification body.  These criteria concern the instrument's behavior at the boundary with adjacent devices in a multi-instrument workcell. They are listed in their own tier so that buyers integrating into a multi-instrument cell can score them independently of standalone instrument compliance, and so that vendors of single-purpose benchtop instruments are not penalized when sold into single-instrument deployments.
+
+---
+
+### C18 — Operating-system independence
+*Important · weight 2 · effort S/M*
+
+**Requirements**
+
+- [ ] The device's programmatic control path (its API, SDK, or driver, together with any host-side runtime it requires) **MUST** be operable from a mainstream, automatable host without being locked to a single proprietary operating system.
+- [ ] Specifically: (a) the device **MUST** be controllable either as an operating-system-neutral network service reachable from any client operating system (for example a documented SiLA 2, OPC UA, or REST endpoint), or through client bindings that run on at least one open, scriptable, server-class operating system (for example a current Linux distribution);
+- [ ] (b) where a vendor-supplied host component (SDK, driver, or service) is required, the vendor **MUST** document its supported operating systems and their support windows; and (c) the vendor MUST document any dependency on a single proprietary operating system (which component, and its support window); documentation is a minimum disclosure obligation and does not by itself satisfy the criterion.
+- A control path operable only through an operating system's GUI, rather than a headless, scriptable interface, does not meet this requirement regardless of documentation and is graded Fail.
+- Exposing the device as a headless, scriptable network service satisfies this criterion for all clients even if the vendor's own server component runs on one operating system, provided that component is documented and automatable (the edge-controller path of C1).
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires an operating-system-independent control path: either the device is an operating-system-neutral network service reachable from any client operating system, or the client SDK and bindings run on at least one open, automatable server operating system, with supported operating systems and their support windows documented. Partial covers a device that is controllable programmatically but whose only supported control path requires a single proprietary host operating system for a headless, scriptable server or edge component with no client-side GUI dependency, where that dependency and its support window are documented; operating-system lock-in exists but is confined to a documented, automatable host. Fail covers operation that requires a specific proprietary operating system through GUI-only automation, a control path that depends on an undocumented operating-system-locked component, or system requirements that do not document the supported operating systems at all.
+
+**Test.** Read the vendor's stated system requirements for the control interface and for any host-side SDK, driver, or service. Confirm that at least one automatable, server-class operating system is supported on the client side, or that the device is reachable as an operating-system-neutral network service. Where feasible, exercise the control path from a non-Windows host (a Linux client, or the network API from a Linux client) and confirm that a command executes and a result returns with no single-operating-system-only component in the client path.
+
+**Rationale.** Operating-system lock-in is a recurring, under-stated integration tax. A device whose control stack runs only on one proprietary desktop operating system forces the laboratory to provision, license, patch, and secure a dedicated host per instrument, enlarges the lifecycle and security surface, and ties the automated laboratory's uptime to a single vendor's operating-system-support decisions. None of this prevents closed-loop operation, which is why the criterion is Important rather than Critical, but it materially raises cost and fragility and narrows deployment options for Linux-based and budget-constrained self-driving laboratories. Exposing the device as an operating-system-neutral network service (C1, C6) is the clean remedy, because it decouples the client ecosystem from the host operating system even when a vendor server component remains operating-system-specific.
+
+---
+
+### C19 — Automated load/unload
+*Cell-integration · weight 2 · effort S*
+
+**Requirements**
+
+- The most basic precondition for cell integration is that a machine can load labware into the instrument and unload it without manual intervention.
+- [ ] The instrument **MUST** provide an arm-reachable labware handoff position and an API-controlled access path for presenting, accepting, and releasing labware (for example commands to open a door, drawer, or shutter, to extend or retract a carrier or nest, and to engage or release a clamp or gripper), or a documented passive handoff in which the arm places directly into a fixed open position.
+- [ ] Its geometry **MUST** be documented for integration: not only the coordinates and approach of the handoff position, but a CAD or 3D model of the instrument itself (a collision model at minimum), so integrators can place it in the cell and plan collision-free arm trajectories around it.
+- [ ] It **MUST** expose a machine-readable handoff-ready or load-complete indication so the arm knows when it may place or pick labware and when the instrument has secured or released it.
+- The instrument is not required to carry labware identity or any internal labware-tracking state; that is owned by the orchestrator and the LIMS (C5 covers execution-identifier traceability), and labware presence at expected positions is reported under C20.
+- This criterion is not applicable to instruments that do not receive machine-loaded labware in the cell (inline pumps, flow cells, fixed environmental sensors, and similar).
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+- [ ] **N/A**
+
+> Pass requires a documented arm-reachable handoff position, documented instrument geometry (the handoff position and a CAD or collision model of the instrument), an API-controlled (or documented passive) load and unload path, and a machine-readable handoff-ready or load-complete indication, with no manual step in routine load or unload. Partial covers an automatable mechanism that is API-addressable but missing the handoff-ready or load-complete indication, requiring a documented manual-assist step, or with incomplete geometry documentation (the handoff position or an instrument collision model undocumented). Fail covers instruments that cannot be loaded or unloaded by a machine without manual intervention. For instruments that do not receive machine-loaded labware, the criterion is graded N/A and the cell-integrated total is computed over the remaining criteria.
+
+**Test.** Drive the instrument through a complete automated load and unload cycle through the API: open or present the access path, confirm a documented arm-reachable handoff position, place labware (physically or in simulation), command the instrument to accept and secure it, verify the handoff-ready or load-complete indication, then command release and unload. Confirm that routine load and unload require no manual step, and that the instrument's geometry is documented: the handoff position and a CAD or collision model of the instrument for cell layout and trajectory planning.
+
+**Rationale.** Integrators are routinely asked to integrate instruments that cannot be machine-loaded at all, which is a hard blocker no orchestrator software can solve and the most common reason an otherwise capable instrument cannot enter a cell. This is why the cell-integration floor requires at least Partial here. Because a robot must approach the instrument and reach into it, the instrument's geometry is part of the integration contract: without a model of it, an integrator cannot lay out the cell or plan collision-free trajectories. The criterion deliberately does not ask the instrument to carry labware identity or maintain internal labware state: labware tracking is owned by the orchestrator and the LIMS. Physical labware presence, where the instrument can sense it, is reported as a readiness state under C20; linking results to samples is handled by execution identifiers under C5.
+
+---
+
+### C20 — Access and motion-readiness coordination
+*Cell-integration · weight 2 · effort S*
+
+**Requirements**
+
+- [ ] The instrument **SHOULD** expose machine-readable, subscribable readiness states for the device-local conditions that affect external access: door, lid, or shutter status; internal-axis position and motion state (parked versus in motion); clamp, gripper, nest, or carrier engagement; labware presence at expected positions; and a vendor-declared robot-access state indicating that all internal moving parts are parked at positions the vendor has documented as safe for an external arm to enter.
+- Applicability is per instrument class: an instrument with motorized axes exposes axis and motion state, one with retention or gripper mechanisms exposes engagement state, one with labware sensors exposes presence, and one that sits inside a robot's work envelope exposes the robot-access state; the vendor declares which categories apply, with a rationale the buyer accepts or rejects.
+- What matters is that these states are accurate and mutually consistent: when the instrument reports it is clear for access, its moving parts are in fact parked.
+- Update latency is a path-planning optimization, not a correctness requirement; a vendor **MAY** document typical latency for that purpose.
+- [ ] These states are software coordination primitives, not safety-rated signals: they **MUST NOT** be used as personnel-safety inputs, and hardware safety events are covered by C21.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+
+> Pass requires all applicable state categories to be exposed, accurate, and mutually consistent, with the robot-access state tracking the underlying conditions; where the vendor has not declared applicability, the evaluator treats all categories as applicable and notes the missing declaration as a documentation gap. Partial covers only a subset of applicable categories exposed, or all categories exposed but the applicability declaration absent. Fail covers no machine-readable readiness state.
+
+**Test.** For each applicable state (door, lid, or shutter; internal-axis position and motion, including a documented blocked-movement condition; clamp, gripper, nest, or carrier engagement; and labware presence), drive or simulate the condition through its documented values and at least one transition, and confirm the API reports the matching value at each point, including intermediate states; on physical hardware, cross-check the reported value against the actual condition, observed directly or with an independent sensor. Then verify that the vendor-declared robot-access state changes consistently with those underlying states, so it reports "clear" only when the door, axes, and mechanisms are actually in their arm-safe positions.
+
+**Rationale.** When an arm reaches into an instrument, the cell controller needs accurate device-local state about the instrument's configuration to plan and validate the arm's trajectory, and the instrument is the only authoritative source for it, which is why exposing it is a vendor responsibility. These are coordination primitives, not safety-rated signals: they support cell-level safety validation but do not replace it, and an API state named "safe to enter" must not be wired into a safety function. Personnel safety and stop functions are handled at the cell level and under C21. Neither SiLA 2 nor LADS standardizes this set of states.
+
+---
+
+### C21 — Safety-event participation
+*Cell-integration · weight 2 · effort L*
+
+**Applicability**
+
+> C21 applies to instruments that can create a hazard the cell must be able to stop: those with active or hazardous actuation, hazardous energy output, robot interaction, or a stop function wired into the cell. Typical in-scope instruments are liquid handlers, centrifuges, robotic arms, plate and tube handlers, automated storage and retrieval systems, and instruments with high-pressure pumps, heaters, lasers, or other hazardous energy, especially when deployed inside a robotic cell with a shared emergency-stop or safety bus. C21 is N/A in its entirety for instruments with none of these: no active actuation, no hazardous energy output, no robot interaction, and no externally relevant stop function. Typical N/A examples are balances, barcode readers, passive cameras, and non-actuated sensors (simple temperature probes, conductivity sensors, and similar). For such instruments, the relevant interface obligations are instead: expose communication-loss status through the normal status channel; qualify readings with a data-validity or staleness indicator; avoid returning unqualified stale measurements after a communication gap; and recover to a valid reporting state without requiring manual intervention after reconnect. These behaviors are evaluated under C15 (control-loss observability and safe-state support) and C10 (observable state) rather than C21. The N/A determination MUST be documented with the same vendor-verification path required for sub-test (a) N/A below: an electrical schematic or safety I/O declaration confirming the absence of active actuators and external safety-bus inputs, or integrator confirmation that the deployment includes no safety relay, E-stop bus, or PLC safety I/O connected to the instrument. A vendor assertion of N/A unsupported by any of these means should be treated as unverified and noted in the evaluation record.
+
+**Requirements**
+
+- [ ] The software interface **MUST** participate in hardware safety events without being treated as the safety function itself.
+- The API signal is not safety-rated unless explicitly certified as part of the safety function; stop-category selection and hardware-safety-chain validation remain part of the cell-level safety design.
+- [ ] Vendor documentation, API schemas, and property or method names **MUST NOT** use safety-function terminology—including "emergency stop," "protective stop," "safety-rated," STO (Safe Torque Off), or SIL (Safety Integrity Level) designations—for software signals covered by this criterion unless the signal is independently certified as part of the safety function under the applicable machinery safety standard (ISO 13849, IEC 62061, or equivalent); use of certified safety-function terminology for non-rated API signals is a criterion Fail regardless of functional behavior, because such labelling creates a safety architecture vulnerability by which cell integrators may inadvertently wire a non-rated software signal into a safety function.
+- Two sub-tests apply.
+- Sub-test (a) Hardware safety event reporting.
+- [ ] When an external hardware safety event occurs (cell-level emergency stop, safety bus signal, or other stop function as defined in IEC 60204-1), the device **MUST NOT** auto-resume without explicit clearance.
+- [ ] If control power and communication remain available, the API **MUST** expose the latched safety-event status and the declared device state through the normal status channel.
+- [ ] If the safety function interrupts communication or controller power, the endpoint **MUST** expose the latched event, last-known command state, and recovery or clearance requirement on reconnect or restart before accepting normal commands; where the safety function interrupts controller power and the instrument cannot preserve the event locally, the vendor MUST document the restart-state behavior, what information is lost, what information is available from the cell PLC or safety relay, and how the orchestrator must verify recovery before normal commands resume.
+- This exception path can support at most Partial unless the cell controller supplies the missing latched-state evidence.
+- Sub-test (a) does not apply to instruments without external safety-bus inputs by design (typically benchtop instruments such as pH meters, balances, and basic spectrophotometers); for such instruments, sub-test (a) is graded N/A and the criterion is graded against sub-test (b) only, with vendor documentation justifying the N/A determination.
+- [ ] Because the N/A determination is otherwise entirely vendor self-reported, the evaluator **SHOULD** independently verify it by requesting the instrument's electrical schematic or safety I/O declaration showing the absence of external safety-bus inputs, or by confirming with the deployment integrator that no safety relay, E-stop bus, or PLC safety I/O is wired to the instrument in the intended deployment configuration; a vendor assertion of N/A unsupported by any of these means should be treated as unverified and noted in the evaluation record.
+- [ ] Where the deployment configuration is not yet finalized at procurement time, the evaluator **SHOULD** record the N/A determination as provisional ("N/A—pending deployment validation") rather than final, and require re-evaluation of sub-test (a) as part of the deployment qualification before the instrument enters unmanned cell operation; a vendor N/A claim accepted at procurement does not exempt the instrument from sub-test (a) evaluation at deployment qualification if the final wiring includes any safety relay, E-stop bus, or PLC safety I/O connected to the instrument.
+- Sub-test (b) Orchestrator-issued operational shutdown command.
+- [ ] The API **MUST** accept an orchestrator-issued operational shutdown command and reach a documented operational shutdown state within a documented interval. This command is not safety-rated unless separately certified as part of the safety function.
+
+**Grade** (check one)
+
+- [ ] **Pass**
+- [ ] **Partial**
+- [ ] **Fail**
+- [ ] **N/A**
+
+> Criterion-level N/A applies when the instrument meets the passive-instrument definition in the applicability note above; such instruments are excluded from the applicable maximum score and their interface obligations are evaluated under C15 and C10 instead. For in-scope instruments, the sub-test grading rule applies: Pass requires every applicable sub-test to pass; Partial when at least one applicable sub-test passes; Fail when none. For instruments where sub-test (a) is graded N/A (per the requirement), the criterion is graded against sub-test (b) only. Where sub-test (a) is evaluated via fallback evidence rather than full hardware signal assertion in the deployment configuration (per the test above), the criterion is capped at Partial regardless of the sub-test (b) outcome; full hardware assertion of sub-test (a) is required for a Pass-grade criterion score.
+
+**Test.** For (a), assert the configured hardware safety signal during a long-running command and verify the instrument reaches its declared safe state. Where asserting the hardware safety signal pre-purchase is not feasible (cell-level E-stop bus unavailable, safety relay not present, or the instrument is evaluated outside its intended deployment cell), the evaluator SHOULD use one of the following fallback paths and document which was used: a test fixture simulating the safety-bus input signal per the vendor's electrical schematic; simulator-based evidence from the vendor demonstrating the latched-event and clearance-requirement behavior; factory-acceptance records covering the safety-event path; or reference-customer testimony from a documented production deployment. Fallback paths other than full hardware signal assertion correspond to at most Partial on sub-test (a), because the software behavior cannot be confirmed without asserting the actual signal in the deployment configuration. For (b), issue the orchestrator-issued operational shutdown command during a long-running command and verify that the instrument reaches its declared operational shutdown state. In both cases, verify that issuing a normal command after the safety event is rejected until clearance is given.
+
+**Rationale.** When a cell-level stop or safety event occurs, every affected instrument must enter its designed response state and, where communication remains available or after controller restart, expose the latched event and recovery requirement before normal commands resume. The interface signal is a non-safety-rated operational fail-safe, not a substitute for the cell's safety-rated infrastructure; an orchestrator-issued operational shutdown command is a distinct mechanism for graceful coordinated shutdown. Control-loss observability and safe-state support (C15) addresses control-client failure; this criterion addresses cell-wide coordinated shutdown; C20 addresses automation-readiness states the cell's safety architecture composes into safety decisions but does not itself constitute. The three criteria sit in a layered relationship: C15 backstops a single control session, safety-event participation backstops a coordinated cell shutdown, and access readiness provides the device-local inputs the cell's automation and safety layers compose into trajectory and safety decisions.
+
+---
+

@@ -1,0 +1,19 @@
+id: C12
+name: Instrument self-state
+tier: Important
+weight: 2
+effort: S
+summary:
+applicability:
+requirement: |-
+  The interface SHOULD expose, via the same API surface as commands: last calibration date and certificate reference; calibration validity flag; qualification status, given as IQ/OQ/PQ for regulated work, or, for non-regulated deployments, a documented self-qualification or readiness check against vendor-defined specifications, including date, result, responsible actor or system, and validity state; in-spec/out-of-spec flag for any monitored parameter (for example a temperature, pressure, vacuum, or flow reading outside its specified range); firmware version, hardware revision, and installed options; and usage and maintenance counters (lamp hours, cycle or spin counts, run time, read or injection counts, septum or syringe cycles) where applicable.
+grade_options:
+- Pass
+- Partial
+- Fail
+grading: |-
+  Pass requires live or triggerable evidence that calibration, qualification or readiness, usage, or out-of-spec state changes update the exposed self-state fields through the same API surface. Partial covers documented payloads, static factory evidence, or simulator evidence without triggerable state changes. Fail covers no machine-readable self-state, stale or hard-coded self-state, or GUI-only state.
+test: |-
+  Read the self-state property after triggering a calibration, qualification, or readiness-state change where practical, or by exercising state-change events through the vendor simulator, service mode, or factory-acceptance environment. For out-of-spec behavior, induce a safe simulated or non-hazardous out-of-spec condition where available. Where live or triggerable state changes are not accessible to the evaluator, fall back to verifying the documented payload structure against vendor-provided evidence (example payloads, simulator dumps, factory-acceptance records). Note: this fallback path corresponds to at most Partial under the grading rule below, regardless of documentation quality; Pass requires live or triggerable evidence.
+rationale: |-
+  A LIMS or asset-management system is usually the system of record for calibration and qualification history, and C12 does not ask the instrument to replace it. Two things nonetheless keep self-state reporting on the device. The usage and wear counters (lamp hours, cycle and spin counts) and the live in-spec/out-of-spec conditions are device-unique: no higher-level system can reconstruct them without the instrument reporting them. And even the calibration and qualification record is only as current as what the instrument exposes. Without a machine-readable path to this state, an orchestrator falls back on operator intervention for trust and maintenance decisions about instrument output, which raises integration and operating cost over the instrument's lifetime. SiLA 2's Standard Features do not cover this; LADS's Hardware View already covers parts of this space, including nameplate information, condition monitoring, and calibration/validation status .

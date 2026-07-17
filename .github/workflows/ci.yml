@@ -1,0 +1,37 @@
+name: scorecard-ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # need history for the changelog diff
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies (locked)
+        run: uv sync --locked
+
+      - name: Validate criterion files against the schema
+        run: uv run python build/validate.py
+
+      - name: Check invariants (weights vs. declared maxima, contiguous ids)
+        run: uv run python build/generate.py --invariants
+
+      - name: Ensure generated files are up to date
+        run: uv run python build/generate.py --check
+
+      - name: Validate contributed device evaluations and check their outputs
+        run: uv run python build/score_device.py --check
+
+      - name: Require a CHANGELOG entry when criteria change
+        if: github.event_name == 'pull_request'
+        run: uv run python build/check_changelog.py "${{ github.event.pull_request.base.sha }}"

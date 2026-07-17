@@ -1,0 +1,42 @@
+# Worked example carried over from the accompanying paper (Supplementary Table S1).
+# Anonymized on purpose: it demonstrates the tooling and is a CI fixture that must
+# reproduce the paper's numbers (standalone 34/44, cell-integrated 37/50). It is not
+# a real named product and should not be copied as an endorsement of any vendor.
+
+device:
+  vendor: "Anonymized (paper Case A)"
+  model: "Reader X"
+  category: fluorescence plate reader
+  interface: SiLA 2
+  firmware_version: null
+  product_url: null
+
+evaluation:
+  evaluator: "paper worked example"
+  date: 2026-01-01
+  scorecard_version: 1.0.0
+  deployment: cell-integrated
+  evidence_basis: hands-on-test
+
+scores:
+  C1:  { grade: Partial, note: "native SiLA 2 server; reconnect documented only as best-effort" }
+  C2:  { grade: Pass,    note: "typed params; FDL constraints enforced" }
+  C3:  { grade: Pass,    note: "SiLA 2 defined errors with stable id, message, structured context" }
+  C4:  { grade: Pass,    note: "no paywall; ecosystem-use license; code reuse permitted" }
+  C5:  { grade: Pass,    note: "headless retrieval by execution id; HDF5 readable without vendor software" }
+  C6:  { grade: Partial, note: "capability introspection present; not gated to deployed config/state" }
+  C7:  { grade: Pass,    note: "kinetic acquisition observable; status query within documented interval" }
+  C8:  { grade: Pass,    note: "hello-world plus kinetic-series worked example" }
+  C9:  { grade: Partial, note: "lock state exposed; ownership/preemption/per-unit locks undocumented" }
+  C10: { grade: Pass,    note: "named states with documented recovery transitions" }
+  C11: { grade: Partial, note: "stable result ids; no in-flight access to increments" }
+  C12: { grade: Fail,    note: "calibration/qualification/usage state not exposed via API" }
+  C13: { grade: Pass,    note: "semver plus deprecation notices (research context)" }
+  C14: { grade: Partial, note: "simulator present but no configurable failure injection" }
+  C15: { grade: Pass,    note: "control-session-lost status with configurable safe default" }
+  C16: { grade: Fail,    note: "no recovery taxonomy beyond basic error id and message" }
+  C17: { grade: Pass,    note: "SiLA 2 self-certification with published test evidence" }
+  C18: { grade: Pass,    note: "native SiLA 2 network service; OS-neutral, reachable from any client OS" }
+  C19: { grade: Partial, note: "motorized carrier loads/unloads; no explicit handoff-ready signal" }
+  C20: { grade: Partial, note: "door/axis state exposed; no declared robot-access state" }
+  C21: { grade: Partial, note: "orchestrator-issued shutdown supported; hardware safety-event reporting absent" }

@@ -1,0 +1,27 @@
+title: Device Integration Scorecard
+grade_values:
+  Pass: 1.0
+  Partial: 0.5
+  Fail: 0.0
+  N/A:
+tiers:
+- Critical
+- Important
+- Cell-integration
+totals:
+  standalone:
+    criteria: C1-C18
+    max: 46
+  cell_integrated:
+    criteria: C1-C21
+    max: 52
+floors:
+- name: Critical floor
+  text: |-
+    At most one Critical criterion at Partial, with all others Pass; any Fail on a Critical criterion disqualifies regardless of the weighted total. A Critical Partial may be accepted with a written remediation commitment and target date (twelve-month ceiling recommended).
+- name: Important floor
+  text: |-
+    Failed Important criteria may not exceed four weighted points in total. C15 may not Fail for instruments operating unattended with active physical hazards unless an external mitigation is documented. C7 has a conditional floor (see C7). No Important criterion may be failed without a documented institutional gap-acceptance decision.
+- name: Cell-integration floor
+  text: |-
+    For cell-integrated procurement, C19 (automated load/unload) must score at least Partial when a machine loads/unloads the instrument; a Fail disqualifies from cell-integrated deployment. Buyers may make C20 and/or C21 local floors for hazardous or robot-envelope instruments.

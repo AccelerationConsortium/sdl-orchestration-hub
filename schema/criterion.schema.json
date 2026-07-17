@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Device integration scorecard criterion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "tier", "weight", "effort", "requirement",
+               "grade_options", "grading", "test", "rationale"],
+  "properties": {
+    "id":            {"type": "string", "pattern": "^C[0-9]+$"},
+    "name":          {"type": "string", "minLength": 1},
+    "tier":          {"enum": ["Critical", "Important", "Cell-integration"]},
+    "weight":        {"type": "integer", "minimum": 1},
+    "effort":        {"type": "string", "pattern": "^[SML](/[SML])?$",
+                      "description": "T-shirt effort: S <=2h, M up to a working day, L multi-day"},
+    "summary":       {"type": ["string", "null"]},
+    "applicability": {"type": ["string", "null"]},
+    "requirement":   {"type": "string", "minLength": 1},
+    "grade_options": {"type": "array", "minItems": 3,
+                      "items": {"enum": ["Pass", "Partial", "Fail", "N/A"]}},
+    "grading":       {"type": "string", "minLength": 1},
+    "test":          {"type": "string", "minLength": 1},
+    "rationale":     {"type": "string", "minLength": 1}
+  }
+}

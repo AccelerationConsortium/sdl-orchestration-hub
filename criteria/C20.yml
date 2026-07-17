@@ -1,0 +1,19 @@
+id: C20
+name: Access and motion-readiness coordination
+tier: Cell-integration
+weight: 2
+effort: S
+summary:
+applicability:
+requirement: |-
+  The instrument SHOULD expose machine-readable, subscribable readiness states for the device-local conditions that affect external access: door, lid, or shutter status; internal-axis position and motion state (parked versus in motion); clamp, gripper, nest, or carrier engagement; labware presence at expected positions; and a vendor-declared robot-access state indicating that all internal moving parts are parked at positions the vendor has documented as safe for an external arm to enter. Applicability is per instrument class: an instrument with motorized axes exposes axis and motion state, one with retention or gripper mechanisms exposes engagement state, one with labware sensors exposes presence, and one that sits inside a robot's work envelope exposes the robot-access state; the vendor declares which categories apply, with a rationale the buyer accepts or rejects. What matters is that these states are accurate and mutually consistent: when the instrument reports it is clear for access, its moving parts are in fact parked. Update latency is a path-planning optimization, not a correctness requirement; a vendor MAY document typical latency for that purpose. These states are software coordination primitives, not safety-rated signals: they MUST NOT be used as personnel-safety inputs, and hardware safety events are covered by C21.
+grade_options:
+- Pass
+- Partial
+- Fail
+grading: |-
+  Pass requires all applicable state categories to be exposed, accurate, and mutually consistent, with the robot-access state tracking the underlying conditions; where the vendor has not declared applicability, the evaluator treats all categories as applicable and notes the missing declaration as a documentation gap. Partial covers only a subset of applicable categories exposed, or all categories exposed but the applicability declaration absent. Fail covers no machine-readable readiness state.
+test: |-
+  For each applicable state (door, lid, or shutter; internal-axis position and motion, including a documented blocked-movement condition; clamp, gripper, nest, or carrier engagement; and labware presence), drive or simulate the condition through its documented values and at least one transition, and confirm the API reports the matching value at each point, including intermediate states; on physical hardware, cross-check the reported value against the actual condition, observed directly or with an independent sensor. Then verify that the vendor-declared robot-access state changes consistently with those underlying states, so it reports "clear" only when the door, axes, and mechanisms are actually in their arm-safe positions.
+rationale: |-
+  When an arm reaches into an instrument, the cell controller needs accurate device-local state about the instrument's configuration to plan and validate the arm's trajectory, and the instrument is the only authoritative source for it, which is why exposing it is a vendor responsibility. These are coordination primitives, not safety-rated signals: they support cell-level safety validation but do not replace it, and an API state named "safe to enter" must not be wired into a safety function. Personnel safety and stop functions are handled at the cell level and under C21. Neither SiLA 2 nor LADS standardizes this set of states.
