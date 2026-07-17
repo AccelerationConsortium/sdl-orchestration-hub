@@ -1,67 +1,116 @@
 name: Contribute a device evaluation
-description: Submit a scorecard for an instrument you have evaluated (no Git required — a maintainer will convert this into a devices/*.yml file).
-title: "[device] <vendor> <model>"
-labels: ["device-evaluation"]
+description: Submit a scorecard for an instrument you have evaluated. No Git needed; a maintainer will convert this into a devices/*.yml file.
+title: "[device]: <vendor> <model>"
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for contributing an evaluation. Grade each criterion **Pass / Partial / Fail**
-        (or **N/A** where the criterion allows it). See `scorecard.md` for the full criteria and
-        grading rules. You do not need to compute any totals — a maintainer will run the tooling.
-        Evaluations are contributor assessments, not endorsements; please base grades on public
-        documentation or your own testing and add evidence links where you can.
+        Thanks for contributing an evaluation! Grade each criterion **Pass**, **Partial**, or **Fail**
+        (or **N/A** where the criterion allows it). See
+        [`scorecard.md`](../blob/main/scorecard.md) for the full criteria and grading rules.
+        You do not need to compute any totals; a maintainer will run the tooling.
+
+        Please base grades on public documentation or your own testing, and add evidence links
+        where you can. Evaluations are contributor assessments, not endorsements.
+
   - type: input
     id: vendor
-    attributes: { label: Vendor }
-    validations: { required: true }
+    attributes:
+      label: Vendor
+      placeholder: e.g. Agilent
+    validations:
+      required: true
+
   - type: input
     id: model
-    attributes: { label: Model }
-    validations: { required: true }
+    attributes:
+      label: Model
+      placeholder: e.g. 1290 Infinity II LC
+    validations:
+      required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: Category (optional)
+      placeholder: e.g. HPLC, plate reader, liquid handler
+
   - type: input
     id: interface
-    attributes: { label: Interface evaluated, description: "e.g. SiLA 2, OPC UA/LADS, REST" }
+    attributes:
+      label: Interface evaluated
+      placeholder: e.g. SiLA 2, OPC UA / LADS, REST, vendor SDK
+    validations:
+      required: true
+
   - type: dropdown
     id: deployment
     attributes:
       label: Deployment evaluated
-      options: [standalone, cell-integrated]
-    validations: { required: true }
+      options:
+        - standalone
+        - cell-integrated
+    validations:
+      required: true
+
   - type: dropdown
     id: evidence_basis
     attributes:
       label: Evidence basis
-      options: [vendor-docs, hands-on-test, integrator-report]
-    validations: { required: true }
+      options:
+        - vendor-docs
+        - hands-on-test
+        - integrator-report
+    validations:
+      required: true
+
   - type: textarea
     id: scores
     attributes:
-      label: Grades (C1–C20)
-      description: One per line as "Cn: Grade — note (evidence url)". N/A is fine for the cell tier if not evaluated.
+      label: Grades (C1–C21)
+      description: >
+        Put your grade after each colon: Pass, Partial, Fail, or N/A. Add a short note in
+        parentheses and an evidence URL if you have one. Use N/A for the cell-integration tier
+        (C19–C21) if you evaluated the instrument standalone.
       value: |
-        C1:
-        C2:
-        C3:
-        C4:
-        C5:
-        C6:
-        C7:
-        C8:
-        C9:
-        C10:
-        C11:
-        C12:
-        C13:
-        C14:
-        C15:
-        C16:
-        C17:
-        C18:
-        C19:
-        C20:
-    validations: { required: true }
+        C1  Orchestrator-reachable programmatic control:
+        C2  Strong typing with units and constraints:
+        C3  Structured error reporting:
+        C4  Open API access:
+        C5  Control-accessible result retrieval:
+        C6  Runtime self-description:
+        C7  Observable command and property state:
+        C8  Reference client implementation:
+        C9  Concurrent-access discipline:
+        C10 Machine-readable device and readiness state:
+        C11 Result addressability and durability:
+        C12 Instrument self-state:
+        C13 Versioning discipline:
+        C14 Simulation or emulation mode:
+        C15 Control-loss observability and safe-state support:
+        C16 Error recovery taxonomy:
+        C17 Conformance and certification:
+        C18 Operating-system independence:
+        C19 Automated load/unload:
+        C20 Access and motion-readiness coordination:
+        C21 Safety-event participation:
+    validations:
+      required: true
+
   - type: input
     id: evaluator
-    attributes: { label: Attribution, description: "name, org, or handle to credit (may be a pseudonym)" }
-    validations: { required: true }
+    attributes:
+      label: Attribution
+      description: Name, org, or handle to credit (may be a pseudonym).
+    validations:
+      required: true
+
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware / software version (optional)
+
+  - type: input
+    id: product_url
+    attributes:
+      label: Product URL (optional)
