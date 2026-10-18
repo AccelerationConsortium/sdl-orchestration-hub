@@ -1,0 +1,45 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "unilabos",
+    "name": "UniLabOS",
+    "organisation": "DP Technology / DeepModeling community",
+    "city": "Beijing",
+    "country": "China",
+    "region": "Asia",
+    "location": {
+      "lat": 39.99,
+      "lng": 116.33
+    },
+    "family": "formal",
+    "familyLabel": "Formal standard",
+    "standardRequired": false,
+    "integrationMechanism": "ROS 2 (primary communication fabric)",
+    "standards": [
+      "ROS 2",
+      "OPC UA (adapter)",
+      "Modbus (adapter)"
+    ],
+    "standardsBase": [
+      "ROS 2",
+      "OPC UA",
+      "Modbus"
+    ],
+    "notes": "Dedicated device_comms/opcua_client/ module; asyncua and pymodbus declared dependencies.",
+    "license": "GPL-3.0",
+    "links": {
+      "website": "https://blogs.deepmodeling.com/Uni-Lab_30_12_2025/",
+      "repository": "https://github.com/deepmodeling/Uni-Lab-OS",
+      "docs": null,
+      "paper": "https://arxiv.org/abs/2512.21766",
+      "logo": "https://github.com/deepmodeling.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [],
+    "href": "/api/v1/tools/unilabos.json",
+    "webUrl": "/#map/unilabos"
+  }
+}

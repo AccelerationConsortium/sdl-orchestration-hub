@@ -1,0 +1,37 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "ochra",
+    "name": "OChRA",
+    "organisation": "OChRA team (Open Chemistry Robotics and Automation)",
+    "city": "Liverpool",
+    "country": "UK",
+    "region": "Europe",
+    "location": {
+      "lat": 53.406,
+      "lng": -2.966
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom station/device adapters over REST (pydantic models)",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "Layered lab and per-station FastAPI servers; device operations dispatched by method name; MongoDB persistence; early-stage prototype (v0.0.1).",
+    "license": "MIT",
+    "links": {
+      "website": "https://ochra-lab.github.io/ochra/",
+      "repository": "https://github.com/OChRA-lab/ochra",
+      "docs": "https://ochra-lab.github.io/ochra/",
+      "paper": "https://github.com/OChRA-lab/ochra",
+      "logo": "https://github.com/OChRA-lab.png?size=96"
+    },
+    "verified": false,
+    "unverifiedFields": "The project publishes no affiliation; location placed at the host of its 2025 AIchemy workshop.",
+    "publicScorecards": [],
+    "href": "/api/v1/tools/ochra.json",
+    "webUrl": "/#map/ochra"
+  }
+}

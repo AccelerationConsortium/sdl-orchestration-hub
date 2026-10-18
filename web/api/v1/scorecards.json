@@ -1,0 +1,245 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "count": 1,
+  "items": [
+    {
+      "id": "reader-x",
+      "instrument": "Reader X (worked example)",
+      "instrumentClass": "Fluorescence plate reader",
+      "endpoint": "SiLA 2",
+      "architecture": "Native endpoint",
+      "targetOrchestrator": "ChemOS 2.0",
+      "targetOrchestratorId": "chemos2",
+      "date": "2026-09-16",
+      "source": "Worked example",
+      "submittedBy": "Toolkit maintainers",
+      "deployment": {
+        "cell": true,
+        "hazard": false,
+        "unattended": false,
+        "networked": true,
+        "isolated": false,
+        "isoAccepted": false,
+        "surfaceDoc": false,
+        "c20local": false,
+        "c21local": false
+      },
+      "grades": {
+        "C1": "P",
+        "C2": "G",
+        "C3": "G",
+        "C4": "G",
+        "C5": "G",
+        "C6": "P",
+        "C7": "G",
+        "C8": "G",
+        "C9": "P",
+        "C10": "G",
+        "C11": "P",
+        "C12": "F",
+        "C13": "G",
+        "C14": "P",
+        "C15": "G",
+        "C16": "F",
+        "C17": "G",
+        "C18": "G",
+        "C19": "P",
+        "C20": "P",
+        "C21": "P"
+      },
+      "notes": {
+        "C1": "Native SiLA 2 server; reconnect documented only as “best-effort”; mode and operation-identifier mechanism must be specified explicitly.",
+        "C2": "Typed parameters; units from declared vocabulary; FDL constraints machine-readable and enforced.",
+        "C3": "SiLA 2 defined errors with stable ID, message, structured context, device timestamp; errors retrievable after delivery.",
+        "C4": "No paywall; ecosystem-use licence; publication and reuse of buyer-written code permitted.",
+        "C5": "Headless retrieval by execution ID; HDF5 payload readable without vendor software.",
+        "C6": "FDL exposes capability introspection (a); operations not scoped to deployed module configuration (b absent).",
+        "C7": "Kinetic acquisition observable; concurrent status query returns within documented interval.",
+        "C8": "Hello-world plus kinetic-series worked example.",
+        "C9": "LockController exposes lock state; ownership reporting, preemption path and hierarchical locks not documented.",
+        "C10": "Named operational states with documented recovery transitions.",
+        "C11": "Stable result IDs; no in-flight access to increments during the run.",
+        "C12": "Calibration, qualification and usage state not exposed through the API.",
+        "C13": "Semver plus deprecation notices; research-only context; regulated bar not evaluated.",
+        "C14": "Drop-in simulator fails on invalid inputs but has no configurable failure injection.",
+        "C15": "Exposes control-session-lost status with a configurable, overridable safe default.",
+        "C16": "No recovery taxonomy beyond identifier and message.",
+        "C17": "SiLA 2 self-certification with complete test evidence and versioned Feature set.",
+        "C18": "Native SiLA 2 network service, reachable from any client OS.",
+        "C19": "Motorized carrier supports automated load/unload; no explicit handoff-ready signal.",
+        "C20": "Door state and axis motion exposed; no declared robot-access state.",
+        "C21": "Orchestrator shutdown (b) supported; hardware safety-event reporting (a) absent."
+      },
+      "remediation": {
+        "C1": {
+          "commitment": "Specify reconnect mode and operation-identifier mechanism. Target: 6 months.",
+          "targetDate": "2027-03-31"
+        },
+        "C12": {
+          "commitment": "Expose calibration, qualification and usage state through the API. Target: 9 months.",
+          "targetDate": "2027-06-30"
+        },
+        "C16": {
+          "commitment": "Expose recovery taxonomy fields on error classes. Target: 9 months.",
+          "targetDate": "2027-06-30"
+        },
+        "C19": {
+          "commitment": "Documented handoff-ready signal before unmanned cell operation.",
+          "targetDate": null
+        },
+        "C21": {
+          "commitment": "Hardware safety-event reporting before unmanned cell operation.",
+          "targetDate": null
+        }
+      },
+      "result": {
+        "status": "eligible",
+        "verdict": "Eligible",
+        "standalone": {
+          "points": 36,
+          "max": 46
+        },
+        "cellIntegrated": {
+          "points": 39,
+          "max": 52
+        },
+        "unrated": 0,
+        "reasons": [
+          {
+            "level": "ok",
+            "text": "Cybersecurity/IT precondition cleared."
+          },
+          {
+            "level": "ok",
+            "text": "Critical Partial on C1 accepted with a dated remediation commitment."
+          },
+          {
+            "level": "ok",
+            "text": "Critical floor met."
+          },
+          {
+            "level": "ok",
+            "text": "Important floor met (4 / 4 failed weighted points)."
+          },
+          {
+            "level": "ok",
+            "text": "Cell-integration floor met."
+          }
+        ]
+      },
+      "evaluation": {
+        "vendor": "Reader X (worked example)",
+        "endpoint": "SiLA 2",
+        "arch": "Native endpoint",
+        "orch": "ChemOS 2.0",
+        "annot": {
+          "6": "a-no-b"
+        },
+        "remedDate": {
+          "1": "2027-03-31",
+          "12": "2027-06-30",
+          "16": "2027-06-30"
+        },
+        "grades": {
+          "1": "P",
+          "2": "G",
+          "3": "G",
+          "4": "G",
+          "5": "G",
+          "6": "P",
+          "7": "G",
+          "8": "G",
+          "9": "P",
+          "10": "G",
+          "11": "P",
+          "12": "F",
+          "13": "G",
+          "14": "P",
+          "15": "G",
+          "16": "F",
+          "17": "G",
+          "18": "G",
+          "19": "P",
+          "20": "P",
+          "21": "P"
+        },
+        "notes": {
+          "1": "Native SiLA 2 server; reconnect documented only as “best-effort”; mode and operation-identifier mechanism must be specified explicitly.",
+          "2": "Typed parameters; units from declared vocabulary; FDL constraints machine-readable and enforced.",
+          "3": "SiLA 2 defined errors with stable ID, message, structured context, device timestamp; errors retrievable after delivery.",
+          "4": "No paywall; ecosystem-use licence; publication and reuse of buyer-written code permitted.",
+          "5": "Headless retrieval by execution ID; HDF5 payload readable without vendor software.",
+          "6": "FDL exposes capability introspection (a); operations not scoped to deployed module configuration (b absent).",
+          "7": "Kinetic acquisition observable; concurrent status query returns within documented interval.",
+          "8": "Hello-world plus kinetic-series worked example.",
+          "9": "LockController exposes lock state; ownership reporting, preemption path and hierarchical locks not documented.",
+          "10": "Named operational states with documented recovery transitions.",
+          "11": "Stable result IDs; no in-flight access to increments during the run.",
+          "12": "Calibration, qualification and usage state not exposed through the API.",
+          "13": "Semver plus deprecation notices; research-only context; regulated bar not evaluated.",
+          "14": "Drop-in simulator fails on invalid inputs but has no configurable failure injection.",
+          "15": "Exposes control-session-lost status with a configurable, overridable safe default.",
+          "16": "No recovery taxonomy beyond identifier and message.",
+          "17": "SiLA 2 self-certification with complete test evidence and versioned Feature set.",
+          "18": "Native SiLA 2 network service, reachable from any client OS.",
+          "19": "Motorized carrier supports automated load/unload; no explicit handoff-ready signal.",
+          "20": "Door state and axis motion exposed; no declared robot-access state.",
+          "21": "Orchestrator shutdown (b) supported; hardware safety-event reporting (a) absent."
+        },
+        "remed": {
+          "1": "Specify reconnect mode and operation-identifier mechanism. Target: 6 months.",
+          "12": "Expose calibration, qualification and usage state through the API. Target: 9 months.",
+          "16": "Expose recovery taxonomy fields on error classes. Target: 9 months.",
+          "19": "Documented handoff-ready signal before unmanned cell operation.",
+          "21": "Hardware safety-event reporting before unmanned cell operation."
+        },
+        "gap": {
+          "12": true,
+          "16": true
+        },
+        "id": "reader-x",
+        "instrumentClass": "Fluorescence plate reader",
+        "source": "Worked example",
+        "submittedBy": "Toolkit maintainers",
+        "date": "2026-09-16",
+        "ctx": {
+          "cell": true,
+          "hazard": false,
+          "unattended": false,
+          "networked": true,
+          "isolated": false,
+          "isoAccepted": false,
+          "surfaceDoc": false,
+          "c20local": false,
+          "c21local": false
+        },
+        "cyber": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "evidence": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    }
+  ]
+}

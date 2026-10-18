@@ -32,6 +32,12 @@ jobs:
       - name: Validate contributed device evaluations and check their outputs
         run: uv run python build/score_device.py --check
 
+      - name: Ensure the web tool's data matches the criteria and device files
+        run: uv run python build/build_web.py --check
+
+      - name: Build the web tool's static API (fails if the Reader X example drifts)
+        run: node web/scripts/build-api.mjs
+
       - name: Require a CHANGELOG entry when criteria change
         if: github.event_name == 'pull_request'
         run: uv run python build/check_changelog.py "${{ github.event.pull_request.base.sha }}"

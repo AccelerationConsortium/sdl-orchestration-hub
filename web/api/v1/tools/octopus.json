@@ -1,0 +1,37 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "octopus",
+    "name": "OCTOPUS",
+    "organisation": "Korea Institute of Science and Technology (KIST), Computational Science Research Center",
+    "city": "Seoul",
+    "country": "Republic of Korea",
+    "region": "Asia",
+    "location": {
+      "lat": 37.601,
+      "lng": 127.046
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom resource-allocation and scheduling framework",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "JSON job scripts; aiohttp transport between master and module nodes.",
+    "license": "Not specified",
+    "links": {
+      "website": "https://github.com/KIST-CSRC/Octopus",
+      "repository": "https://github.com/KIST-CSRC/Octopus",
+      "docs": null,
+      "paper": "https://doi.org/10.1038/s41467-024-54067-7",
+      "logo": "https://github.com/KIST-CSRC.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [],
+    "href": "/api/v1/tools/octopus.json",
+    "webUrl": "/#map/octopus"
+  }
+}

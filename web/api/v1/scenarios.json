@@ -1,0 +1,67 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "count": 5,
+  "items": [
+    {
+      "id": "frugal",
+      "name": "Frugal / single-group academic SDL",
+      "profile": "One or two instruments, a small Python-fluent group, few cross-lab needs, no regulatory burden.",
+      "recommendation": "Python consumer/client layer (PyLabRobot, Opentrons), later a SiLA 2 wrapper",
+      "why": "Fastest path to a working prototype.",
+      "tradeoffs": "These conventions are Python libraries, not network services: no discoverability across workstations or orchestrators. Keep device code behind a minimal typed interface (units, constraints, error objects) so wrapping it later as SiLA 2 or LADS is a refactor, not a rewrite. Keep the SiLA wrapper thin; labware and coordination state belong in the orchestrator.",
+      "recommendedStandards": []
+    },
+    {
+      "id": "shared",
+      "name": "Multi-instrument shared academic SDL",
+      "profile": "Several vendors, rotating users, moderate turnover, no hard regulatory deadlines.",
+      "recommendation": "SiLA 2",
+      "why": "Runtime discoverability, Python ecosystem, separation of concerns, flexibility for changing setups.",
+      "tradeoffs": "A runtime-discoverable Feature catalog lets a client enumerate commands, parameters, properties and constraints without hand-written drivers (sila-python is the open reference implementation). It does not remove the need for device documentation, method knowledge, calibration state and safety context.",
+      "recommendedStandards": [
+        "SiLA 2"
+      ]
+    },
+    {
+      "id": "regulated",
+      "name": "Regulated industrial / pharma",
+      "profile": "Audit trails, lifecycle management and enterprise integration matter.",
+      "recommendation": "SiLA 2 or OPC UA with LADS",
+      "why": "Audit, lifecycle, enterprise integration.",
+      "tradeoffs": "If the same device is exposed over both, apply the scorecard to the endpoint your orchestrator will actually consume. Compliance on one endpoint does not transfer to the other. Regulated buyers may weigh the conformance-evidence criteria (C17) higher.",
+      "recommendedStandards": [
+        "SiLA 2",
+        "OPC UA + LADS"
+      ]
+    },
+    {
+      "id": "robotics",
+      "name": "Robotics-heavy SDL",
+      "profile": "Arms, gantries or tracks tending many instruments inside a workcell.",
+      "recommendation": "ROS 2 or SiLA 2 for robots; SiLA 2 / LADS for instruments; under a shared orchestrator",
+      "why": "Separation of robot and instrument concerns.",
+      "tradeoffs": "The cell-integration tier (C19–C21) is where every standard still leaves gaps for the integrator. Weigh C20/C21 higher for hazardous actuation and expect external sensors, interlocks or PLC-level safety.",
+      "recommendedStandards": [
+        "SiLA 2",
+        "OPC UA + LADS"
+      ]
+    },
+    {
+      "id": "multisite",
+      "name": "Multi-site / cross-institutional",
+      "profile": "Experiments federated across laboratories.",
+      "recommendation": "Brokered federation (e.g. FINALES2) or a centralized integration platform, above local device-integration choices",
+      "why": "The cross-site layer is agnostic to local device-integration choices.",
+      "tradeoffs": "Each site still needs a sound local device boundary; the criteria in the scorecard apply per instrument at each site.",
+      "recommendedStandards": []
+    }
+  ],
+  "precedence": [
+    "multisite",
+    "robotics",
+    "regulated",
+    "instrument count (few → frugal, many → shared)"
+  ]
+}

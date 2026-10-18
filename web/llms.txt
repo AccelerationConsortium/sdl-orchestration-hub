@@ -1,0 +1,31 @@
+# SDL Device Integration Toolkit
+
+> Machine-readable companion to the SDL Device Integration Toolkit. It lists open-source SDL orchestrators, defines 21 testable criteria for autonomous-ready instrument interfaces, and publishes instrument scorecards. All data is static JSON; there is no server-side search — fetch and filter.
+
+## Start here
+- [API index](/api/v1/index.json): every endpoint, counts, URL interface, submission links
+- [OpenAPI](/api/v1/openapi.json)
+
+## Data
+- [Orchestrators](/api/v1/tools.json): 16 records; filter on family, standardsBase, region, license, standardRequired
+- [Criteria C1–C21](/api/v1/criteria.json): weights, tiers, test procedure, Pass/Partial/Fail rules
+- [Scoring rules](/api/v1/rules.json): decision order and floors — apply in order; a later step never overrides an earlier one
+- [Public scorecards](/api/v1/scorecards.json): instrument evaluations with computed status and totals
+- [Scenarios](/api/v1/scenarios.json) and [standards comparison](/api/v1/standards.json)
+
+## Evaluate an instrument
+1. Build an object matching [evaluation.schema.json](/api/v1/schema/evaluation.schema.json). Grades: "G" Pass, "P" Partial, "F" Fail, "NA" (C5, C19, C21 only), keyed by criterion number.
+2. Score it with [score.js](/score.js): `require("./score.js").evaluate(evaluation, { criteria })` where `criteria` is criteria.json items mapped to `{ n, tier: "C"|"I"|"X", w: weight }`.
+3. Status is one of blocked, not_eligible, incomplete, conditionally_eligible, eligible. Rank only eligible / conditionally eligible instruments by total.
+
+## Compare
+- Compare instruments by result.status first, then result.standalone.points (or cellIntegrated for workcells).
+- An instrument’s score belongs to the endpoint scored (SiLA 2, OPC UA + LADS, REST, MCP); it does not transfer to other endpoints.
+
+## Contribute
+- New orchestrator: https://github.com/willigott/device-integration-scorecard/issues/new?template=new-orchestrator.yml
+- New scorecard: https://github.com/willigott/device-integration-scorecard/issues/new?template=new-scorecard.yml
+
+## Caveats
+- Grading text is condensed; confirm the full criterion definition before relying on it. Weights are proposed defaults.
+- Locations, links and logos were compiled separately and may be incomplete; check `verified` on each tool.

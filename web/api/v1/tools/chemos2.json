@@ -1,0 +1,51 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "chemos2",
+    "name": "ChemOS 2.0",
+    "organisation": "Aspuru-Guzik Group, University of Toronto / Acceleration Consortium",
+    "city": "Toronto, ON",
+    "country": "Canada",
+    "region": "North America",
+    "location": {
+      "lat": 43.66,
+      "lng": -79.3957
+    },
+    "family": "formal",
+    "familyLabel": "Formal standard",
+    "standardRequired": true,
+    "integrationMechanism": "SiLA 2 (required for all device drivers)",
+    "standards": [
+      "SiLA 2"
+    ],
+    "standardsBase": [
+      "SiLA 2"
+    ],
+    "notes": "All servers and clients are built on the sila2 bindings; no alternative integration path.",
+    "license": "MIT",
+    "links": {
+      "website": "https://acceleration.utoronto.ca",
+      "repository": "https://github.com/malcolmsimgithub/ChemOS2.0",
+      "docs": null,
+      "paper": "https://doi.org/10.1016/j.matt.2024.04.022",
+      "logo": "https://github.com/aspuru-guzik-group.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [
+      {
+        "id": "reader-x",
+        "status": "eligible",
+        "standalone": {
+          "points": 36,
+          "max": 46
+        },
+        "href": "/api/v1/scorecards/reader-x.json"
+      }
+    ],
+    "href": "/api/v1/tools/chemos2.json",
+    "webUrl": "/#map/chemos2"
+  }
+}

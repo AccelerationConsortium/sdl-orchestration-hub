@@ -1,0 +1,215 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SDL Device Integration Toolkit API",
+    "version": "v1",
+    "description": "Static, read-only JSON describing open-source SDL orchestrators, the autonomous-readiness criteria and public instrument scorecards. All endpoints are plain files; filter client-side."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/tools.json": {
+      "get": {
+        "summary": "All surveyed orchestrators with location, links, integration mechanism, standards and linked public scorecards.",
+        "operationId": "tools",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "/api/v1/schema/tool.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/{id}.json": {
+      "get": {
+        "summary": "One orchestrator by id.",
+        "operationId": "tools_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "/api/v1/schema/tool.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/criteria.json": {
+      "get": {
+        "summary": "Criteria C1–C21: tier, default weight, what each checks, how to test it, and the Pass/Partial/Fail rule.",
+        "operationId": "criteria",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rules.json": {
+      "get": {
+        "summary": "Scoring rules: grade values, tiers, maxima, the sequential decision order and floors, precondition deliverables, RFP evidence pack.",
+        "operationId": "rules",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scorecards.json": {
+      "get": {
+        "summary": "Public instrument scorecards with results computed by score.js.",
+        "operationId": "scorecards",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "/api/v1/schema/evaluation.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scorecards/{id}.json": {
+      "get": {
+        "summary": "One public scorecard by id.",
+        "operationId": "scorecards_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios.json": {
+      "get": {
+        "summary": "Deployment archetypes with recommended default integration boundary.",
+        "operationId": "scenarios",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/standards.json": {
+      "get": {
+        "summary": "Standards comparison: SiLA 2, OPC UA + LADS, typical REST, MCP.",
+        "operationId": "standards",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/schema/evaluation.schema.json": {
+      "get": {
+        "summary": "JSON Schema for an instrument evaluation (input to score.js and the web app's Import).",
+        "operationId": "schema_evaluation_schema",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/schema/tool.schema.json": {
+      "get": {
+        "summary": "JSON Schema for an orchestrator record.",
+        "operationId": "schema_tool_schema",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

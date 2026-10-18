@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/api/v1/schema/tool.schema.json",
+  "title": "Orchestrator record",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "organisation",
+    "family",
+    "location"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "organisation": {
+      "type": "string"
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "region": {
+      "type": "string"
+    },
+    "location": {
+      "type": "object",
+      "required": [
+        "lat",
+        "lng"
+      ],
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        }
+      }
+    },
+    "family": {
+      "enum": [
+        "formal",
+        "hal",
+        "agentic",
+        "bespoke"
+      ]
+    },
+    "familyLabel": {
+      "type": "string"
+    },
+    "standardRequired": {
+      "type": "boolean"
+    },
+    "integrationMechanism": {
+      "type": "string"
+    },
+    "standards": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "standardsBase": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "license": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "unverifiedFields": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "publicScorecards": {
+      "type": "array"
+    },
+    "href": {
+      "type": "string"
+    },
+    "webUrl": {
+      "type": "string"
+    }
+  }
+}

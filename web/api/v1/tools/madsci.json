@@ -1,0 +1,41 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "madsci",
+    "name": "MADSci",
+    "organisation": "Argonne National Laboratory, Data Science and Learning Division",
+    "city": "Lemont, IL",
+    "country": "USA",
+    "region": "North America",
+    "location": {
+      "lat": 41.7183,
+      "lng": -87.9784
+    },
+    "family": "formal",
+    "familyLabel": "Formal standard",
+    "standardRequired": false,
+    "integrationMechanism": "Custom AbstractNode / RestNode module over REST",
+    "standards": [
+      "SiLA 2 (optional)"
+    ],
+    "standardsBase": [
+      "SiLA 2"
+    ],
+    "notes": "REST node modules wrap vendor protocols; ships a generated SiLA 2 example node and declares sila2 as an optional dependency.",
+    "license": "MIT",
+    "links": {
+      "website": "https://ad-sdl.github.io/MADSci/",
+      "repository": "https://github.com/AD-SDL/MADSci",
+      "docs": "https://ad-sdl.github.io/MADSci/",
+      "paper": "https://doi.org/10.21105/joss.09416",
+      "logo": "https://github.com/AD-SDL.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [],
+    "href": "/api/v1/tools/madsci.json",
+    "webUrl": "/#map/madsci"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "interfaces": [
+    "SiLA 2",
+    "OPC UA + LADS",
+    "Typical vendor REST",
+    "MCP (model-facing)"
+  ],
+  "criteria": [
+    {
+      "criterion": "Runtime discoverability",
+      "ratings": {
+        "SiLA 2": "Yes",
+        "OPC UA + LADS": "Yes",
+        "Typical vendor REST": "Limited",
+        "MCP (model-facing)": "Yes"
+      }
+    },
+    {
+      "criterion": "Machine-readable semantics",
+      "ratings": {
+        "SiLA 2": "Yes",
+        "OPC UA + LADS": "Yes",
+        "Typical vendor REST": "Partial",
+        "MCP (model-facing)": "Partial"
+      }
+    },
+    {
+      "criterion": "Strong typing & data model",
+      "ratings": {
+        "SiLA 2": "Yes",
+        "OPC UA + LADS": "Yes",
+        "Typical vendor REST": "Partial",
+        "MCP (model-facing)": "Yes"
+      }
+    },
+    {
+      "criterion": "Runtime introspection (generic client)",
+      "ratings": {
+        "SiLA 2": "Yes",
+        "OPC UA + LADS": "Yes",
+        "Typical vendor REST": "Limited",
+        "MCP (model-facing)": "Yes"
+      }
+    },
+    {
+      "criterion": "Composability & extension",
+      "ratings": {
+        "SiLA 2": "Yes",
+        "OPC UA + LADS": "Yes",
+        "Typical vendor REST": "Yes",
+        "MCP (model-facing)": "Yes"
+      }
+    }
+  ],
+  "note": "Ratings reflect what each approach requires, not any particular implementation. A well-engineered REST + OpenAPI interface can satisfy most procurement criteria but still lacks a shared cross-vendor lab vocabulary. MCP and REST give typed I/O without one."
+}

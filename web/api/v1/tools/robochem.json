@@ -1,0 +1,37 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "robochem",
+    "name": "RoboChem-Flex / OmniPlatypus",
+    "organisation": "Noël Group, Van ’t Hoff Institute for Molecular Sciences, University of Amsterdam",
+    "city": "Amsterdam",
+    "country": "Netherlands",
+    "region": "Europe",
+    "location": {
+      "lat": 52.3547,
+      "lng": 4.954
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom BaseDevice abstraction with protocol- and vendor-specific subclasses",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "Common device interface exposes named parameters and metadata; subclasses support serial, TCP socket, Modbus and vendor XML; USB-serial devices are auto-identified from stored hardware IDs.",
+    "license": "Apache-2.0",
+    "links": {
+      "website": "https://hims.uva.nl",
+      "repository": "https://github.com/Noel-Research-Group/Robochem_Flex",
+      "docs": null,
+      "paper": "https://doi.org/10.1038/s44160-026-01053-0",
+      "logo": "https://github.com/Noel-Research-Group.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [],
+    "href": "/api/v1/tools/robochem.json",
+    "webUrl": "/#map/robochem"
+  }
+}

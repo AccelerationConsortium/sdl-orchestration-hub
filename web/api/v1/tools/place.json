@@ -1,0 +1,37 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "place",
+    "name": "PLACE",
+    "organisation": "Physical Acoustics Lab, University of Auckland",
+    "city": "Auckland",
+    "country": "New Zealand",
+    "region": "Oceania",
+    "location": {
+      "lat": -36.8523,
+      "lng": 174.7691
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom Instrument base class with plugin-per-vendor",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "Each vendor device is implemented as a separate plugin.",
+    "license": "LGPL-3.0",
+    "links": {
+      "website": "https://place.auckland.ac.nz",
+      "repository": "https://github.com/PALab/place",
+      "docs": "https://place.auckland.ac.nz",
+      "paper": "https://doi.org/10.1177/2211068214553022",
+      "logo": "https://github.com/PALab.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [],
+    "href": "/api/v1/tools/place.json",
+    "webUrl": "/#map/place"
+  }
+}

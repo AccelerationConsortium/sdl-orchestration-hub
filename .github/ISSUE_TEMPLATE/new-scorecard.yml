@@ -1,0 +1,39 @@
+name: Submit a scorecard
+description: Publish an instrument evaluation to the public scorecard registry.
+title: "[Scorecard] "
+labels: ["submission", "scorecard"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Score one instrument **endpoint** (e.g. its SiLA 2 server) against criteria C1–C21. Easiest path: fill in the Scorecard on the website and use **Submit to public registry** on the Review stage — the JSON below is then filled in for you.
+  - type: input
+    id: instrument
+    attributes: { label: Instrument / vendor }
+    validations: { required: true }
+  - type: dropdown
+    id: endpoint
+    attributes:
+      label: Endpoint scored
+      options: ["SiLA 2", "OPC UA + LADS", "REST + OpenAPI", "MCP", "Other"]
+    validations: { required: true }
+  - type: input
+    id: orchestrator
+    attributes: { label: Target orchestrator, placeholder: "e.g. ChemOS 2.0 (or Not decided)" }
+  - type: input
+    id: verdict
+    attributes: { label: Verdict and total (as computed by the site), placeholder: "Eligible — 36 / 46" }
+  - type: textarea
+    id: evidence
+    attributes: { label: Evidence, description: "How was each grade established? Test logs, documentation, vendor statements." }
+  - type: textarea
+    id: json
+    attributes: { label: Evaluation JSON, description: "Schema: api/v1/schema/evaluation.schema.json", render: json }
+    validations: { required: true }
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Publication
+      options:
+        - label: I am allowed to publish this evaluation (vendor contract and NDA permit it, or the data is anonymised).
+          required: true

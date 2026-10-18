@@ -1,0 +1,41 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "nimo",
+    "name": "NIMO",
+    "organisation": "National Institute for Materials Science (NIMS), Center for Basic Research on Materials",
+    "city": "Tsukuba",
+    "country": "Japan",
+    "region": "Asia",
+    "location": {
+      "lat": 36.066,
+      "lng": 140.13
+    },
+    "family": "agentic",
+    "familyLabel": "Model-facing (MCP)",
+    "standardRequired": false,
+    "integrationMechanism": "MCP (model-facing, agentic)",
+    "standards": [
+      "MCP"
+    ],
+    "standardsBase": [
+      "MCP"
+    ],
+    "notes": "Device integration is provided by the NIMO Controller; MCP connects a language-model agent to the decision engine and to laboratory devices. MCP is a model-facing natural-language interface, not a formally governed type system.",
+    "license": "MIT",
+    "links": {
+      "website": "https://github.com/NIMS-DA/nimo",
+      "repository": "https://github.com/NIMS-DA/nimo",
+      "docs": null,
+      "paper": "https://arxiv.org/abs/2605.15227",
+      "logo": "https://github.com/NIMS-DA.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "publicScorecards": [],
+    "href": "/api/v1/tools/nimo.json",
+    "webUrl": "/#map/nimo"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-10-18T02:53:46.478Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "chemios",
+    "name": "Chemios",
+    "organisation": "Chemios contributors (K. Felton)",
+    "city": "Raleigh, NC",
+    "country": "USA",
+    "region": "North America",
+    "location": {
+      "lat": 35.7847,
+      "lng": -78.6821
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom pump and instrument classes",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "pyserial and minimalmodbus for direct hardware access. Pumps, spectrometers and temperature controllers; last repository activity 2021.",
+    "license": "MIT",
+    "links": {
+      "website": "https://chemios.readthedocs.io",
+      "repository": "https://github.com/Chemios/chemios",
+      "docs": "https://chemios.readthedocs.io",
+      "paper": "https://github.com/Chemios/chemios",
+      "logo": "https://github.com/Chemios.png?size=96"
+    },
+    "verified": false,
+    "unverifiedFields": "Home institution and location inferred from the lead contributor; not confirmed by the project.",
+    "publicScorecards": [],
+    "href": "/api/v1/tools/chemios.json",
+    "webUrl": "/#map/chemios"
+  }
+}

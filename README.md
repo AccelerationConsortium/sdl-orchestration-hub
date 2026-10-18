@@ -25,6 +25,11 @@ among vendors that already clear the floors — **eligibility is decided by the 
 (Critical, Important, cell-integration), not by the total. See `scorecard.md` for the exact
 floor rules.
 
+- **[`web/`](web/)** — an interactive web tool: guided scorecard with verdict logic, side-by-side
+  comparison, an orchestrator map and explorer, deployment scenarios, and a static JSON API.
+  Run it with `python3 -m http.server 4377 --directory web` and open http://localhost:4377.
+  See [`web/README.md`](web/README.md).
+
 ## How it's built (why you don't edit the checklist directly)
 
 There is **one source of truth** and everything else is generated from it:
@@ -39,6 +44,9 @@ build/check_changelog.py     # CI helper: require a CHANGELOG entry on criteria 
 scorecard.md                 # GENERATED — do not edit by hand
 scorecard-template.csv       # GENERATED — do not edit by hand
 scorecard-template.xlsx      # GENERATED — do not edit by hand
+build/build_web.py           # criteria/*.yml + meta.yml + devices/*.yml  ->  web/scorecard-data.js
+web/scorecard-data.js        # GENERATED — do not edit by hand
+web/                         # interactive web tool (static; see web/README.md)
 CHANGELOG.md                 # human-maintained history
 .github/workflows/ci.yml     # CI: validate + invariants + regenerate-check + changelog
 ```
@@ -72,9 +80,10 @@ environment once with `source .venv/bin/activate` and run them directly.
    uv run python build/generate.py            # rewrites scorecard.md + templates
    uv run python build/generate.py --check    # confirms nothing is stale
    uv run python build/generate.py --invariants
+   uv run python build/build_web.py            # refreshes web/scorecard-data.js
    ```
 4. Commit **both** the edited `criteria/CXX.yml` **and** the regenerated `scorecard.md` /
-   `scorecard-template.*`, and open a PR.
+   `scorecard-template.*` / `web/scorecard-data.js`, and open a PR.
 
 ### Adding a new criterion (a novel `Cxy`)
 
@@ -132,8 +141,10 @@ devices/README.md         # GENERATED index of all contributed devices — do no
    ```bash
    uv run python build/score_device.py            # writes devices/<slug>.md + devices/README.md
    uv run python build/score_device.py --check     # confirms nothing is stale
+   uv run python build/build_web.py                # adds the device to the web tool
    ```
-5. Commit **both** your `devices/<vendor>-<model>.yml` and the regenerated `devices/*.md`, and
+5. Commit **both** your `devices/<vendor>-<model>.yml` and the regenerated `devices/*.md` /
+   `web/scorecard-data.js`, and
    open a PR. CI validates the file (schema + every criterion graded with a permitted grade) and
    recomputes the totals and floors.
 
@@ -154,6 +165,8 @@ not require a `CHANGELOG.md` entry (the changelog tracks the criteria set, not c
   and ids are contiguous.
 - **No stale outputs** — `scorecard.md` and `scorecard-template.csv` match what the generator
   produces from the current source (`generate.py --check`).
+- **Web tool in sync** — `web/scorecard-data.js` matches the criteria and device files
+  (`build_web.py --check`), and the web API build reproduces the paper's Reader X totals.
 - **Changelog** — if any criterion or `meta.yml` changed, `CHANGELOG.md` must have an entry.
 
 ## Versioning and releases
