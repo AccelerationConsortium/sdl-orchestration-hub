@@ -1,6 +1,7 @@
 name: Contribute a device evaluation
 description: Submit a scorecard for an instrument you have evaluated. No Git needed; a maintainer will convert this into a devices/*.yml file.
 title: "[device]: <vendor> <model>"
+labels: ["submission", "device"]
 body:
   - type: markdown
     attributes:

@@ -73,6 +73,26 @@ Set `siteUrl` in `config.js` to the public URL before building if the site is se
 
 ## Submissions
 
+Contributions arrive as GitHub issues from two forms in `.github/ISSUE_TEMPLATE/`:
+`new-orchestrator.yml` (labels `submission`, `orchestrator`) and `device-scorecard.yml` (labels
+`submission`, `device`). Contributors can open them from the site (prefilled) or directly on GitHub;
+GitHub renders both the same way, so `issues.js` parses either into a pending entry. The field labels
+it looks for are exported from the templates by `build/build_web.py`, so editing a form label does
+not break parsing.
+
+Open submission issues show up as **pending**: in the **Submissions** tab, as faded markers on the
+map (orchestrators with coordinates) and as a separate group in Compare (scorecards). The site reads
+them live from the GitHub API (cached for 10 minutes per tab; anonymous requests are limited to 60 an
+hour per visitor) and falls back to `api/v1/submissions.json`, a snapshot the Pages workflow writes on
+every push, on every issue change and every six hours. While the repository is private, only the
+snapshot works, because the live API needs a token. Closing an issue removes it from the pending set;
+merging the corresponding `orchestrators/*.yml` or `devices/*.yml` makes it a regular entry.
+
+```bash
+GITHUB_TOKEN=$(gh auth token) node web/scripts/fetch-submissions.mjs   # refresh the snapshot locally
+node web/scripts/test-issues.mjs                                       # parser tests (also run in CI)
+```
+
 `config.js → repo` names the GitHub repository. The site opens prefilled issues using the forms in `.github/ISSUE_TEMPLATE/` (`new-orchestrator.yml` for orchestrators, the repository's `device-scorecard.yml` for evaluations). Accepted orchestrators go into `orchestrators/<id>.yml`; accepted evaluations go into `devices/<vendor>-<model>.yml` (see the repository README) so they are scored by `build/score_device.py` as well; `scorecards.js` only keeps the Reader X worked example with its remediation dates.
 
 ## Files
@@ -88,6 +108,9 @@ Set `siteUrl` in `config.js` to the public URL before building if the site is se
 | `data.js` | Standards comparison, scenarios, cybersecurity deliverables, criteria (Table 7), RFP evidence list. |
 | `grading.js` | Pass / Partial / Fail rules per criterion (paraphrased from Note S1) and the Reader X example. |
 | `scorecard-data.js` | **Generated** by `build/build_web.py` from `criteria/*.yml`, `meta.yml`, `devices/*.yml`. |
+| `issues.js` | Parses submission issues (either form, either path) into pending orchestrators and evaluations. |
+| `scripts/fetch-submissions.mjs` | Writes the `api/v1/submissions.json` snapshot. |
+| `scripts/test-issues.mjs` | Parser tests. |
 | `sync.js` | Applies `scorecard-data.js` over the defaults and adds device evaluations to the public scorecards. |
 | `app.js`, `styles.css`, `index.html` | The app. |
 

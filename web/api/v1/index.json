@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:12:10.359Z",
+  "generated": "2026-10-18T03:32:22.579Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "name": "SDL Device Integration Toolkit API",
   "version": "v1",
@@ -69,6 +69,16 @@
       "path": "/api/v1/schema/tool.schema.json",
       "href": "/api/v1/schema/tool.schema.json",
       "description": "JSON Schema for an orchestrator record."
+    },
+    {
+      "path": "/api/v1/submissions.json",
+      "href": "/api/v1/submissions.json",
+      "description": "Snapshot of open submission issues (orchestrators and device evaluations from the issue forms), raw and parsed. Refreshed by the Pages workflow; the site prefers the live GitHub API."
+    },
+    {
+      "path": "/issues.js",
+      "href": "/issues.js",
+      "description": "Issue-form parser (UMD). Node: require('./issues.js').parse(issue, { forms, criteria }). Browser: window.SDLIssues."
     },
     {
       "path": "/score.js",

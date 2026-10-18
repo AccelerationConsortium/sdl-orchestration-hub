@@ -38,6 +38,9 @@ jobs:
       - name: Build the web tool's static API (fails if the Reader X example drifts)
         run: node web/scripts/build-api.mjs
 
+      - name: Test the submission issue parser against both issue forms
+        run: node web/scripts/test-issues.mjs
+
       - name: Require a CHANGELOG entry when criteria change
         if: github.event_name == 'pull_request'
         run: uv run python build/check_changelog.py "${{ github.event.pull_request.base.sha }}"

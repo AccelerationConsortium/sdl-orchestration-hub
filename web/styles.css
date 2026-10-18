@@ -682,3 +682,10 @@ a.org:hover{border-color:var(--ink);color:var(--ink)}
 .reg-grid{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));margin:var(--sp-3) 0 var(--sp-6)}
 .card.reg h3{margin:0 0 var(--sp-1)}
 .evitem .meta{display:block}
+
+/* ---------- pending submissions ---------- */
+.tag.pending{border-style:dashed;color:var(--accent-text);text-decoration:none}
+a.tag.pending:hover{background:var(--accent-soft)}
+.dot.pending-dot{background:transparent;border-style:dashed;border-color:var(--mute)}
+.grid2{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));margin-top:var(--sp-6)}
+.ctable.subs td{vertical-align:top}

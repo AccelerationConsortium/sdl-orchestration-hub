@@ -22,7 +22,7 @@ try {
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
 const uid = () => Math.random().toString(36).slice(2, 9);
 const allTools = () => window.TOOLS.concat(store.tools);
-const toolById = id => allTools().find(t => t.id === id);
+const toolById = id => allTools().find(t => t.id === id) || PENDING.tools.find(t => t.id === id);
 
 function blank(over = {}) {
   return Object.assign({
@@ -40,6 +40,45 @@ const wOf = c => store.weights[c.n] ?? c.w;
 const effectiveGrade = (e, c) => SDLScore.effectiveGrade(e, c);
 const evaluate = e => SDLScore.evaluate(e, { criteria: CRIT, weights: store.weights, cyberCount: window.CYBER.length });
 const PUBLIC = (window.PUBLIC_SCORECARDS || []).map(p => Object.assign(blank(), p, { pub: true }));
+
+/* ---------- pending submissions (open issues from the issue forms) ----------
+   Issues come from the web tool's prefilled forms or straight from GitHub; both are parsed by
+   issues.js. Live GitHub API first (cached 10 min per tab), then the build-time snapshot
+   api/v1/submissions.json written by the Pages workflow. */
+const PENDING = { tools: [], evals: [], items: [], source: "loading", at: null, error: null };
+const SUBS_TTL = 10 * 60 * 1000, SUBS_KEY = "sdl-subs-live";
+async function fetchLiveIssues() {
+  try { const c = JSON.parse(sessionStorage.getItem(SUBS_KEY) || "null"); if (c && Date.now() - c.t < SUBS_TTL) return { issues: c.issues, at: new Date(c.t).toISOString() }; } catch (e) {}
+  const res = await fetch(`https://api.github.com/repos/${REPO}/issues?state=open&per_page=100`, { headers: { Accept: "application/vnd.github+json" } });
+  if (!res.ok) throw new Error(res.status === 404 ? "repository not found or private" : res.status === 403 ? "GitHub API rate limit reached" : `GitHub API ${res.status}`);
+  const issues = (await res.json()).filter(i => SDLIssues.isSubmission(i, FORMS)).map(SDLIssues.trim);
+  try { sessionStorage.setItem(SUBS_KEY, JSON.stringify({ t: Date.now(), issues })); } catch (e) {}
+  return { issues, at: new Date().toISOString() };
+}
+async function loadSubmissions({ force = false } = {}) {
+  if (!window.SDLIssues || !REPO) { PENDING.source = "none"; PENDING.error = "issue parser or repository not configured"; return; }
+  if (force) try { sessionStorage.removeItem(SUBS_KEY); } catch (e) {}
+  let got = null, liveErr = null;
+  try { got = Object.assign(await fetchLiveIssues(), { source: "live" }); }
+  catch (e) { liveErr = String(e.message || e); }
+  if (!got) {
+    try {
+      const snap = await fetch("api/v1/submissions.json", { cache: "no-cache" }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      got = { issues: snap.issues || [], at: snap.generated, source: "snapshot", snapError: snap.error };
+    } catch (e) { got = { issues: [], at: null, source: "none" }; }
+  }
+  const items = got.issues.map(i => SDLIssues.parse(i, { forms: FORMS, criteria: (window.SCORECARD_SOURCE || {}).criteria || [] }));
+  const known = new Set(window.TOOLS.map(t => t.id));
+  Object.assign(PENDING, {
+    items, source: got.source, at: got.at, error: liveErr, snapError: got.snapError || null,
+    tools: items.filter(p => p.kind === "orchestrator" && p.record).map(p => Object.assign({}, p.record, {
+      id: `pending-${p.number}`, proposedId: p.record.id, pending: { number: p.number, url: p.url, exists: known.has(p.record.id) } })),
+    evals: items.filter(p => p.kind === "device" && p.evaluation).map(p => Object.assign(blank(), p.evaluation, {
+      pub: true, pending: { number: p.number, url: p.url, errors: p.errors }, cyber: window.CYBER.map(() => true) }))
+  });
+}
+const FORMS = (window.SCORECARD_SOURCE || {}).issueForms || {};
+const pendingTag = p => p ? ` <a class="tag pending" href="${esc(p.url)}" target="_blank" rel="noopener" title="Open submission issue">pending #${p.number}</a>` : "";
 function toolStats(name) {
   const ev = store.evals.filter(e => e.orch === name).concat(PUBLIC.filter(p => p.orch === name));
   const rs = ev.map(evaluate);
@@ -50,7 +89,7 @@ function toolStats(name) {
 }
 
 /* ---------- routing ---------- */
-const routes = { map: renderMap, orchestrators: renderOrch, scenarios: renderScen, scorecard: renderScore, compare: renderCompare, team: renderTeam, api: renderApi, about: renderAbout };
+const routes = { map: renderMap, orchestrators: renderOrch, scenarios: renderScen, scorecard: renderScore, compare: renderCompare, submissions: renderSubmissions, team: renderTeam, api: renderApi, about: renderAbout };
 let mapState = { selected: null, q: "", fam: "all" };
 function parseHash() {
   const raw = (location.hash || "#map").slice(1);
@@ -127,8 +166,9 @@ function toolDetail(t) {
       <div class="td-title"><h2>${esc(t.name)}</h2>
         <p class="meta">${esc(t.org)}</p>${place(t) ? `<p class="meta">${esc(place(t))}</p>` : ""}</div></div>
     ${links ? `<nav class="td-links" aria-label="Links">${links}</nav>` : ""}
-    <div class="tags">${familyTags(t)}${t.user ? '<span class="tag">added locally</span>' : ""}</div>
-    ${t.verified === false ? `<p class="flag">⚠ ${esc(t.unverified || "Some fields are unverified.")}</p>` : ""}
+    <div class="tags">${familyTags(t)}${t.user ? '<span class="tag">added locally</span>' : ""}${pendingTag(t.pending)}</div>
+    ${t.pending ? `<p class="flag">Submitted in <a href="${esc(t.pending.url)}" target="_blank" rel="noopener">issue #${t.pending.number}</a> and awaiting review; not part of the curated survey yet.${t.pending.exists ? ` Proposes changes to the existing entry <a href="#map/${esc(t.proposedId)}">${esc(t.proposedId)}</a>.` : ""}</p>`
+      : t.verified === false ? `<p class="flag">⚠ ${esc(t.unverified || "Some fields are unverified.")}</p>` : ""}
     <dl class="td-facts">
       <dt>Device integration</dt><dd>${esc(t.mech || "—")}</dd>
       ${t.notes ? `<dt>Notes</dt><dd>${esc(t.notes)}</dd>` : ""}
@@ -163,10 +203,12 @@ function mapMatches(t) {
 }
 function renderMap() {
   leafletMap = null;
-  const tools = allTools().slice().sort((a, b) => a.name.localeCompare(b.name));
-  const nCountries = new Set(tools.map(t => t.country)).size;
+  const pend = PENDING.tools.filter(t => typeof t.lat === "number" && typeof t.lng === "number");
+  const tools = allTools().concat(pend).sort((a, b) => a.name.localeCompare(b.name));
+  const curated = tools.filter(t => !t.pending);
+  const nCountries = new Set(curated.map(t => t.country)).size;
   view.innerHTML = `
-    ${pageHead("Orchestrator map", `${tools.length} open-source SDL orchestrators across ${nCountries} countries. Pick one from the list or the map.`, `<button class="btn" id="addtool">+ Add a tool</button>`)}
+    ${pageHead("Orchestrator map", `${curated.length} open-source SDL orchestrators across ${nCountries} countries${pend.length ? `, plus <a href="#submissions">${pend.length} pending submission${pend.length === 1 ? "" : "s"}</a> (faded markers)` : ""}. Pick one from the list or the map.`, `<button class="btn" id="addtool">+ Add a tool</button>`)}
     <div class="mapgrid">
       <section class="tlist-pane" aria-label="Orchestrators">
         <div class="tlist-tools">
@@ -177,14 +219,14 @@ function renderMap() {
         </div>
         <ul class="tlist" id="tlist" role="list">${tools.map(t => `
           <li data-tid="${esc(t.id)}"><button class="titem" data-sel="${esc(t.id)}" aria-current="${mapState.selected === t.id}">
-            ${logoImg(t, 32)}<span class="titem-body"><span class="titem-name">${esc(t.name)}</span><span class="titem-meta">${esc(place(t) || t.org)}</span></span>
+            ${logoImg(t, 32)}<span class="titem-body"><span class="titem-name">${esc(t.name)}${t.pending ? ` <span class="tag pending">pending #${t.pending.number}</span>` : ""}</span><span class="titem-meta">${esc(place(t) || t.org)}</span></span>
             <i class="dot ${t.family}" title="${esc(FAMILY[t.family])}"></i></button></li>`).join("")}
           <li class="tlist-empty" id="tempty" hidden>No orchestrators match. <button class="linkbtn" id="mclear">Clear filters</button></li>
         </ul>
       </section>
       <div class="map-pane">
         <div id="map" role="region" aria-label="World map of orchestrators"></div>
-        <div class="legend"><span><i class="dot formal"></i>Formal standard</span><span><i class="dot hal"></i>Hardware-abstraction layer</span><span><i class="dot agentic"></i>Model-facing (MCP)</span><span><i class="dot bespoke"></i>Bespoke</span><span class="legend-note">Marker size grows with your saved scorecards.</span></div>
+        <div class="legend"><span><i class="dot formal"></i>Formal standard</span><span><i class="dot hal"></i>Hardware-abstraction layer</span><span><i class="dot agentic"></i>Model-facing (MCP)</span><span><i class="dot bespoke"></i>Bespoke</span><span><i class="dot pending-dot"></i>Pending submission</span><span class="legend-note">Marker size grows with your saved scorecards.</span></div>
       </div>
       <aside class="card detail-pane" id="tooldetail" aria-live="polite"></aside>
     </div>
@@ -194,9 +236,9 @@ function renderMap() {
   let map = null, ring = "#fff", ringSel = "#000";
   const detail = $("#tooldetail");
   const emptyDetail = () => {
-    const formal = tools.filter(t => t.family === "formal").length;
+    const formal = curated.filter(t => t.family === "formal").length;
     detail.innerHTML = `<div class="empty-detail"><h2>Select an orchestrator</h2><p class="hint">Choose a name in the list or a marker on the map to see its institution, links, device-integration approach and your scorecards for it.</p>
-      <div class="kpis"><div><b>${tools.length}</b><span>tools</span></div><div><b>${formal}</b><span>governed standard</span></div><div><b>${nCountries}</b><span>countries</span></div></div></div>`;
+      <div class="kpis"><div><b>${curated.length}</b><span>tools</span></div><div><b>${formal}</b><span>governed standard</span></div><div><b>${nCountries}</b><span>countries</span></div></div></div>`;
   };
   function select(id, { fly = true, scroll = false } = {}) {
     const t = toolById(id); if (!t) return;
@@ -253,8 +295,8 @@ function renderMap() {
     for (const t of tools) {
       const k = `${t.lat.toFixed(1)},${t.lng.toFixed(1)}`; const i = seen[k] = (seen[k] || 0) + 1;
       const n = toolStats(t.name).n;
-      markers[t.id] = L.circleMarker([t.lat + (i - 1) * 0.35, t.lng + (i - 1) * 0.35], { radius: 7 + Math.min(n, 6) * 1.5, baseR: 7 + Math.min(n, 6) * 1.5, color: ring, weight: 1.5, fillColor: color[t.family] || tok("--m-bespoke"), fillOpacity: 0.95 })
-        .bindTooltip(`<b>${esc(t.name)}</b><br>${esc(t.org)}`, { direction: "top" }).addTo(map).on("click", () => select(t.id));
+      markers[t.id] = L.circleMarker([t.lat + (i - 1) * 0.35, t.lng + (i - 1) * 0.35], { radius: 7 + Math.min(n, 6) * 1.5, baseR: 7 + Math.min(n, 6) * 1.5, color: ring, weight: 1.5, fillColor: color[t.family] || tok("--m-bespoke"), fillOpacity: t.pending ? 0.3 : 0.95, dashArray: t.pending ? "3 3" : null })
+        .bindTooltip(`<b>${esc(t.name)}</b>${t.pending ? ` (pending #${t.pending.number})` : ""}<br>${esc(t.org)}`, { direction: "top" }).addTo(map).on("click", () => select(t.id));
     }
     // Fit to whichever markers are currently shown (respects list search / family filter).
     const fitAll = (animate = false) => {
@@ -845,16 +887,18 @@ function drawResult(e) {
 }
 
 /* ---------- Compare ---------- */
-let cmpPublic = true;
+let cmpPublic = true, cmpPending = true;
 function renderCompare() {
-  const E = store.evals.concat(cmpPublic ? PUBLIC : []);
-  const toggle = `<label class="toggle"><input type="checkbox" id="cmp-pub" ${cmpPublic ? "checked" : ""}><span>Include public registry (${PUBLIC.length})</span></label>`;
-  if (!E.length) { view.innerHTML = `${pageHead("Compare vendors", "", toggle)}<div class="empty"><p>No evaluations yet.</p><a class="btn pri" href="#scorecard">Start a scorecard</a></div>`; $("#cmp-pub").onchange = ev => { cmpPublic = ev.target.checked; renderCompare(); }; return; }
+  const E = store.evals.concat(cmpPublic ? PUBLIC : [], cmpPending ? PENDING.evals : []);
+  const toggle = `<label class="toggle"><input type="checkbox" id="cmp-pub" ${cmpPublic ? "checked" : ""}><span>Include public registry (${PUBLIC.length})</span></label>
+    <label class="toggle"><input type="checkbox" id="cmp-pend" ${cmpPending ? "checked" : ""}><span>Include pending submissions (${PENDING.evals.length})</span></label>`;
+  const wireToggles = () => { $("#cmp-pub").onchange = ev => { cmpPublic = ev.target.checked; renderCompare(); }; $("#cmp-pend").onchange = ev => { cmpPending = ev.target.checked; renderCompare(); }; };
+  if (!E.length) { view.innerHTML = `${pageHead("Compare vendors", "", toggle)}<div class="empty"><p>No evaluations yet.</p><a class="btn pri" href="#scorecard">Start a scorecard</a></div>`; wireToggles(); return; }
   const R = E.map(evaluate);
   view.innerHTML = `
   ${pageHead("Compare vendors", "Eligibility is decided by the gates and floors; the total only ranks vendors that clear them. A vendor that clears every floor with a moderate total may be the right choice.", `<div class="btn-row">${toggle}<button class="btn" id="cc">Export comparison CSV</button></div>`)}
   <div class="scroll"><table class="ctable">
-    <thead><tr><th>Criterion</th>${E.map(v => `<th><span class="th-name">${esc(v.vendor)}${v.pub ? ' <span class="tag">public</span>' : ""}</span><span class="meta">${esc(v.endpoint)} · ${esc(v.arch)}${v.orch ? ` · → ${esc(v.orch)}` : ""}</span></th>`).join("")}</tr></thead>
+    <thead><tr><th>Criterion</th>${E.map(v => `<th><span class="th-name">${esc(v.vendor)}${v.pending ? pendingTag(v.pending) : v.pub ? ' <span class="tag">public</span>' : ""}</span><span class="meta">${esc(v.endpoint)} · ${esc(v.arch)}${v.orch ? ` · → ${esc(v.orch)}` : ""}</span></th>`).join("")}</tr></thead>
     <tbody>
       <tr class="sum"><th scope="row">Verdict</th>${R.map(r => `<td><span class="g ${r.cls === "ok" ? "G" : r.cls === "bad" ? "F" : r.cls === "warn" ? "P" : "NA"}">${esc(r.verdict)}</span></td>`).join("")}</tr>
       <tr class="sum"><th scope="row">Standalone</th>${R.map(r => `<td class="num">${r.pts} / ${r.max}</td>`).join("")}</tr>
@@ -863,28 +907,57 @@ function renderCompare() {
       ${CRIT.map(c => `<tr><th scope="row"><span class="n">C${c.n}</span> ${esc(c.name)} <span class="meta">w${wOf(c)}</span></th>${E.map(v => { if (c.tier === "X" && !v.ctx.cell) return `<td class="meta">—</td>`; const g = effectiveGrade(v, c); return `<td><span class="g ${g || "U"}">${g ? GL[g] : "—"}</span>${c.n === 17 && v.annot[17] ? ` <span class="meta">${esc(v.annot[17])}</span>` : ""}</td>`; }).join("")}</tr>`).join("")}
     </tbody></table></div>
   <p class="hint"><b>Verdict</b> applies the full procedure (precondition, remediation dates, gap decisions, conditional floors). <b>Repo floors</b> is the three-floor check <code>build/score_device.py</code> applies to <code>devices/*.yml</code>.</p>
-  ${E.some(v => v.pub) ? `<h2 class="subhead">Public registry entries</h2><div class="reg-grid">${E.filter(v => v.pub).map(registryCard).join("")}</div>` : ""}`;
+  ${E.some(v => v.pub && !v.pending) ? `<h2 class="subhead">Public registry entries</h2><div class="reg-grid">${E.filter(v => v.pub && !v.pending).map(registryCard).join("")}</div>` : ""}
+  ${E.some(v => v.pending) ? `<h2 class="subhead">Pending submissions</h2><p class="hint">Open issues not yet reviewed; grades are as submitted. <a href="#submissions">All submissions →</a></p><div class="reg-grid">${E.filter(v => v.pending).map(registryCard).join("")}</div>` : ""}`;
   $("#cc").onclick = () => download("sdl-scorecard-comparison.csv", toCSV(E), "text/csv");
-  $("#cmp-pub").onchange = ev => { cmpPublic = ev.target.checked; renderCompare(); };
+  wireToggles();
 }
 
 function registryCard(v) {
   const ver = v.scorecardVersion, cur = window.SCORECARD_VERSION;
   const links = Object.entries(v.evidenceLinks || {}).map(([n, u]) => `<li><b>C${esc(n)}</b> <a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a></li>`).join("");
   return `<article class="card reg">
-    <h3>${esc(v.vendor)}${v.verified ? ' <span class="tag">verified</span>' : ""}</h3>
+    <h3>${esc(v.vendor)}${v.verified ? ' <span class="tag">verified</span>' : ""}${pendingTag(v.pending)}</h3>
     <p class="meta">${[v.instrumentClass, v.endpoint, v.arch, v.firmware && `firmware ${v.firmware}`].filter(Boolean).map(esc).join(" · ")}</p>
     <dl class="glossary">
       <dt>Evaluator</dt><dd>${esc(v.submittedBy || "—")}${v.date ? ` · ${esc(v.date)}` : ""}</dd>
       <dt>Evidence basis</dt><dd>${esc(v.evidenceBasis || "—")}</dd>
       <dt>Scorecard version</dt><dd>${esc(ver || "—")}${ver && cur && ver !== cur ? ` <span class="g P">scored against ${esc(ver)}, current is ${esc(cur)}</span>` : ""}</dd>
-      ${v.source ? `<dt>Source</dt><dd>${REPO && v.source.startsWith("devices/") ? `<a href="https://github.com/${esc(REPO)}/blob/main/${esc(v.source)}" target="_blank" rel="noopener">${esc(v.source)} ↗</a>` : esc(v.source)}</dd>` : ""}
+      ${v.pending ? `<dt>Source</dt><dd><a href="${esc(v.pending.url)}" target="_blank" rel="noopener">issue #${v.pending.number} ↗</a> · awaiting review</dd>` : v.source ? `<dt>Source</dt><dd>${REPO && v.source.startsWith("devices/") ? `<a href="https://github.com/${esc(REPO)}/blob/main/${esc(v.source)}" target="_blank" rel="noopener">${esc(v.source)} ↗</a>` : esc(v.source)}</dd>` : ""}
       ${v.productUrl ? `<dt>Product</dt><dd><a href="${esc(v.productUrl)}" target="_blank" rel="noopener">${esc(v.productUrl)}</a></dd>` : ""}
     </dl>
-    ${v.cyberAssumed ? `<p class="hint">The device file does not record the cybersecurity precondition; it is treated as cleared.</p>` : ""}
+    ${v.pending?.errors?.length ? `<p class="flag">⚠ ${v.pending.errors.map(esc).join("; ")}</p>` : ""}
+    ${v.cyberAssumed ? `<p class="hint">The ${v.pending ? "issue form" : "device file"} does not record the cybersecurity precondition; it is treated as cleared.</p>` : ""}
     ${links ? `<details><summary>Evidence links</summary><ul class="rv-list">${links}</ul></details>` : ""}
     ${v.vendorResponse ? `<details><summary>Vendor response</summary><p class="hint">${esc(v.vendorResponse)}</p></details>` : ""}
   </article>`;
+}
+
+/* ---------- Submissions ---------- */
+function renderSubmissions() {
+  const P = PENDING, when = t => t ? new Date(t).toLocaleString() : "";
+  const src = P.source === "loading" ? "Loading open issues…"
+    : P.source === "live" ? `Live from GitHub (open issues, fetched ${when(P.at)}).`
+    : P.source === "snapshot" ? `Snapshot built ${when(P.at)}${P.snapError ? ` (build note: ${esc(P.snapError)})` : ""}. The live GitHub API was not available${P.error ? `: ${esc(P.error)}` : ""}.`
+    : `No submission data available${P.error ? ` (live API: ${esc(P.error)})` : ""}.`;
+  const kindLabel = { device: "Scorecard", orchestrator: "Orchestrator" };
+  const row = p => {
+    const target = p.kind === "orchestrator" && p.record ? (typeof p.record.lat === "number" ? `<a href="#map/pending-${p.number}">On map</a>` : '<span class="meta">no coordinates</span>')
+      : p.kind === "device" ? `<a href="#compare">In Compare</a>` : "";
+    const score = p.kind === "device" && p.evaluation ? (() => { const e = PENDING.evals.find(x => x.pending.number === p.number); const r = e && evaluate(e); return r ? `<span class="g ${r.cls === "ok" ? "G" : r.cls === "bad" ? "F" : r.cls === "warn" ? "P" : "NA"}">${r.unrated ? "incomplete" : `${r.headline.p} / ${r.headline.m}`}</span>` : ""; })() : "";
+    return `<tr><td class="num"><a href="${esc(p.url)}" target="_blank" rel="noopener">#${p.number}</a></td><td><span class="tag">${kindLabel[p.kind] || "Other"}</span></td>
+      <td>${esc(p.title)}${p.errors?.length ? `<div class="meta">⚠ ${p.errors.map(esc).join("; ")}</div>` : ""}</td><td>${esc(p.author || "")}</td><td class="meta">${esc(String(p.created || "").slice(0, 10))}</td><td>${score}</td><td>${target}</td></tr>`;
+  };
+  view.innerHTML = `
+  ${pageHead("Submissions", "Open contributions filed through the issue forms — from this site or directly on GitHub. They show here, on the map and in Compare as pending until a maintainer reviews them and adds them to the repository.", `<div class="btn-row"><button class="btn" id="subs-refresh">Refresh</button>${REPO ? `<a class="btn" href="https://github.com/${esc(REPO)}/issues?q=is%3Aissue+is%3Aopen+label%3Asubmission" target="_blank" rel="noopener">Open on GitHub ↗</a>` : ""}</div>`)}
+  <p class="meta" aria-live="polite">${src}</p>
+  ${P.items.length ? `<div class="scroll"><table class="ctable subs"><thead><tr><th>Issue</th><th>Type</th><th>Title</th><th>By</th><th>Opened</th><th>Score</th><th></th></tr></thead><tbody>${P.items.map(row).join("")}</tbody></table></div>`
+    : P.source === "loading" ? "" : `<div class="empty"><p>No open submissions.</p></div>`}
+  <div class="grid2">
+    <div class="card"><h2>Submit from this site</h2><p class="hint">Fill in a <a href="#scorecard">Scorecard</a> and use <b>Submit to public registry</b> on the Review step, or <b>+ Add a tool</b> on the <a href="#map">Map</a>. Both open the GitHub issue form prefilled; you review and submit it on GitHub.</p></div>
+    <div class="card"><h2>Submit on GitHub</h2><p class="hint">${REPO ? `Use the <a href="https://github.com/${esc(REPO)}/issues/new?template=device-scorecard.yml" target="_blank" rel="noopener">device evaluation</a> or <a href="https://github.com/${esc(REPO)}/issues/new?template=new-orchestrator.yml" target="_blank" rel="noopener">orchestrator</a> form directly.` : "No repository configured."} Issues from either path are labelled <code>submission</code> and read the same way here.</p></div>
+  </div>`;
+  $("#subs-refresh").onclick = async () => { PENDING.source = "loading"; renderSubmissions(); await loadSubmissions({ force: true }); renderSubmissions(); };
 }
 
 /* ---------- About ---------- */
@@ -1200,4 +1273,8 @@ function download(name, text, type) {
 
 window.__sdl = { evaluate, blank, store, toolStats };
 route();
+loadSubmissions().then(() => {
+  const { name } = parseHash();
+  if (name === "submissions" || ((name === "map" || name === "compare") && PENDING.items.length)) routes[name]();
+});
 })();

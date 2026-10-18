@@ -210,6 +210,24 @@
           }
         }
       }
+    },
+    "/api/v1/submissions.json": {
+      "get": {
+        "summary": "Snapshot of open submission issues (orchestrators and device evaluations from the issue forms), raw and parsed. Refreshed by the Pages workflow; the site prefers the live GitHub API.",
+        "operationId": "submissions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

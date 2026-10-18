@@ -152,8 +152,11 @@ devices/README.md         # GENERATED index of all contributed devices — do no
    open a PR. CI validates the file (schema + every criterion graded with a permitted grade) and
    recomputes the totals and floors.
 
-No Git? Open a **[device evaluation issue](../../issues/new?template=device-scorecard.yml)** and a
-maintainer will convert it into a `devices/*.yml` file.
+No Git? Open a **[device evaluation issue](../../issues/new?template=device-scorecard.yml)** (or use
+**Submit to public registry** in the web tool, which opens the same form prefilled) and a maintainer
+will convert it into a `devices/*.yml` file. Open submission issues, labelled `submission`, appear in
+the web tool's **Submissions** tab, on the map and in Compare as *pending* until they are merged and
+the issue is closed.
 
 Notes: evaluations are **contributor assessments, not endorsements**; a `verified: true` mark is
 set only by a maintainer who independently confirmed the evaluation, and the optional
@@ -169,6 +172,8 @@ not require a `CHANGELOG.md` entry (the changelog tracks the criteria set, not c
   and ids are contiguous.
 - **No stale outputs** — `scorecard.md` and `scorecard-template.csv` match what the generator
   produces from the current source (`generate.py --check`).
+- **Issue parser** — `web/scripts/test-issues.mjs` checks that issues from both submission forms
+  (prefilled by the web tool or filed directly on GitHub) parse into pending entries.
 - **Web tool in sync** — `web/scorecard-data.js` and `web/tools.js` match the criteria, device and
   orchestrator files, every `orchestrators/*.yml` validates (`build_web.py --check`), and the web
   API build reproduces the paper's Reader X totals.

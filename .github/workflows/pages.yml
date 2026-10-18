@@ -5,10 +5,16 @@ name: web-pages
 on:
   push:
     branches: [main]
+  # Refresh the submissions snapshot when submission issues change, and every 6 hours.
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
+  schedule:
+    - cron: "23 */6 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: read
   pages: write
   id-token: write
 
@@ -46,6 +52,13 @@ jobs:
         run: |
           sed -i "s#siteUrl: \"\"#siteUrl: \"${SITE_URL}\"#" web/config.js
           node web/scripts/build-api.mjs
+
+      # Snapshot of open submission issues, the site's fallback when the live GitHub API is
+      # unavailable (e.g. while the repository is private).
+      - name: Snapshot open submission issues
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node web/scripts/fetch-submissions.mjs
 
       - uses: actions/upload-pages-artifact@v3
         with:

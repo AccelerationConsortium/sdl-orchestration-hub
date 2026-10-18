@@ -158,7 +158,11 @@ const toolSchema = {
 };
 
 /* ---------- write ---------- */
+// Clear generated output, but keep the submissions snapshot (written by fetch-submissions.mjs).
+const SNAP = path.join(OUT, "submissions.json");
+const snap = fs.existsSync(SNAP) ? fs.readFileSync(SNAP) : null;
 fs.rmSync(OUT, { recursive: true, force: true });
+if (snap) { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(SNAP, snap); }
 const endpoints = [];
 const add = (rel, data, description, schema) => { write(rel, data); endpoints.push({ path: `/api/${VERSION}/${rel}`, href: href(rel), description, schema: schema || null }); };
 add("tools.json", meta({ count: tools.length, items: tools, excluded: EXCLUDED.map(x => ({ name: x.name.replace(/\s*\[[^\]]*\]/, ""), why: x.why })) }), "All surveyed orchestrators with location, links, integration mechanism, standards and linked public scorecards.", href("schema/tool.schema.json"));
@@ -175,6 +179,8 @@ write("schema/evaluation.schema.json", evaluationSchema);
 write("schema/tool.schema.json", toolSchema);
 endpoints.push({ path: `/api/${VERSION}/schema/evaluation.schema.json`, href: href("schema/evaluation.schema.json"), description: "JSON Schema for an instrument evaluation (input to score.js and the web app's Import)." });
 endpoints.push({ path: `/api/${VERSION}/schema/tool.schema.json`, href: href("schema/tool.schema.json"), description: "JSON Schema for an orchestrator record." });
+endpoints.push({ path: `/api/${VERSION}/submissions.json`, href: href("submissions.json"), description: "Snapshot of open submission issues (orchestrators and device evaluations from the issue forms), raw and parsed. Refreshed by the Pages workflow; the site prefers the live GitHub API." });
+endpoints.push({ path: "/issues.js", href: `${BASE}/issues.js`, description: "Issue-form parser (UMD). Node: require('./issues.js').parse(issue, { forms, criteria }). Browser: window.SDLIssues." });
 endpoints.push({ path: "/score.js", href: `${BASE}/score.js`, description: "Scoring engine (UMD). Node: require('./score.js').evaluate(evaluation, { criteria }). Browser: window.SDLScore." });
 
 /* OpenAPI 3.1 for the static GET endpoints */

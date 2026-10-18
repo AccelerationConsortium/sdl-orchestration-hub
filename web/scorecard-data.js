@@ -1242,5 +1242,49 @@ window.SCORECARD_SOURCE = {
    "evidence": {},
    "vendorResponse": null
   }
- ]
+ ],
+ "issueForms": {
+  "device": {
+   "template": "device-scorecard.yml",
+   "titlePrefix": "[device]:",
+   "labels": [
+    "submission",
+    "device"
+   ],
+   "fields": {
+    "Vendor": "vendor",
+    "Model": "model",
+    "Category (optional)": "category",
+    "Interface evaluated": "interface",
+    "C1 endpoint architecture": "architecture",
+    "Deployment evaluated": "deployment",
+    "Evidence basis": "evidence_basis",
+    "Grades (C1–C21)": "scores",
+    "Attribution": "evaluator",
+    "Firmware / software version (optional)": "firmware",
+    "Product URL (optional)": "product_url"
+   }
+  },
+  "orchestrator": {
+   "template": "new-orchestrator.yml",
+   "titlePrefix": "[Orchestrator]",
+   "labels": [
+    "submission",
+    "orchestrator"
+   ],
+   "fields": {
+    "Name": "name",
+    "Institution / group": "org",
+    "City, country": "location",
+    "Latitude, longitude": "coords",
+    "Integration family": "family",
+    "Underlying standards": "standards",
+    "Primary device-integration mechanism": "mech",
+    "Links (website, repository, docs, paper)": "links",
+    "Licence": "license",
+    "Evidence of SDL deployment": "evidence",
+    "Machine-readable record": "json"
+   }
+  }
+ }
 };
