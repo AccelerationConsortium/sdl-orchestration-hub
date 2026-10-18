@@ -1,0 +1,19 @@
+id: octopus
+name: OCTOPUS
+ref: '45'
+paper: https://doi.org/10.1038/s41467-024-54067-7
+org: Korea Institute of Science and Technology (KIST), Computational Science Research Center
+city: Seoul
+country: Republic of Korea
+lat: 37.601
+lng: 127.046
+website: https://github.com/KIST-CSRC/Octopus
+repo: https://github.com/KIST-CSRC/Octopus
+docs: ""
+logo: https://github.com/KIST-CSRC.png?size=96
+family: bespoke
+mech: Custom resource-allocation and scheduling framework
+standards: []
+notes: JSON job scripts; aiohttp transport between master and module nodes.
+license: Not specified
+verified: true

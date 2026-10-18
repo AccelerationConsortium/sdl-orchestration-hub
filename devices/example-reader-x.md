@@ -3,7 +3,7 @@
 > **Generated** by `build/score_device.py` from `devices/*.yml`. Do not edit by hand.
 > Grades are a contributor assessment, not an endorsement.
 
-Interface: SiLA 2 · Category: fluorescence plate reader · Deployment: cell-integrated · Evidence: hands-on-test · Evaluator: paper worked example · Date: 2026-01-01 · Scorecard version: 1.0.0 · Verified: no
+Interface: SiLA 2 · C1 architecture: Native endpoint · Category: fluorescence plate reader · Deployment: cell-integrated · Evidence: hands-on-test · Evaluator: paper worked example · Date: 2026-01-01 · Scorecard version: 1.0.0 · Verified: no
 
 - **Standalone total (C1–C18):** 36 / 46
 - **Cell-integrated total (C1–C21):** 39 / 52

@@ -28,7 +28,8 @@ floor rules.
 - **[`web/`](web/)** — an interactive web tool: guided scorecard with verdict logic, side-by-side
   comparison, an orchestrator map and explorer, deployment scenarios, and a static JSON API.
   Run it with `python3 -m http.server 4377 --directory web` and open http://localhost:4377.
-  See [`web/README.md`](web/README.md).
+  See [`web/README.md`](web/README.md). Pushes to `main` publish it to GitHub Pages
+  (`.github/workflows/pages.yml`; enable Pages with source "GitHub Actions" in the repository settings).
 
 ## How it's built (why you don't edit the checklist directly)
 
@@ -44,8 +45,11 @@ build/check_changelog.py     # CI helper: require a CHANGELOG entry on criteria 
 scorecard.md                 # GENERATED — do not edit by hand
 scorecard-template.csv       # GENERATED — do not edit by hand
 scorecard-template.xlsx      # GENERATED — do not edit by hand
+orchestrators/*.yml          # orchestrator registry shown on the web tool's map (schema/orchestrator.schema.json)
 build/build_web.py           # criteria/*.yml + meta.yml + devices/*.yml  ->  web/scorecard-data.js
+                             # orchestrators/*.yml                        ->  web/tools.js
 web/scorecard-data.js        # GENERATED — do not edit by hand
+web/tools.js                 # GENERATED — do not edit by hand
 web/                         # interactive web tool (static; see web/README.md)
 CHANGELOG.md                 # human-maintained history
 .github/workflows/ci.yml     # CI: validate + invariants + regenerate-check + changelog
@@ -165,8 +169,9 @@ not require a `CHANGELOG.md` entry (the changelog tracks the criteria set, not c
   and ids are contiguous.
 - **No stale outputs** — `scorecard.md` and `scorecard-template.csv` match what the generator
   produces from the current source (`generate.py --check`).
-- **Web tool in sync** — `web/scorecard-data.js` matches the criteria and device files
-  (`build_web.py --check`), and the web API build reproduces the paper's Reader X totals.
+- **Web tool in sync** — `web/scorecard-data.js` and `web/tools.js` match the criteria, device and
+  orchestrator files, every `orchestrators/*.yml` validates (`build_web.py --check`), and the web
+  API build reproduces the paper's Reader X totals.
 - **Changelog** — if any criterion or `meta.yml` changed, `CHANGELOG.md` must have an entry.
 
 ## Versioning and releases

@@ -17,7 +17,7 @@
 
   // Fill missing fields so partial evaluations (e.g. written by an agent) can be scored.
   function normalize(e, cyberCount = 10, evidenceCount = 10) {
-    const o = Object.assign({ vendor: "", endpoint: "", arch: "Native endpoint", orch: "", date: "", grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {}, mit: {}, c21fallback: false, c21aNA: false }, e || {});
+    const o = Object.assign({ vendor: "", endpoint: "", arch: "Native endpoint", orch: "", date: "", grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {}, annotDate: {}, mit: {}, c15noReconnect: false, c15fixedDefault: false, c21fallback: false, c21aNA: false, c21powerPath: false, c21naVerified: false }, e || {});
     o.ctx = Object.assign({}, CTX_DEFAULT, o.ctx || {});
     o.cyber = Array.isArray(o.cyber) ? o.cyber.slice(0, cyberCount).concat(Array(Math.max(0, cyberCount - o.cyber.length)).fill(false)) : Array(cyberCount).fill(false);
     o.evidence = Array.isArray(o.evidence) ? o.evidence : Array(evidenceCount).fill(false);
@@ -26,6 +26,8 @@
   function effectiveGrade(e, c) {
     let g = e.grades[c.n];
     if (c.n === 21 && g === "G" && e.c21fallback && !e.c21aNA) g = "P";   // fallback evidence caps C21 at Partial
+    if (c.n === 21 && g === "G" && e.c21powerPath && !e.c21aNA) g = "P";  // power-interruption exception path without cell-controller latched-state evidence
+    if (c.n === 15 && g === "G" && (e.c15noReconnect || e.c15fixedDefault)) g = "P";   // C15 Pass needs explicit reconnect semantics and an overridable safe default
     return g;
   }
   function evaluate(raw, { criteria, weights = {}, cyberCount = 10 } = {}) {
@@ -42,8 +44,12 @@
       if (c.tier !== "X") { pts += v; max += wOf(c); }
       ptsCell += v; maxCell += wOf(c);
     }
+    const c17missing = e.grades[17] === "P" && !e.annot[17];   // a C17 Partial MUST carry a reason code
+    if (c17missing) unrated++;
     const out = { pts, max, ptsCell, maxCell, unrated, reasons: [], blocked: false, inelig: false, cond: false };
     const R = (lvl, t) => out.reasons.push({ lvl, t });
+    if (c17missing) R("warn", "C17 Partial needs a reason code (P-OLD, P-GAP or P-UNDOC).");
+    if (e.grades[17] === "P" && e.annot[17] === "P-OLD" && !e.annotDate[17]) { out.cond = true; R("warn", "C17 P-OLD: needs a published re-certification roadmap with a target date."); }
     const x = e.ctx;
 
     // Step 1 — cybersecurity / IT deployment precondition (unscored)
@@ -73,6 +79,8 @@
     }
     if (!cF.length && cP.length <= 1) R("ok", "Critical floor met.");
 
+    if (e.grades[15] === "G" && (e.c15noReconnect || e.c15fixedDefault)) R("warn", "C15 capped at Partial: reconnect semantics not explicit, or the safe default cannot be configured or overridden by the orchestrator.");
+
     // Step 3 — Important floor and conditional floors
     const iF = CRIT.filter(c => c.tier === "I" && g(c.n) === "F");
     const failPts = iF.reduce((a, c) => a + wOf(c), 0);
@@ -81,14 +89,16 @@
     const noGap = iF.filter(c => !e.gap[c.n]);
     if (noGap.length) { out.cond = true; R("warn", `Documented institutional gap-acceptance decision needed for Important Fail on ${noGap.map(c => "C" + c.n).join(", ")}.`); }
     if (x.hazard && x.unattended && g(15) === "F" && !e.mit[15]) { out.inelig = true; R("bad", "C15 floor: unattended hazardous instrument with unobservable control-session loss and no documented external mechanism."); }
-    if (x.hazard && g(7) === "F" && !e.mit[7]) { out.inelig = true; R("bad", "C7 conditional floor: hazardous actuation / shared-resource blocking requires ≥ Partial or a documented external mitigation."); }
+    if (x.hazard && g(7) === "F") { out.inelig = true; R("bad", "C7 conditional floor: hazardous actuation / shared-resource blocking requires at least Partial."); }
 
     // Step 4 — cell-integration floor and buyer-defined local floors
     if (x.cell) {
-      if (g(19) === "F" && !e.mit[19]) { out.inelig = true; R("bad", "C19 Fail: a machine cannot load/unload the instrument — disqualified from cell deployment."); }
-      for (const n of [20, 21]) if (x["c" + n + "local"] && g(n) === "F" && !e.mit[n]) { out.inelig = true; R("bad", `Local floor: C${n} must be ≥ Partial or have a documented external mitigation.`); }
-      if (g(19) !== "F" || e.mit[19]) R("ok", "Cell-integration floor met.");
+      if (g(19) === "F") { out.inelig = true; R("bad", "C19 Fail: a machine cannot load/unload the instrument — disqualified from cell deployment."); }
+      for (const n of [20, 21]) if (x["c" + n + "local"] && g(n) === "F") { out.inelig = true; R("bad", `Local floor: C${n} must be at least Partial.`); }
+      if (g(19) !== "F") R("ok", "Cell-integration floor met.");
       if (e.c21fallback && !e.c21aNA && e.grades[21] === "G") R("warn", "C21 capped at Partial: sub-test (a) was verified with fallback evidence, not by asserting the hardware safety signal.");
+      if (e.c21powerPath && !e.c21aNA && e.grades[21] === "G") R("warn", "C21 capped at Partial: power-interruption exception path without latched-state evidence from the cell controller.");
+      if (e.grades[21] === "NA" && !e.c21naVerified) R("warn", "C21 N/A is unverified: confirm no safety-event source with a schematic, safety I/O declaration or integrator; evaluate the instrument under C15 and C10.");
     }
 
     out.headline = x.cell ? { p: ptsCell, m: maxCell } : { p: pts, m: max };
@@ -100,5 +110,20 @@
     out.status = { bad: out.blocked ? "blocked" : "not_eligible", inc: "incomplete", warn: "conditionally_eligible", ok: "eligible" }[out.cls];
     return out;
   }
-  return { evaluate, effectiveGrade, normalize, GRADE_VALUE: GV };
+  // The three floors exactly as build/score_device.py checks them for devices/*.yml (no
+  // precondition, remediation dates or gap decisions). Cell floor applies when any
+  // Cell-integration criterion is graded other than N/A.
+  function repoFloors(raw, { criteria } = {}) {
+    const e = normalize(raw), CRIT = criteria, g = n => e.grades[n];
+    const ofTier = t => CRIT.filter(c => c.tier === t);
+    const cg = ofTier("C").map(c => g(c.n));
+    const critical = !cg.includes("F") && cg.filter(x => x === "P").length <= 1;
+    const impFail = ofTier("I").filter(c => g(c.n) === "F").reduce((a, c) => a + c.w, 0);
+    const cellIds = ofTier("X").map(c => c.n);
+    const cellApplies = cellIds.some(n => g(n) && g(n) !== "NA");
+    const floors = { critical, important: impFail <= 4 };
+    if (cellApplies) floors.cell = g(cellIds[0]) !== "F";
+    return { floors, cellApplies, eligible: Object.values(floors).every(Boolean), unrated: CRIT.some(c => !g(c.n)) };
+  }
+  return { evaluate, effectiveGrade, normalize, repoFloors, GRADE_VALUE: GV };
 });

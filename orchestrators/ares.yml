@@ -1,0 +1,21 @@
+id: ares
+name: ARES OS 2.0
+ref: '32'
+paper: https://arxiv.org/abs/2604.03440
+org: Air Force Research Laboratory, Materials and Manufacturing Directorate
+city: Wright-Patterson AFB, Dayton, OH
+country: USA
+lat: 39.8266
+lng: -84.0486
+website: https://afrl-ares.github.io
+repo: https://github.com/AFRL-ARES/ARES
+docs: https://afrl-ares.github.io
+logo: https://github.com/AFRL-ARES.png?size=96
+family: bespoke
+mech: Custom plugin architecture (Devices, Analysis, Planning plugins over gRPC/Protobuf; PyAres for Python
+  modules)
+standards: []
+notes: Devices, Analysis and Planning plugin pattern. C#/.NET core with Blazor front end; PyAres wraps
+  the gRPC/Protobuf API for Python devices and planners.
+license: USAF Open Source Agreement 1.0
+verified: true

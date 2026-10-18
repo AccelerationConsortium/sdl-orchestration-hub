@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Device integration scorecard — orchestrator record (web tool map and explorer)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "org", "lat", "lng", "family", "verified"],
+  "properties": {
+    "id":        {"type": "string", "pattern": "^[a-z0-9-]+$", "description": "must match the file name"},
+    "name":      {"type": "string", "minLength": 1},
+    "ref":       {"type": "string", "description": "reference number(s) in the accompanying paper"},
+    "paper":     {"type": "string", "description": "primary publication or repository URL"},
+    "org":       {"type": "string", "minLength": 1},
+    "city":      {"type": "string"},
+    "country":   {"type": "string"},
+    "lat":       {"type": "number", "minimum": -90, "maximum": 90},
+    "lng":       {"type": "number", "minimum": -180, "maximum": 180},
+    "website":   {"type": "string"},
+    "repo":      {"type": "string"},
+    "docs":      {"type": "string"},
+    "logo":      {"type": "string", "description": "image URL; GitHub org avatars work well"},
+    "family":    {"enum": ["formal", "hal", "agentic", "bespoke"],
+                  "description": "formal: consumes a formally governed standard; hal: hardware-abstraction layer; agentic: model-facing (MCP); bespoke: own class hierarchy / plugin system"},
+    "enforced":  {"type": "boolean", "description": "the formal standard is required for all device drivers"},
+    "optional":  {"type": "boolean", "description": "the formal standard is one supported option"},
+    "mech":      {"type": "string", "description": "integration mechanism"},
+    "standards": {"type": "array", "items": {"type": "string"}},
+    "notes":     {"type": "string"},
+    "license":   {"type": "string"},
+    "verified":  {"type": "boolean", "description": "false if any field is unconfirmed; the site flags it"},
+    "unverified": {"type": "string", "description": "what is unconfirmed"}
+  }
+}

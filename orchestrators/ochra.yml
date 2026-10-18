@@ -1,0 +1,21 @@
+id: ochra
+name: OChRA
+ref: '44'
+paper: https://github.com/OChRA-lab/ochra
+org: OChRA team (Open Chemistry Robotics and Automation)
+city: Liverpool
+country: UK
+lat: 53.406
+lng: -2.966
+website: https://ochra-lab.github.io/ochra/
+repo: https://github.com/OChRA-lab/ochra
+docs: https://ochra-lab.github.io/ochra/
+logo: https://github.com/OChRA-lab.png?size=96
+family: bespoke
+mech: Custom station/device adapters over REST (pydantic models)
+standards: []
+notes: Layered lab and per-station FastAPI servers; device operations dispatched by method name; MongoDB
+  persistence; early-stage prototype (v0.0.1).
+license: MIT
+verified: false
+unverified: The project publishes no affiliation; location placed at the host of its 2025 AIchemy workshop.

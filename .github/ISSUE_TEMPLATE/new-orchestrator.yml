@@ -47,4 +47,4 @@ body:
     attributes: { label: Evidence of SDL deployment, description: Paper or project page showing use in a self-driving lab. }
   - type: textarea
     id: json
-    attributes: { label: Machine-readable record, description: "tools.js entry (schema: api/v1/schema/tool.schema.json)", render: json }
+    attributes: { label: Machine-readable record, description: "Record for orchestrators/<id>.yml (schema: schema/orchestrator.schema.json). JSON is fine; a maintainer converts it to YAML.", render: json }

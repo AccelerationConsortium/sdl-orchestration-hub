@@ -7,7 +7,7 @@ Reads  devices/*.yml  (contributor evaluations),  criteria/*.yml  and  meta.yml
   - devices/README.md    an index/leaderboard of all contributed devices
 
 It validates each device file (schema + semantic checks), then computes the
-weighted standalone (C1-C17) and cell-integrated (C1-C20) totals and the pass
+weighted standalone (C1-C18) and cell-integrated (C1-C21) totals and the pass
 floors. Contributors only assign grades; totals and floors are computed here so
 they cannot be entered wrong.
 
@@ -142,7 +142,10 @@ def render_device_md(dev, res, crits):
     w(f"# {title}\n\n")
     w("> **Generated** by `build/score_device.py` from `devices/*.yml`. Do not edit by hand.\n")
     w("> Grades are a contributor assessment, not an endorsement.\n\n")
-    meta_bits = [f"Interface: {d.get('interface') or 'n/a'}",
+    meta_bits = [f"Interface: {d.get('interface') or 'n/a'}"]
+    if d.get("architecture"):
+        meta_bits.append(f"C1 architecture: {d['architecture']}")
+    meta_bits += [
                  f"Category: {d.get('category') or 'n/a'}",
                  f"Deployment: {e['deployment']}",
                  f"Evidence: {e['evidence_basis']}",

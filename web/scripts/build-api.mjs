@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Generates the static, machine-readable API in api/v1/ (plus llms.txt) from the same data
-   files the website uses. Run after editing tools.js, data.js, grading.js or scorecards.js:
+   files the website uses. Run after build/build_web.py, or after editing data.js, grading.js or scorecards.js:
 
      node scripts/build-api.mjs
 
@@ -35,7 +35,7 @@ const FAMILY = { formal: "Formal standard", hal: "Hardware-abstraction layer", a
 const TIER = { C: "critical", I: "important", X: "cell_integration" };
 const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
 const stdBase = s => s.replace(/\s*\(.*\)\s*$/, "").trim();
-const NA_OK = new Set(ctx.NA_OK || [7, 19, 20, 21]);
+const NA_OK = new Set(ctx.NA_OK || []);
 
 /* ---------- scorecards (computed with the shared engine) ---------- */
 const scorecards = PUBLIC_SCORECARDS.map(sc => {
@@ -94,8 +94,8 @@ const rules = {
   decisionOrder: [
     { step: 1, name: "precondition", rule: "All cybersecurity/IT deliverables supplied (or isolated link formally accepted, or local control surfaces documented). Otherwise status = blocked." },
     { step: 2, name: "critical_floor", rule: "No Critical criterion may Fail; at most one may be Partial, and only with a written remediation commitment and a target date ≤ 12 months." },
-    { step: 3, name: "important_floor", rule: "Failed Important criteria may total at most 4 weighted points; each Important Fail needs a documented gap-acceptance decision. Conditional floors: C7 ≥ Partial for hazardous/resource-blocking instruments; C15 ≠ Fail for unattended hazardous instruments — unless a documented external mitigation is recorded." },
-    { step: 4, name: "cell_floor", rule: "Cell-deployed only: C19 ≥ Partial where a machine loads labware; optional buyer-defined local floors on C20/C21." },
+    { step: 3, name: "important_floor", rule: "Failed Important criteria may total at most 4 weighted points; each Important Fail needs a documented gap-acceptance decision. Conditional floors: C7 ≥ Partial for hazardous/resource-blocking instruments; C15 ≠ Fail for unattended hazardous instruments unless a documented external mechanism (cell-level watchdog, hardwired interlock, supervisory power cutoff, orchestrator-side handling) is recorded. C17 Partial requires a reason code." },
+    { step: 4, name: "cell_floor", rule: "Cell-deployed only: C19 ≥ Partial where a machine loads labware (a Fail disqualifies; no mitigation exception); optional buyer-defined local floors on C20/C21." },
     { step: 5, name: "weighted_total", rule: "Σ grade × weight over applicable criteria. Used only to rank instruments that cleared steps 1–4." }
   ],
   statuses: { blocked: "Precondition not met", not_eligible: "A floor is not met", incomplete: "Some criteria unrated", conditionally_eligible: "Floors met, but a commitment or gap-acceptance is missing", eligible: "All gates and floors cleared" },
@@ -127,9 +127,16 @@ const evaluationSchema = {
     remed: { type: "object", additionalProperties: { type: "string" }, description: "Remediation commitment text per criterion" },
     remedDate: { type: "object", additionalProperties: { type: "string", format: "date" } },
     gap: { type: "object", additionalProperties: { type: "boolean" }, description: "Documented gap acceptance for Important Fails" },
-    mit: { type: "object", additionalProperties: { type: "boolean" }, description: "Documented external mitigation (C7, C15, C19, C20, C21)" },
+    mit: { type: "object", additionalProperties: { type: "boolean" }, description: "Documented external mechanism for C15 control-session loss" },
     annot: { type: "object", additionalProperties: { type: "string" }, description: "C6 partial case; C17 reason code (P-OLD, P-GAP, P-UNDOC)" },
+    annotDate: { type: "object", additionalProperties: { type: "string", format: "date" }, description: "C17 P-OLD re-certification roadmap target date" },
+    c15noReconnect: { type: "boolean", description: "C15 reconnect semantics not explicit (caps C15 at Partial)" },
+    c15fixedDefault: { type: "boolean", description: "C15 safe default not configurable/overridable (caps C15 at Partial)" },
     c21fallback: { type: "boolean" }, c21aNA: { type: "boolean" },
+    c21powerPath: { type: "boolean", description: "C21 sub-test (a) via power-interruption exception path without cell-controller evidence (caps C21 at Partial)" },
+    c21naVerified: { type: "boolean", description: "C21 N/A verified by schematic, safety I/O declaration or integrator" },
+    model: { type: "string" }, scorecardVersion: { type: "string", description: "Criteria-set version the evaluation was scored against" },
+    reqChecks: { type: "object", description: "Ticked MUST/SHOULD requirement items per criterion" },
     evidence: { type: "array", items: { type: "boolean" } }
   }
 };
@@ -193,7 +200,7 @@ write("index.json", meta({
     orchestrators: `${BASE}/#orchestrators?q={text}&fam={formal,hal,agentic,bespoke}&std={standard,...}&region={region,...}&lic={licence,...}&req=1&repo=1&docs=1&scored=1&verified=1`,
     scorecard: `${BASE}/#scorecard`
   },
-  submit: SITE.repo ? { newOrchestrator: `https://github.com/${SITE.repo}/issues/new?template=new-orchestrator.yml`, newScorecard: `https://github.com/${SITE.repo}/issues/new?template=new-scorecard.yml` } : null
+  submit: SITE.repo ? { newOrchestrator: `https://github.com/${SITE.repo}/issues/new?template=new-orchestrator.yml`, newScorecard: `https://github.com/${SITE.repo}/issues/new?template=device-scorecard.yml` } : null
 }));
 
 /* llms.txt — concise guide for language-model agents */
@@ -222,7 +229,7 @@ const llms = `# SDL Device Integration Toolkit
 - An instrument’s score belongs to the endpoint scored (SiLA 2, OPC UA + LADS, REST, MCP); it does not transfer to other endpoints.
 
 ## Contribute
-${SITE.repo ? `- New orchestrator: https://github.com/${SITE.repo}/issues/new?template=new-orchestrator.yml\n- New scorecard: https://github.com/${SITE.repo}/issues/new?template=new-scorecard.yml` : "- Submission repository not configured."}
+${SITE.repo ? `- New orchestrator: https://github.com/${SITE.repo}/issues/new?template=new-orchestrator.yml\n- New scorecard: https://github.com/${SITE.repo}/issues/new?template=device-scorecard.yml` : "- Submission repository not configured."}
 
 ## Caveats
 - Grading text is condensed; confirm the full criterion definition before relying on it. Weights are proposed defaults.

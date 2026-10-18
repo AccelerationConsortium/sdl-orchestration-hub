@@ -26,22 +26,30 @@
   const cyberCount = (window.CYBER || []).length || 10;
   for (const d of S.devices) {
     if (SKIP.has(d.slug)) continue;
+    const cellIds = S.criteria.filter(c => c.tier === "X").map(c => String(c.n));
     window.PUBLIC_SCORECARDS.push({
       id: d.slug,
       vendor: `${d.vendor} ${d.model}`,
+      model: d.model,
       endpoint: d.interface || "",
-      arch: "Native endpoint",
+      arch: d.architecture || "Native endpoint",
       orch: "",
       instrumentClass: d.category || "",
+      firmware: d.firmwareVersion || "",
+      productUrl: d.productUrl || "",
       source: `devices/${d.slug}.yml`,
       submittedBy: d.evaluator,
       date: d.date,
       verified: d.verified,
       scorecardVersion: d.scorecardVersion,
       evidenceBasis: d.evidenceBasis,
+      vendorResponse: d.vendorResponse || "",
       grades: d.grades,
       notes: d.notes,
-      ctx: { cell: d.deployment === "cell-integrated" },
+      evidenceLinks: d.evidence,
+      // Same rule as build/score_device.py: the cell tier applies when any of its criteria
+      // is graded other than N/A (the deployment field is informational).
+      ctx: { cell: cellIds.some(n => d.grades[n] && d.grades[n] !== "NA") },
       // Device files do not record the cybersecurity precondition (it is a deployment
       // precondition, not a scored criterion), so it is treated as cleared here.
       cyber: Array(cyberCount).fill(true),

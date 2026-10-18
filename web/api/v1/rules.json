@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T02:53:46.478Z",
+  "generated": "2026-10-18T03:12:10.359Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "grades": {
     "G": {
@@ -77,12 +77,12 @@
     {
       "step": 3,
       "name": "important_floor",
-      "rule": "Failed Important criteria may total at most 4 weighted points; each Important Fail needs a documented gap-acceptance decision. Conditional floors: C7 ≥ Partial for hazardous/resource-blocking instruments; C15 ≠ Fail for unattended hazardous instruments — unless a documented external mitigation is recorded."
+      "rule": "Failed Important criteria may total at most 4 weighted points; each Important Fail needs a documented gap-acceptance decision. Conditional floors: C7 ≥ Partial for hazardous/resource-blocking instruments; C15 ≠ Fail for unattended hazardous instruments unless a documented external mechanism (cell-level watchdog, hardwired interlock, supervisory power cutoff, orchestrator-side handling) is recorded. C17 Partial requires a reason code."
     },
     {
       "step": 4,
       "name": "cell_floor",
-      "rule": "Cell-deployed only: C19 ≥ Partial where a machine loads labware; optional buyer-defined local floors on C20/C21."
+      "rule": "Cell-deployed only: C19 ≥ Partial where a machine loads labware (a Fail disqualifies; no mitigation exception); optional buyer-defined local floors on C20/C21."
     },
     {
       "step": 5,

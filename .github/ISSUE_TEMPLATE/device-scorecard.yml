@@ -44,6 +44,16 @@ body:
       required: true
 
   - type: dropdown
+    id: architecture
+    attributes:
+      label: C1 endpoint architecture
+      options:
+        - Native endpoint
+        - Vendor edge-controller
+        - Third-party gateway
+        - Not sure
+
+  - type: dropdown
     id: deployment
     attributes:
       label: Deployment evaluated
@@ -70,8 +80,8 @@ body:
       label: Grades (C1–C21)
       description: >
         Put your grade after each colon: Pass, Partial, Fail, or N/A. Add a short note in
-        parentheses and an evidence URL if you have one. Use N/A for the cell-integration tier
-        (C19–C21) if you evaluated the instrument standalone.
+        parentheses and an evidence URL if you have one. N/A is permitted only for C5, C19 and
+        C21 (use it for C19 and C21 if you evaluated the instrument standalone); C20 must be graded.
       value: |
         C1  Orchestrator-reachable programmatic control:
         C2  Strong typing with units and constraints:

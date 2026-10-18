@@ -12,6 +12,7 @@ device:
   model: Example Model 100
   category: plate reader            # optional
   interface: SiLA 2                 # protocol you evaluated
+  architecture: Native endpoint     # C1 architecture: Native endpoint | Vendor edge-controller | Third-party gateway
   firmware_version: null            # optional
   product_url: null                 # optional
 
@@ -24,11 +25,13 @@ evaluation:
   # verified: false                 # set by maintainers only
 
 scores:
+  # Critical tier (C5 may be N/A)
   C1:  { grade: Fail, note: "", evidence: null }
   C2:  { grade: Fail }
   C3:  { grade: Fail }
   C4:  { grade: Fail }
   C5:  { grade: Fail }
+  # Important tier
   C6:  { grade: Fail }
   C7:  { grade: Fail }
   C8:  { grade: Fail }
@@ -41,10 +44,11 @@ scores:
   C15: { grade: Fail }
   C16: { grade: Fail }
   C17: { grade: Fail }
-  # Cell-integration tier — grade only if you evaluated cell deployment,
-  # otherwise use N/A (or omit if deployment: standalone).
-  C18: { grade: "N/A" }
+  C18: { grade: Fail }
+  # Cell-integration tier. C19 and C21 may be N/A if you evaluated standalone only.
+  # C20 does not permit N/A in the current criteria set, so it must be graded.
   C19: { grade: "N/A" }
-  C20: { grade: "N/A" }
+  C20: { grade: Fail }
+  C21: { grade: "N/A" }
 
 # vendor_response: null             # optional right-of-reply

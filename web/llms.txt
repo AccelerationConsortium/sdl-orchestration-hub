@@ -24,7 +24,7 @@
 
 ## Contribute
 - New orchestrator: https://github.com/willigott/device-integration-scorecard/issues/new?template=new-orchestrator.yml
-- New scorecard: https://github.com/willigott/device-integration-scorecard/issues/new?template=new-scorecard.yml
+- New scorecard: https://github.com/willigott/device-integration-scorecard/issues/new?template=device-scorecard.yml
 
 ## Caveats
 - Grading text is condensed; confirm the full criterion definition before relying on it. Weights are proposed defaults.

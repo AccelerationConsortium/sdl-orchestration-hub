@@ -7,7 +7,7 @@ const GV = { G: 1, P: 0.5, F: 0 };
 const GL = { G: "Pass", P: "Partial", F: "Fail", NA: "N/A" };
 const TIER = { C: "Critical", I: "Important", X: "Cell-integration" };
 const FAMILY = { formal: "Formal standard", hal: "Hardware-abstraction layer", agentic: "Model-facing (MCP)", bespoke: "Bespoke conventions" };
-const NA_OK = new Set(window.NA_OK || [7, 19, 20, 21]);   // criteria allowed to grade N/A (from criteria/*.yml via sync.js)
+const NA_OK = new Set(window.NA_OK || []);   // criteria allowed to grade N/A (from criteria/*.yml via sync.js)
 const CRIT = window.CRITERIA;
 const MONTH = 30.44 * 864e5;
 
@@ -28,8 +28,9 @@ function blank(over = {}) {
   return Object.assign({
     id: uid(), vendor: "New instrument", endpoint: "SiLA 2", arch: "Native endpoint", orch: "", date: new Date().toISOString().slice(0, 10),
     ctx: { cell: false, hazard: false, unattended: false, networked: true, isolated: false, isoAccepted: false, surfaceDoc: false, c20local: false, c21local: false },
-    cyber: window.CYBER.map(() => false), grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {},
-    mit: {}, c21fallback: false, c21aNA: false, evidence: window.EVIDENCE.map(() => false)
+    cyber: window.CYBER.map(() => false), grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {}, annotDate: {},
+    mit: {}, c15noReconnect: false, c15fixedDefault: false, c21fallback: false, c21aNA: false, c21powerPath: false, c21naVerified: false, reqChecks: {},
+    model: "", scorecardVersion: window.SCORECARD_VERSION || "", evidence: window.EVIDENCE.map(() => false)
   }, over);
 }
 const cur = () => store.evals.find(e => e.id === store.current);
@@ -576,17 +577,19 @@ function renderScore() {
   <div class="sc">
     <aside class="side" aria-label="Evaluations">
       <h2 class="rail-title">Evaluations</h2>
-      <div class="evals">${store.evals.map(v => { const r = evaluate(v); return `<button class="evitem ${v.id === e.id ? "sel" : ""}" data-sel="${v.id}" aria-current="${v.id === e.id}"><span class="evitem-name">${esc(v.vendor)}</span>${v.orch ? `<span class="meta">→ ${esc(v.orch)}</span>` : ""}<span class="evitem-v ${r.cls}">${esc(r.verdict)}</span></button>`; }).join("")}</div>
+      <div class="evals">${store.evals.map(v => { const r = evaluate(v); return `<button class="evitem ${v.id === e.id ? "sel" : ""}" data-sel="${v.id}" aria-current="${v.id === e.id}"><span class="evitem-name">${esc(v.vendor)}</span>${v.orch ? `<span class="meta">→ ${esc(v.orch)}</span>` : ""}<span class="evitem-v ${r.cls}">${esc(r.verdict)}</span>${v.scorecardVersion && window.SCORECARD_VERSION && v.scorecardVersion !== window.SCORECARD_VERSION ? `<span class="meta">scored on v${esc(v.scorecardVersion)}; criteria now v${esc(window.SCORECARD_VERSION)}</span>` : ""}</button>`; }).join("")}</div>
       <div class="btn-row"><button class="btn pri" id="new">New</button><button class="btn" id="dup">Duplicate</button><button class="btn" id="del">Delete</button></div>
       <div class="btn-col">
         <button class="btn sm" id="ex">Load Reader X example</button>
         <div class="btn-row"><button class="btn sm" id="exp">Export JSON</button><label class="btn sm">Import<input type="file" id="imp" accept=".json" hidden></label></div>
       </div>
       <p class="hint">Reader X is a worked example: 36/46 standalone, 39/52 cell-integrated, eligible at the margin.</p>
-      <details class="note"><summary>Weights</summary>
-        <p class="hint">Defaults are the framework’s proposed values. A hazardous workcell may weigh C20/C21 higher; a regulated deployment may weigh C17 higher.</p>
+      <div class="note"><p class="meta">Criteria v${esc(window.SCORECARD_VERSION || "?")}${REPO ? ` · <a href="https://github.com/${esc(REPO)}/blob/main/CHANGELOG.md" target="_blank" rel="noopener">changelog ↗</a>` : ""}</p>
+        ${REPO ? `<p class="hint">Offline copies: <a href="https://github.com/${esc(REPO)}/blob/main/scorecard.md" target="_blank" rel="noopener">checklist (.md)</a> · <a href="https://github.com/${esc(REPO)}/raw/main/scorecard-template.xlsx">spreadsheet (.xlsx)</a> · <a href="https://github.com/${esc(REPO)}/raw/main/scorecard-template.csv">.csv</a></p>` : ""}</div>
+      <details class="note"><summary>Weights <span class="meta">local only</span></summary>
+        <p class="hint">Defaults are the framework’s proposed values. A hazardous workcell may weigh C20/C21 higher; a regulated deployment may weigh C17 higher. Custom weights apply only in this browser: published totals (46 / 52) and <code>devices/*.yml</code> scoring always use the default weights.</p>
         <div class="weights">${CRIT.map(c => `<label class="wrow"><span>C${c.n} <span class="meta">(${c.w})</span></span><input type="number" min="0" max="10" step="1" data-w="${c.n}" value="${wOf(c)}" aria-label="Weight for C${c.n}"></label>`).join("")}</div>
-        <button class="btn sm" id="wreset">Reset to paper defaults</button></details>
+        <button class="btn sm" id="wreset">Reset to default weights</button></details>
     </aside>
     <section id="form" aria-label="Evaluation form"></section>
     <aside class="result" id="result" aria-live="polite"></aside>
@@ -635,8 +638,8 @@ function stageStatus(e, i, r = evaluate(e)) {
     const g = n => effectiveGrade(e, CRIT.find(c => c.n === n));
     let bad = false;
     if (id === "C") bad = cs.some(c => g(c.n) === "F") || cs.filter(c => g(c.n) === "P").length > 1;
-    if (id === "I") bad = cs.filter(c => g(c.n) === "F").reduce((a, c) => a + wOf(c), 0) > 4 || (e.ctx.hazard && g(7) === "F" && !e.mit[7]) || (e.ctx.hazard && e.ctx.unattended && g(15) === "F" && !e.mit[15]);
-    if (id === "X") bad = (g(19) === "F" && !e.mit[19]) || [20, 21].some(n => e.ctx["c" + n + "local"] && g(n) === "F" && !e.mit[n]);
+    if (id === "I") bad = cs.filter(c => g(c.n) === "F").reduce((a, c) => a + wOf(c), 0) > 4 || (e.ctx.hazard && g(7) === "F") || (e.ctx.hazard && e.ctx.unattended && g(15) === "F" && !e.mit[15]);
+    if (id === "X") bad = g(19) === "F" || [20, 21].some(n => e.ctx["c" + n + "local"] && g(n) === "F");
     if (bad) return { s: "issue", note: `${rated}/${cs.length} · floor not met` };
     return rated === cs.length ? { s: "done", note: `${rated}/${cs.length}` } : { s: rated ? "progress" : "todo", note: `${rated}/${cs.length} rated` };
   }
@@ -669,7 +672,13 @@ function drawForm(e) {
   let body = "";
   if (st.id === "instrument") body = `
     <div class="formgrid">
-      <label class="field span-2"><span class="field-label">Vendor / instrument</span><input type="text" data-f="vendor" value="${esc(e.vendor)}"></label>
+      <label class="field"><span class="field-label">Vendor / instrument</span><input type="text" data-f="vendor" value="${esc(e.vendor)}"></label>
+      <label class="field"><span class="field-label">Model</span><input type="text" data-f="model" value="${esc(e.model || "")}" placeholder="needed for a devices/*.yml export"></label>
+      <label class="field"><span class="field-label">Category</span><input type="text" data-f="instrumentClass" value="${esc(e.instrumentClass || "")}" placeholder="e.g. plate reader, HPLC"></label>
+      <label class="field"><span class="field-label">Firmware / software version</span><input type="text" data-f="firmware" value="${esc(e.firmware || "")}"></label>
+      <label class="field"><span class="field-label">Evaluator</span><input type="text" data-f="evaluator" value="${esc(e.evaluator || "")}" placeholder="name, org or handle"></label>
+      <label class="field"><span class="field-label">Evidence basis</span><select data-f="evidenceBasis">${["vendor-docs", "hands-on-test", "integrator-report"].map(o => `<option ${(e.evidenceBasis || "vendor-docs") === o ? "selected" : ""}>${o}</option>`).join("")}</select></label>
+      <label class="field span-2"><span class="field-label">Product URL</span><input type="url" data-f="productUrl" value="${esc(e.productUrl || "")}"></label>
       <label class="field"><span class="field-label">Endpoint scored</span><select data-f="endpoint">${["SiLA 2", "OPC UA + LADS", "REST + OpenAPI", "MCP", "Other"].map(o => `<option ${e.endpoint === o ? "selected" : ""}>${o}</option>`).join("")}</select></label>
       <label class="field"><span class="field-label">C1 architecture</span><select data-f="arch">${["Native endpoint", "Vendor edge-controller", "Third-party gateway"].map(o => `<option ${e.arch === o ? "selected" : ""}>${o}</option>`).join("")}</select></label>
       ${(() => { const names = allTools().map(o => o.name).sort((a, b) => a.localeCompare(b)), isOther = !!e.orch && !names.includes(e.orch) || e.orchOther;
@@ -722,7 +731,9 @@ function drawForm(e) {
   f.querySelectorAll("[data-remdate]").forEach(i => i.onchange = () => { e.remedDate[i.dataset.remdate] = i.value; save(); drawResult(e); });
   f.querySelectorAll("[data-gap]").forEach(i => i.onchange = () => { e.gap[i.dataset.gap] = i.checked; save(); drawResult(e); });
   f.querySelectorAll("[data-mit]").forEach(i => i.onchange = () => { e.mit[+i.dataset.mit] = i.checked; save(); keep(() => { drawForm(e); drawResult(e); }); });
-  f.querySelectorAll("[data-annot]").forEach(i => i.onchange = () => { e.annot[i.dataset.annot] = i.value; save(); });
+  f.querySelectorAll("[data-annot]").forEach(i => i.onchange = () => { e.annot[i.dataset.annot] = i.value; save(); keep(() => { drawForm(e); drawResult(e); }); });
+  f.querySelectorAll("[data-req]").forEach(i => i.onchange = () => { const [n, k] = i.dataset.req.split(":").map(Number); const R = (e.reqChecks ||= {}); const a = new Set(R[n] || []); i.checked ? a.add(k) : a.delete(k); R[n] = [...a].sort((x, y) => x - y); save(); const m = i.closest("details").querySelector("summary .meta"); const all = i.closest("ul").querySelectorAll("[data-req]"); m.textContent = `${[...all].filter(x => x.checked).length} / ${all.length} MUST/SHOULD ticked`; });
+  f.querySelectorAll("[data-annotdate]").forEach(i => i.onchange = () => { (e.annotDate ||= {})[i.dataset.annotdate] = i.value; save(); drawResult(e); });
   f.querySelectorAll("[data-flag]").forEach(i => i.onchange = () => { e[i.dataset.flag] = i.checked; save(); keep(() => { drawForm(e); drawResult(e); }); });
   const os = $("#orchsel"); if (os) os.onchange = () => {
     const other = os.value === "__other"; e.orchOther = other;
@@ -731,6 +742,7 @@ function drawForm(e) {
     save(); drawResult(e); refreshStepper(e);
   };
   const sub = $("#submitsc"); if (sub) sub.onclick = () => openIssue(scorecardIssue(e));
+  const dy = $("#devyml"); if (dy) dy.onclick = () => { const { name, text, todo } = toDeviceYAML(e); download(name, text, "text/yaml"); if (todo.length) alert(`Exported with ${todo.length} item(s) to fill in before submitting:\n- ${todo.join("\n- ")}`); };
   const csv2 = $("#csv2"); if (csv2) csv2.onclick = () => download(`${e.vendor.replace(/\W+/g, "_")}_scorecard.csv`, toCSV([e]), "text/csv");
 }
 function refreshStepper(e) {
@@ -748,7 +760,7 @@ function reviewBody(e, r) {
     ${row(1, "Cybersecurity / IT precondition", !r.blocked, r.blocked ? "Blocked — supply the missing deliverables before scoring." : "Cleared.")}
     ${row(2, "Critical floor", cF.length || cP.length > 1 ? false : cs.every(c => e.grades[c.n]) ? true : null, cF.length ? `Fail on ${cF.map(c => "C" + c.n).join(", ")} — disqualifying.` : cP.length > 1 ? `${cP.length} Partials (max 1).` : cP.length === 1 ? `One Partial (C${cP[0].n}) — needs a dated remediation commitment.` : cs.every(c => e.grades[c.n]) ? "All Critical criteria pass." : "Not all Critical criteria rated.")}
     ${row(3, "Important & local floors", failPts > 4 ? false : is.every(c => e.grades[c.n]) ? true : null, `${failPts} / 4 failed weighted points${iF.length ? ` (${iF.map(c => "C" + c.n).join(", ")})` : ""}${x.hazard ? " · C7 floor active" : ""}${x.hazard && x.unattended ? " · C15 floor active" : ""}.`)}
-    ${x.cell ? row(4, "Cell-integration floor", g(CRIT[18]) === "F" && !e.mit[19] ? false : CRIT.filter(c => c.tier === "X").every(c => e.grades[c.n]) ? true : null, g(CRIT[18]) === "F" ? "C19 Fail — cannot run unattended in a cell." : "C19 at least Partial or N/A.") : ""}
+    ${x.cell ? row(4, "Cell-integration floor", g(CRIT[18]) === "F" ? false : CRIT.filter(c => c.tier === "X").every(c => e.grades[c.n]) ? true : null, g(CRIT[18]) === "F" ? "C19 Fail — cannot run unattended in a cell." : "C19 at least Partial or N/A.") : ""}
     ${row(x.cell ? 5 : 4, "Weighted total (ranks eligible vendors)", allRated ? true : null, `${r.headline.p} / ${r.headline.m}${x.cell ? " cell-integrated" : " standalone"} — ${esc(r.verdict)}.`)}
   </ol>`;
   const tiers = ["C", "I", "X"].filter(t => t !== "X" || x.cell);
@@ -765,7 +777,8 @@ function reviewBody(e, r) {
         <p class="hint">Ask for endpoint-specific evidence rather than general statements of API availability.</p>
         <div class="subchecks">${window.EVIDENCE.map((c, i) => `<label class="chk"><input type="checkbox" data-ev="${i}" ${e.evidence[i] ? "checked" : ""}><span>${esc(c)}</span></label>`).join("")}</div></div>
       <div class="rv-block"><h3>Share</h3><p class="hint">Publish this evaluation to the public registry (reviewed via a GitHub issue), or export it.</p>
-        <div class="btn-row"><button class="btn pri" id="submitsc">Submit to public registry ↗</button><button class="btn" id="csv2">Export CSV</button></div></div>
+        <div class="btn-row"><button class="btn pri" id="submitsc">Submit to public registry ↗</button><button class="btn" id="devyml">Export devices/*.yml</button><button class="btn" id="csv2">Export CSV</button></div>
+        <p class="hint">The YAML file is the repository's device-evaluation format: add it under <code>devices/</code> in a pull request, or submit through the issue form and a maintainer converts it.</p></div>
     </div>`;
 }
 
@@ -775,11 +788,16 @@ function critCard(e, c) {
   const g = window.GRADING[c.n], cur = e.grades[c.n], eff = effectiveGrade(e, c);
   const opts = ["G", "P", "F"].concat(NA_OK.has(c.n) ? ["NA"] : []);
   const wantsRemed = (c.tier === "C" && cur === "P") || (c.tier === "I" && cur === "F") || (c.tier === "X" && (cur === "P" || cur === "F"));
-  const mitLabel = { 7: "Hazard / resource blocking handled by a documented external mitigation", 15: "Control-session loss handled by a documented external mechanism (orchestrator-side, cell-level or vendor default)", 19: "Documented external mitigation accepted by the institution", 20: "Documented external mitigation in place (sensors, PLC interlocks, hardwired circuits)", 21: "Documented external mitigation in place (sensors, PLC interlocks, hardwired circuits)" }[c.n];
-  const annot = c.n === 17 && cur === "P" ? `<label class="field"><span class="field-label">Partial reason code</span><select data-annot="17"><option value="">—</option>${["P-OLD — certification covers an older version", "P-GAP — implementation or test-coverage gap", "P-UNDOC — evidence not tied to shipped firmware / companion depth undocumented"].map(o => `<option ${e.annot[17] === o.slice(0, o.indexOf(" ")) ? "selected" : ""} value="${o.slice(0, o.indexOf(" "))}">${o}</option>`).join("")}</select></label>`
+  const mitLabel = { 15: "Control-session loss handled by a documented external mechanism (cell-level watchdog, hardwired interlock, supervisory power cutoff, or orchestrator-side handling)" }[c.n];
+  const flag = (k, t) => `<label class="chk"><input type="checkbox" data-flag="${k}" ${e[k] ? "checked" : ""}><span>${t}</span></label>`;
+  const annot = c.n === 17 && cur === "P" ? `<label class="field"><span class="field-label">Partial reason code (required)</span><select data-annot="17"><option value="">—</option>${["P-OLD — certification covers an older version", "P-GAP — implementation or test-coverage gap", "P-UNDOC — evidence not tied to shipped firmware / companion depth undocumented"].map(o => `<option ${e.annot[17] === o.slice(0, o.indexOf(" ")) ? "selected" : ""} value="${o.slice(0, o.indexOf(" "))}">${o}</option>`).join("")}</select></label>
+      ${e.annot[17] === "P-OLD" ? `<label class="field"><span class="field-label">Re-certification roadmap target date</span><input type="date" data-annotdate="17" value="${esc(e.annotDate?.[17] || "")}"></label>` : ""}`
+    : c.n === 15 && cur === "G" ? flag("c15noReconnect", "Reconnect semantics are not explicit — caps the criterion at Partial") + flag("c15fixedDefault", "Vendor safe default cannot be configured or overridden by the orchestrator — caps the criterion at Partial")
+    : c.n === 21 && cur === "NA" ? flag("c21naVerified", "No safety-event source confirmed by schematic, safety I/O declaration or integrator (otherwise the N/A is recorded as unverified); evaluate the instrument under C15 and C10")
     : c.n === 6 && cur === "P" ? `<label class="field"><span class="field-label">Which Partial case?</span><select data-annot="6"><option value="">—</option>${[["a-no-b", "Runtime introspection (a) without state-aware availability (b)"], ["static", "Static contract only (OpenAPI / JSON Schema / IDL), no runtime introspection"]].map(([v, l]) => `<option value="${v}" ${e.annot[6] === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>`
     : c.n === 21 && cur && cur !== "NA" ? `<label class="chk"><input type="checkbox" data-flag="c21aNA" ${e.c21aNA ? "checked" : ""}><span>Sub-test (a) is N/A — no external safety-bus input by design (verify with schematic or integrator; provisional if deployment not final)</span></label>
-      ${!e.c21aNA ? `<label class="chk"><input type="checkbox" data-flag="c21fallback" ${e.c21fallback ? "checked" : ""}><span>Sub-test (a) verified by fallback evidence only (fixture, simulator, FAT records, reference customer) — caps the criterion at Partial</span></label>` : ""}` : "";
+      ${!e.c21aNA ? `<label class="chk"><input type="checkbox" data-flag="c21fallback" ${e.c21fallback ? "checked" : ""}><span>Sub-test (a) verified by fallback evidence only (fixture, simulator, FAT records, reference customer) — caps the criterion at Partial</span></label>
+      ${flag("c21powerPath", "Sub-test (a) met through the power-interruption exception path, without latched-state evidence from the cell controller — caps the criterion at Partial")}` : ""}` : "";
   return `<article class="card crit t${c.tier}" id="C${c.n}">
     <header class="crit-head"><h3><span class="n">C${c.n}</span>${esc(c.name)}</h3><span class="wt">${TIER[c.tier]} · w${wOf(c)}${wOf(c) !== c.w ? ` (paper ${c.w})` : ""} · ${g.effort}</span></header>
     <p class="crit-checks">${esc(c.checks)}</p>
@@ -790,6 +808,8 @@ function critCard(e, c) {
     ${mitLabel && cur === "F" ? `<label class="chk"><input type="checkbox" data-mit="${c.n}" ${e.mit[c.n] ? "checked" : ""}><span>${mitLabel} — recorded as an institutional deployment decision; the grade is unchanged</span></label>` : ""}
     ${wantsRemed ? `<div class="remed"><label class="field"><span class="field-label">Remediation commitment</span><textarea data-rem="${c.n}" placeholder="What will be fixed and the acceptance test that verifies it">${esc(e.remed[c.n] || "")}</textarea></label><label class="field"><span class="field-label">Target date</span><input type="date" data-remdate="${c.n}" value="${esc(e.remedDate[c.n] || "")}"></label></div>` : ""}
     <label class="field"><span class="field-label sr-only">Evidence / notes for C${c.n}</span><textarea data-note="${c.n}" placeholder="Evidence / notes">${esc(e.notes[c.n] || "")}</textarea></label>
+    ${c.full?.requirementItems ? (() => { const items = c.full.requirementItems, ticks = (e.reqChecks || {})[c.n] || [], boxed = items.map((it, i) => /^(MUST|SHOULD)/.test(it.m || "") ? i : -1).filter(i => i >= 0);
+      return `<details class="reqlist"><summary>Requirement checklist <span class="meta">${boxed.filter(i => ticks.includes(i)).length} / ${boxed.length} MUST/SHOULD ticked</span></summary><ul class="req">${items.map((it, i) => `<li class="${it.sub ? "sub" : ""}">${boxed.includes(i) ? `<label class="chk"><input type="checkbox" data-req="${c.n}:${i}" ${ticks.includes(i) ? "checked" : ""}><span>` : "<span>"}${it.m ? `<b class="modal">${esc(it.m)}</b> ` : ""}${esc(it.t)}</span>${boxed.includes(i) ? "</label>" : ""}</li>`).join("")}</ul><p class="hint">Ticks are notes for the evaluator; they do not change the grade.</p></details>`; })() : ""}
     <details><summary>How to test and grade</summary>
       <p class="hint"><b>How to test:</b> ${esc(c.hint)}</p>
       <p class="rule"><b class="G">Pass</b> ${esc(g.pass)}</p>
@@ -838,11 +858,33 @@ function renderCompare() {
     <tbody>
       <tr class="sum"><th scope="row">Verdict</th>${R.map(r => `<td><span class="g ${r.cls === "ok" ? "G" : r.cls === "bad" ? "F" : r.cls === "warn" ? "P" : "NA"}">${esc(r.verdict)}</span></td>`).join("")}</tr>
       <tr class="sum"><th scope="row">Standalone</th>${R.map(r => `<td class="num">${r.pts} / ${r.max}</td>`).join("")}</tr>
+      <tr class="sum"><th scope="row">Repo floors <span class="meta">score_device.py</span></th>${E.map(v => { const f = SDLScore.repoFloors(v, { criteria: CRIT }); return `<td>${f.unrated ? '<span class="meta">incomplete</span>' : `<span class="g ${f.eligible ? "G" : "F"}">${f.eligible ? "eligible" : "not eligible"}</span>`}</td>`; }).join("")}</tr>
       <tr class="sum last"><th scope="row">Cell-integrated</th>${E.map((v, i) => `<td class="num">${v.ctx.cell ? `${R[i].ptsCell} / ${R[i].maxCell}` : '<span class="meta">—</span>'}</td>`).join("")}</tr>
       ${CRIT.map(c => `<tr><th scope="row"><span class="n">C${c.n}</span> ${esc(c.name)} <span class="meta">w${wOf(c)}</span></th>${E.map(v => { if (c.tier === "X" && !v.ctx.cell) return `<td class="meta">—</td>`; const g = effectiveGrade(v, c); return `<td><span class="g ${g || "U"}">${g ? GL[g] : "—"}</span>${c.n === 17 && v.annot[17] ? ` <span class="meta">${esc(v.annot[17])}</span>` : ""}</td>`; }).join("")}</tr>`).join("")}
-    </tbody></table></div>`;
+    </tbody></table></div>
+  <p class="hint"><b>Verdict</b> applies the full procedure (precondition, remediation dates, gap decisions, conditional floors). <b>Repo floors</b> is the three-floor check <code>build/score_device.py</code> applies to <code>devices/*.yml</code>.</p>
+  ${E.some(v => v.pub) ? `<h2 class="subhead">Public registry entries</h2><div class="reg-grid">${E.filter(v => v.pub).map(registryCard).join("")}</div>` : ""}`;
   $("#cc").onclick = () => download("sdl-scorecard-comparison.csv", toCSV(E), "text/csv");
   $("#cmp-pub").onchange = ev => { cmpPublic = ev.target.checked; renderCompare(); };
+}
+
+function registryCard(v) {
+  const ver = v.scorecardVersion, cur = window.SCORECARD_VERSION;
+  const links = Object.entries(v.evidenceLinks || {}).map(([n, u]) => `<li><b>C${esc(n)}</b> <a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a></li>`).join("");
+  return `<article class="card reg">
+    <h3>${esc(v.vendor)}${v.verified ? ' <span class="tag">verified</span>' : ""}</h3>
+    <p class="meta">${[v.instrumentClass, v.endpoint, v.arch, v.firmware && `firmware ${v.firmware}`].filter(Boolean).map(esc).join(" · ")}</p>
+    <dl class="glossary">
+      <dt>Evaluator</dt><dd>${esc(v.submittedBy || "—")}${v.date ? ` · ${esc(v.date)}` : ""}</dd>
+      <dt>Evidence basis</dt><dd>${esc(v.evidenceBasis || "—")}</dd>
+      <dt>Scorecard version</dt><dd>${esc(ver || "—")}${ver && cur && ver !== cur ? ` <span class="g P">scored against ${esc(ver)}, current is ${esc(cur)}</span>` : ""}</dd>
+      ${v.source ? `<dt>Source</dt><dd>${REPO && v.source.startsWith("devices/") ? `<a href="https://github.com/${esc(REPO)}/blob/main/${esc(v.source)}" target="_blank" rel="noopener">${esc(v.source)} ↗</a>` : esc(v.source)}</dd>` : ""}
+      ${v.productUrl ? `<dt>Product</dt><dd><a href="${esc(v.productUrl)}" target="_blank" rel="noopener">${esc(v.productUrl)}</a></dd>` : ""}
+    </dl>
+    ${v.cyberAssumed ? `<p class="hint">The device file does not record the cybersecurity precondition; it is treated as cleared.</p>` : ""}
+    ${links ? `<details><summary>Evidence links</summary><ul class="rv-list">${links}</ul></details>` : ""}
+    ${v.vendorResponse ? `<details><summary>Vendor response</summary><p class="hint">${esc(v.vendorResponse)}</p></details>` : ""}
+  </article>`;
 }
 
 /* ---------- About ---------- */
@@ -924,12 +966,52 @@ function toolIssue(o) {
     family: FAMILY_LABEL_ISSUE[o.family] || "", standards: o.standards || "", mech: o.mech || "", license: o.license || "",
     links: [o.website, o.repo, o.docs, o.paper].filter(Boolean).join(" "), json: JSON.stringify(rec, null, 2) } };
 }
+const GRADE_WORD = { G: "Pass", P: "Partial", F: "Fail", NA: "N/A" };
+const slugify = t => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const yq = v => v == null || v === "" ? "null" : JSON.stringify(String(v));
+// Grades for a devices/*.yml file. Standalone evaluations grade the cell tier N/A where the
+// criterion allows it; anything still missing is flagged for the evaluator.
+function deviceGrades(e) {
+  const todo = [], out = {};
+  for (const c of CRIT) {
+    let g = e.grades[c.n];
+    if (!g && c.tier === "X" && !e.ctx.cell && NA_OK.has(c.n)) g = "NA";
+    if (!g) todo.push(`C${c.n} not graded${c.tier === "X" && !NA_OK.has(c.n) ? " (N/A is not permitted for this criterion)" : ""}`);
+    out[c.n] = g;
+  }
+  return { out, todo };
+}
+function toDeviceYAML(e) {
+  const { out, todo } = deviceGrades(e);
+  if (!e.model) todo.push("model is empty");
+  if (!e.evaluator) todo.push("evaluator is empty");
+  if (e.grades[17] === "P" && !e.annot[17]) todo.push("C17 Partial needs a reason code");
+  const name = `${slugify(e.vendor)}-${slugify(e.model || "model")}.yml`;
+  const pad = n => `C${n}:`.padEnd(4);
+  const note = n => [e.grades[n] === "P" && n === 17 && e.annot[17] ? e.annot[17] : "", e.notes[n] || ""].filter(Boolean).join(" — ");
+  const lines = [
+    `# Exported from the Device Integration Scorecard web tool on ${new Date().toISOString().slice(0, 10)}.`,
+    `# Save as devices/${name}, then run:  uv run python build/score_device.py --check`,
+    ...(todo.length ? ["# TODO before submitting:", ...todo.map(t => `#   - ${t}`)] : []),
+    "", "device:",
+    `  vendor: ${yq(e.vendor)}`, `  model: ${yq(e.model || "TODO")}`, `  category: ${yq(e.instrumentClass)}`,
+    `  interface: ${yq(e.endpoint)}`, `  architecture: ${yq(e.arch)}`, `  firmware_version: ${yq(e.firmware)}`, `  product_url: ${yq(e.productUrl)}`,
+    "", "evaluation:",
+    `  evaluator: ${yq(e.evaluator || "TODO")}`, `  date: ${e.date || new Date().toISOString().slice(0, 10)}`,
+    `  scorecard_version: ${e.scorecardVersion || window.SCORECARD_VERSION || "1.0.0"}`,
+    `  deployment: ${e.ctx.cell ? "cell-integrated" : "standalone"}`, `  evidence_basis: ${e.evidenceBasis || "vendor-docs"}`,
+    "", "scores:",
+    ...CRIT.map(c => `  ${pad(c.n)} { grade: ${out[c.n] ? yq(GRADE_WORD[out[c.n]]) : '"Fail"  # TODO not graded'}${note(c.n) ? `, note: ${yq(note(c.n))}` : ""} }`)
+  ];
+  return { name, text: lines.join("\n") + "\n", todo };
+}
 function scorecardIssue(e) {
-  const r = evaluate(e);
-  const clean = JSON.parse(JSON.stringify(e)); delete clean.stage; delete clean.visited; delete clean.pub; delete clean.orchOther;
-  return { template: "new-scorecard.yml", title: `[Scorecard] ${e.vendor} (${e.endpoint})`, fields: {
-    instrument: e.vendor, endpoint: e.endpoint, orchestrator: e.orch || "Not decided",
-    verdict: `${r.verdict} — ${r.headline.p} / ${r.headline.m}${e.ctx.cell ? " (cell-integrated)" : ""}`, json: JSON.stringify(clean) } };
+  const { out } = deviceGrades(e);
+  const scores = CRIT.map(c => `${`C${c.n}`.padEnd(4)}${c.name}: ${out[c.n] ? GRADE_WORD[out[c.n]] : ""}${e.notes[c.n] || (c.n === 17 && e.annot[17]) ? ` (${[c.n === 17 ? e.annot[17] : "", e.notes[c.n] || ""].filter(Boolean).join(" — ")})` : ""}`).join("\n");
+  return { template: "device-scorecard.yml", title: `[device]: ${e.vendor} ${e.model || ""}`.trim(), fields: {
+    vendor: e.vendor, model: e.model || "", category: e.instrumentClass || "", interface: e.endpoint, architecture: e.arch,
+    deployment: e.ctx.cell ? "cell-integrated" : "standalone", evidence_basis: e.evidenceBasis || "vendor-docs",
+    scores, evaluator: e.evaluator || "", firmware: e.firmware || "", product_url: e.productUrl || "" } };
 }
 function openIssue({ template, title, fields }) {
   if (!REPO) { alert("No submission repository is configured (config.js → repo)."); return; }

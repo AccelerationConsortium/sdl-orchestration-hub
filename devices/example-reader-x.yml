@@ -1,6 +1,6 @@
 # Worked example carried over from the accompanying paper (Supplementary Table S1).
 # Anonymized on purpose: it demonstrates the tooling and is a CI fixture that must
-# reproduce the paper's numbers (standalone 34/44, cell-integrated 37/50). It is not
+# reproduce the paper's numbers (standalone 36/46, cell-integrated 39/52). It is not
 # a real named product and should not be copied as an endorsement of any vendor.
 
 device:
@@ -8,6 +8,7 @@ device:
   model: "Reader X"
   category: fluorescence plate reader
   interface: SiLA 2
+  architecture: Native endpoint
   firmware_version: null
   product_url: null
 

@@ -54,7 +54,7 @@ Static JSON in `api/v1/`, generated from the same data files the site reads:
 node scripts/build-api.mjs
 ```
 
-Re-run it after editing `tools.js`, `data.js`, `grading.js` or `scorecards.js`. The build fails if Reader X no longer reproduces Table S1 (36/46, 39/52).
+Re-run it after `build/build_web.py`, or after editing `data.js`, `grading.js` or `scorecards.js`. The build fails if Reader X no longer reproduces Table S1 (36/46, 39/52).
 
 | Endpoint | Contents |
 |---|---|
@@ -73,13 +73,13 @@ Set `siteUrl` in `config.js` to the public URL before building if the site is se
 
 ## Submissions
 
-`config.js → repo` names the GitHub repository. The site opens prefilled issues using the forms in `.github/ISSUE_TEMPLATE/` (`new-orchestrator.yml`, `new-scorecard.yml`). Each issue carries a JSON block: paste an accepted orchestrator into `tools.js`, then rebuild the API. Accepted evaluations go into `devices/<vendor>-<model>.yml` (see the repository README) so they are scored by `build/score_device.py` as well; `scorecards.js` only keeps the Reader X worked example with its remediation dates.
+`config.js → repo` names the GitHub repository. The site opens prefilled issues using the forms in `.github/ISSUE_TEMPLATE/` (`new-orchestrator.yml` for orchestrators, the repository's `device-scorecard.yml` for evaluations). Accepted orchestrators go into `orchestrators/<id>.yml`; accepted evaluations go into `devices/<vendor>-<model>.yml` (see the repository README) so they are scored by `build/score_device.py` as well; `scorecards.js` only keeps the Reader X worked example with its remediation dates.
 
 ## Files
 
 | File | Contents |
 |---|---|
-| `tools.js` | **Orchestrator registry** — one object per tool (see below). |
+| `tools.js` | **Generated** orchestrator registry, from `orchestrators/*.yml` (see below). |
 | `scorecards.js` | Public scorecard registry (seeded with Reader X). |
 | `team.js` | Authors and affiliations from the manuscript. |
 | `score.js` | Shared scoring engine (site, API build, agents). |
@@ -96,34 +96,38 @@ Evaluations, weight overrides and locally added tools are kept in the browser's 
 
 ## Adding a tool
 
-Append an object to `window.TOOLS` in `tools.js` (or use **+ Add a tool** on the Map tab and paste the
-exported JSON). Fields:
+Orchestrators live in the repository's `orchestrators/<id>.yml`, one file per tool, validated
+against `schema/orchestrator.schema.json`. `web/tools.js` is **generated** from them by
+`build/build_web.py`; do not edit it. To add a tool, create `orchestrators/<id>.yml` (or use
+**+ Add a tool** on the Map tab and submit the issue form), then run `uv run python build/build_web.py`.
 
-```js
-{
-  id: "mytool",                     // required, unique, URL-safe (used in #map/<id>)
-  name: "MyLabOS",                  // required
-  ref: "52",                        // reference number in the paper, if any
-  paper: "https://doi.org/…",       // paper or preprint
-  org: "Group, Institution",        // required
-  city: "City, Region", country: "Country",
-  lat: 43.66, lng: -79.39,          // required — marker position
-  website: "", repo: "", docs: "",  // links (any may be "")
-  logo: "https://github.com/<org>.png?size=96",   // any image URL; GitHub org avatars work well
-  family: "bespoke",                // "formal" | "hal" | "agentic" | "bespoke"
-  enforced: false,                  // formal only: standard required for every driver (ChemOS 2.0)
-  optional: false,                  // formal only: standard is an optional path (EOS, MADSci, HELAO)
-  mech: "Primary integration mechanism (Table 2 column 2)",
-  standards: ["SiLA 2 (optional)"], // Table 2 column 3; [] if none
-  notes: "Table 2 notes",
-  license: "MIT",
-  verified: true,                   // false → the UI shows a ⚠ with `unverified`
-  unverified: "which fields are uncertain"
-}
+```yaml
+id: mytool                        # required, unique, URL-safe; must match the file name
+name: MyLabOS                     # required
+ref: "52"                         # reference number in the paper, if any
+paper: https://doi.org/…          # paper or preprint
+org: Group, Institution           # required
+city: City, Region
+country: Country
+lat: 43.66                        # required — marker position
+lng: -79.39
+website: ""                       # links (any may be "")
+repo: ""
+docs: ""
+logo: https://github.com/<org>.png?size=96   # any image URL; GitHub org avatars work well
+family: bespoke                   # required: formal | hal | agentic | bespoke
+enforced: false                   # formal only: standard required for every driver (ChemOS 2.0)
+optional: false                   # formal only: standard is an optional path (EOS, MADSci, HELAO)
+mech: Primary integration mechanism (Table 2 column 2)
+standards: [SiLA 2 (optional)]    # Table 2 column 3; [] if none
+notes: Table 2 notes
+license: MIT
+verified: true                    # required; false → the UI shows a ⚠ with `unverified`
+unverified: which fields are uncertain
 ```
 
-Only `id`, `name`, `org`, `lat`, `lng` and `family` are required. The Orchestrators tab, the map, the
-scorecard's orchestrator autocomplete and the per-tool score panel all read from this one array.
+Projects the paper excludes are listed in `orchestrators/_excluded.yml`. The Orchestrators tab, the
+map, the scorecard's orchestrator autocomplete and the per-tool score panel all read from this data.
 
 ## Provenance of locations and links
 

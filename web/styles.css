@@ -672,3 +672,13 @@ a.org:hover{border-color:var(--ink);color:var(--ink)}
 }
 
 @media (max-width:639px){.brand-name{white-space:normal;font-size:var(--fs-md);line-height:1.25}.brand{align-items:flex-start}.brand .mark{margin-top:4px}}
+
+/* ---------- requirement checklist and registry cards ---------- */
+.req{list-style:none;margin:var(--sp-2) 0;padding:0;display:grid;gap:var(--sp-1)}
+.req li{font-size:var(--fs-sm);line-height:var(--lh);color:var(--ink)}
+.req li.sub{padding-left:var(--sp-6)}
+.req li>span{display:block;color:var(--mute)}
+.req .modal{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);color:var(--accent-text);letter-spacing:.02em}
+.reg-grid{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));margin:var(--sp-3) 0 var(--sp-6)}
+.card.reg h3{margin:0 0 var(--sp-1)}
+.evitem .meta{display:block}

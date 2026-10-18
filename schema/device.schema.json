@@ -14,6 +14,7 @@
         "model":            {"type": "string", "minLength": 1},
         "category":         {"type": ["string", "null"], "description": "e.g. plate reader, HPLC, liquid handler"},
         "interface":        {"type": ["string", "null"], "description": "protocol evaluated, e.g. SiLA 2, OPC UA/LADS, REST"},
+        "architecture":     {"enum": ["Native endpoint", "Vendor edge-controller", "Third-party gateway", null], "description": "C1 endpoint architecture, recorded separately from the C1 grade"},
         "firmware_version": {"type": ["string", "null"]},
         "product_url":      {"type": ["string", "null"]}
       }

@@ -1,0 +1,19 @@
+id: place
+name: PLACE
+ref: '46'
+paper: https://doi.org/10.1177/2211068214553022
+org: Physical Acoustics Lab, University of Auckland
+city: Auckland
+country: New Zealand
+lat: -36.8523
+lng: 174.7691
+website: https://place.auckland.ac.nz
+repo: https://github.com/PALab/place
+docs: https://place.auckland.ac.nz
+logo: https://github.com/PALab.png?size=96
+family: bespoke
+mech: Custom Instrument base class with plugin-per-vendor
+standards: []
+notes: Each vendor device is implemented as a separate plugin.
+license: LGPL-3.0
+verified: true

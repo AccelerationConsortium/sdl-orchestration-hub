@@ -125,7 +125,7 @@
       "additionalProperties": {
         "type": "boolean"
       },
-      "description": "Documented external mitigation (C7, C15, C19, C20, C21)"
+      "description": "Documented external mechanism for C15 control-session loss"
     },
     "annot": {
       "type": "object",
@@ -134,11 +134,46 @@
       },
       "description": "C6 partial case; C17 reason code (P-OLD, P-GAP, P-UNDOC)"
     },
+    "annotDate": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "format": "date"
+      },
+      "description": "C17 P-OLD re-certification roadmap target date"
+    },
+    "c15noReconnect": {
+      "type": "boolean",
+      "description": "C15 reconnect semantics not explicit (caps C15 at Partial)"
+    },
+    "c15fixedDefault": {
+      "type": "boolean",
+      "description": "C15 safe default not configurable/overridable (caps C15 at Partial)"
+    },
     "c21fallback": {
       "type": "boolean"
     },
     "c21aNA": {
       "type": "boolean"
+    },
+    "c21powerPath": {
+      "type": "boolean",
+      "description": "C21 sub-test (a) via power-interruption exception path without cell-controller evidence (caps C21 at Partial)"
+    },
+    "c21naVerified": {
+      "type": "boolean",
+      "description": "C21 N/A verified by schematic, safety I/O declaration or integrator"
+    },
+    "model": {
+      "type": "string"
+    },
+    "scorecardVersion": {
+      "type": "string",
+      "description": "Criteria-set version the evaluation was scored against"
+    },
+    "reqChecks": {
+      "type": "object",
+      "description": "Ticked MUST/SHOULD requirement items per criterion"
     },
     "evidence": {
       "type": "array",
