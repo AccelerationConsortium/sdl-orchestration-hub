@@ -70,7 +70,8 @@ body:
       label: Grades (C1–C21)
       description: >
         Put your grade after each colon: Pass, Partial, Fail, or N/A. Add a short note in
-        parentheses and an evidence URL if you have one. Use N/A for the cell-integration tier
+        parentheses and an evidence URL if you have one. N/A is permitted only where the
+        criterion defines it (C7, C19, C20, C21). Use N/A for the cell-integration tier
         (C19–C21) if you evaluated the instrument standalone.
       value: |
         C1  Orchestrator-reachable programmatic control:

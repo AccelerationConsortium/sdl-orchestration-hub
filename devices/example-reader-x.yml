@@ -1,6 +1,6 @@
 # Worked example carried over from the accompanying paper (Supplementary Table S1).
 # Anonymized on purpose: it demonstrates the tooling and is a CI fixture that must
-# reproduce the paper's numbers (standalone 34/44, cell-integrated 37/50). It is not
+# reproduce the paper's numbers (standalone 36/46, cell-integrated 39/52). It is not
 # a real named product and should not be copied as an endorsement of any vendor.
 
 device:
@@ -19,24 +19,24 @@ evaluation:
   evidence_basis: hands-on-test
 
 scores:
-  C1:  { grade: Partial, note: "native SiLA 2 server; reconnect documented only as best-effort" }
-  C2:  { grade: Pass,    note: "typed params; FDL constraints enforced" }
-  C3:  { grade: Pass,    note: "SiLA 2 defined errors with stable id, message, structured context" }
-  C4:  { grade: Pass,    note: "no paywall; ecosystem-use license; code reuse permitted" }
-  C5:  { grade: Pass,    note: "headless retrieval by execution id; HDF5 readable without vendor software" }
-  C6:  { grade: Partial, note: "capability introspection present; not gated to deployed config/state" }
-  C7:  { grade: Pass,    note: "kinetic acquisition observable; status query within documented interval" }
-  C8:  { grade: Pass,    note: "hello-world plus kinetic-series worked example" }
-  C9:  { grade: Partial, note: "lock state exposed; ownership/preemption/per-unit locks undocumented" }
-  C10: { grade: Pass,    note: "named states with documented recovery transitions" }
-  C11: { grade: Partial, note: "stable result ids; no in-flight access to increments" }
-  C12: { grade: Fail,    note: "calibration/qualification/usage state not exposed via API" }
-  C13: { grade: Pass,    note: "semver plus deprecation notices (research context)" }
-  C14: { grade: Partial, note: "simulator present but no configurable failure injection" }
-  C15: { grade: Pass,    note: "control-session-lost status with configurable safe default" }
-  C16: { grade: Fail,    note: "no recovery taxonomy beyond basic error id and message" }
-  C17: { grade: Pass,    note: "SiLA 2 self-certification with published test evidence" }
-  C18: { grade: Pass,    note: "native SiLA 2 network service; OS-neutral, reachable from any client OS" }
-  C19: { grade: Partial, note: "motorized carrier loads/unloads; no explicit handoff-ready signal" }
-  C20: { grade: Partial, note: "door/axis state exposed; no declared robot-access state" }
-  C21: { grade: Partial, note: "orchestrator-issued shutdown supported; hardware safety-event reporting absent" }
+  C1:  { grade: Partial, note: "native SiLA 2 server; reconnect documented only as \"best-effort\"; reconnect mode and operation-identifier mechanism must be specified explicitly (remediation required before contract)" }
+  C2:  { grade: Pass,    note: "typed parameters; units from declared vocabulary; FDL constraints machine-readable and enforced (out-of-range value rejected with a typed error)" }
+  C3:  { grade: Pass,    note: "SiLA 2 defined errors with stable ID, human-readable message, structured context field, device-anchored timestamp, declared FDL error catalog and errors retrievable after delivery" }
+  C4:  { grade: Pass,    note: "no paywall; ecosystem-use license; publication and reuse of buyer-written integration code permitted" }
+  C5:  { grade: Pass,    note: "headless API retrieves result by execution ID; HDF5 payload readable without vendor software and includes required metadata" }
+  C6:  { grade: Partial, note: "FDL exposes capability introspection (sub-test a); operations not scoped to the deployed module configuration (compulsory sub-test b absent; transient state gating is a SHOULD and not the basis for this grade)" }
+  C7:  { grade: Pass,    note: "kinetic acquisition observable; concurrent status query returns within documented interval" }
+  C8:  { grade: Pass,    note: "hello world example plus kinetic-series worked example" }
+  C9:  { grade: Partial, note: "LockController exposes lock state; ownership reporting, preemption path, and hierarchical per-unit locks not documented" }
+  C10: { grade: Pass,    note: "named operational states with documented recovery transitions in machine-readable form" }
+  C11: { grade: Partial, note: "stable result identifiers; no in-flight access to increments during the run" }
+  C12: { grade: Fail,    note: "calibration, qualification, and usage state not exposed through API (remediation commitment required before contract; the Fail clears only once the capability is exposed and its acceptance test passes)" }
+  C13: { grade: Pass,    note: "semver plus deprecation notices; research-only deployment context; regulated-deployment bar not evaluated" }
+  C14: { grade: Partial, note: "drop-in simulator that can be driven to fail on invalid inputs and command sequences, but without configurable failure injection" }
+  C15: { grade: Pass,    note: "exposes control-session-lost status with a configurable, overridable vendor-declared safe default" }
+  C16: { grade: Fail,    note: "no recovery taxonomy beyond basic error identifier and message (remediation commitment required before contract; the Fail clears only once the capability is exposed and its acceptance test passes)" }
+  C17: { grade: Pass,    note: "SiLA 2 self-certification with complete published test evidence and a versioned Feature set for the shipped instrument" }
+  C18: { grade: Pass,    note: "native SiLA 2 network service, reachable from any client OS; no single-operating-system dependency in the client path" }
+  C19: { grade: Partial, note: "motorized plate carrier supports automated load and unload, but the API exposes no explicit handoff-ready or load-complete signal; remediation commitment required before unmanned workcell operation" }
+  C20: { grade: Partial, note: "door state and axis motion state exposed; vendor does not declare a robot-access state" }
+  C21: { grade: Partial, note: "orchestrator-issued shutdown (sub-test b) supported; hardware safety-event reporting (sub-test a) absent; remediation commitment required before unmanned workcell operation" }
