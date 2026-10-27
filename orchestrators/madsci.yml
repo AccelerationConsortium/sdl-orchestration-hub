@@ -1,6 +1,6 @@
 id: madsci
 name: MADSci
-ref: '39'
+ref: '43'
 paper: https://doi.org/10.21105/joss.09416
 org: Argonne National Laboratory, Data Science and Learning Division
 city: Lemont, IL
@@ -13,7 +13,7 @@ docs: https://ad-sdl.github.io/MADSci/
 logo: https://github.com/AD-SDL.png?size=96
 family: formal
 optional: true
-mech: Custom AbstractNode / RestNode module over REST
+mech: Custom AbstractNode/RestNode module over REST
 standards:
 - SiLA 2 (optional)
 notes: REST node modules wrap vendor protocols; ships a generated SiLA 2 example node and declares sila2

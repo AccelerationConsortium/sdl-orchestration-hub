@@ -1,9 +1,9 @@
 # Projects the paper deliberately excludes (they do not drive instruments directly).
-- name: FireWorks [26]
+- name: FireWorks [29]
   why: Computational-workflow manager for HPC jobs.
-- name: AiiDA [27]
+- name: AiiDA [30]
   why: Computational-workflow manager for HPC jobs.
-- name: FINALES2 [28]
+- name: FINALES2 [31]
   why: Inter-lab federation broker.
-- name: XDL [29, 30]
+- name: XDL [32, 33]
   why: Procedure-level description language that compiles to platform-specific execution.

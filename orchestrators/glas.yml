@@ -1,0 +1,28 @@
+id: glas
+name: GLAS
+ref: '40'
+paper: https://doi.org/10.1039/D4DD00253A
+org: Swiss Cat+ West Hub, École Polytechnique Fédérale de Lausanne (EPFL)
+city: Lausanne
+country: Switzerland
+lat: 46.5191
+lng: 6.5668
+website: https://swisscatplus.ch
+repo: https://github.com/swisscatplus/glas
+docs: https://github.com/swisscatplus/glas/wiki
+logo: https://github.com/swisscatplus.png?size=96
+family: bespoke
+mech: Custom hierarchical Node/Workflow architecture over REST
+standards:
+- REST (scheduler interface)
+- ROS 2 (device/adapter layer)
+- RTDE (device/adapter layer)
+- TCP (device/adapter layer)
+- ADS (device/adapter layer)
+- Serial (device/adapter layer)
+- DLL (device/adapter layer)
+- Vendor-specific APIs (device/adapter layer)
+notes: Git-based Python framework with layered main and sub-schedulers; JSON task submission; protocol-agnostic
+  device adapters; MySQL-backed task, node, workflow, state and log persistence; deployed at Swiss Cat+.
+license: MIT
+verified: true

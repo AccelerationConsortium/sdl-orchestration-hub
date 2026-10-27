@@ -179,17 +179,10 @@ function toolDetail(t) {
       ${s.n ? `<div class="kpis"><div><b>${s.best ?? "—"}</b><span>/ ${s.maxStd ?? "—"} best</span></div><div><b>${s.mean ?? "—"}</b><span>mean</span></div><div><b>${s.eligible}</b><span>/ ${s.n} eligible</span></div></div>
         <ul class="evlist">${s.evals.map(({ e, r }) => `<li>${e.pub ? `<a href="#compare">${esc(e.vendor)}</a> <span class="tag">public</span>` : `<a href="#scorecard" data-open="${e.id}">${esc(e.vendor)}</a>`}<span class="g ${r.cls === "ok" ? "G" : r.cls === "bad" ? "F" : r.cls === "warn" ? "P" : "NA"}">${r.unrated ? "incomplete" : `${r.pts}/${r.max}`}</span></li>`).join("")}</ul>`
         : `<p class="hint">No instrument has been scored for this orchestrator yet. Scorecards rate instruments, not orchestrators — this panel collects the scorecards that name it as their target.</p>`}
-      <button class="btn pri block" data-score="${esc(t.id)}">Score an instrument for ${esc(t.name)} →</button>
+      <p class="hint">To score an instrument, open the <a href="#scorecard">Scorecard</a> tab and choose ${esc(t.name)} as its target orchestrator.</p>
     </section>`;
 }
 function wireToolActions(root) {
-  root.querySelectorAll("[data-score]").forEach(b => b.onclick = () => {
-    const t = toolById(b.dataset.score);
-    const e = blank({ orch: t.name, vendor: "New instrument" });
-    const st = (t.standards || []).join(" ");
-    e.endpoint = /SiLA/.test(st) ? "SiLA 2" : /OPC/.test(st) ? "OPC UA + LADS" : /MCP/.test(st) ? "MCP" : "REST + OpenAPI";
-    store.evals.push(e); store.current = e.id; save(); location.hash = "#scorecard";
-  });
   root.querySelectorAll("[data-open]").forEach(a => a.onclick = ev => { ev.preventDefault(); store.current = a.dataset.open; save(); location.hash = "#scorecard"; });
 }
 
@@ -484,17 +477,16 @@ function renderOrch() {
         <div class="tags">${familyTags(o)}</div>
         <p class="ocard-mech">${esc(o.mech)}</p>
         <div class="ocard-foot"><span class="meta">${esc(o.license || "—")} · ${esc(place(o) || "—")}</span>
-          <span class="meta">${s.n ? `${s.n} scorecard${s.n > 1 ? "s" : ""}` : ""}</span><button class="btn sm" data-score="${esc(o.id)}">Score →</button></div>
+          <span class="meta">${s.n ? `${s.n} scorecard${s.n > 1 ? "s" : ""}` : ""}</span></div>
       </article>`; }).join("")}</div>`;
     else $("#oresults").innerHTML = `<div class="tablewrap"><table class="otable">
-      <colgroup><col class="c-proj"><col class="c-mech"><col class="c-std"><col class="c-notes"><col class="c-act"></colgroup>
-      <thead><tr><th scope="col">Project</th><th scope="col">Integration mechanism</th><th scope="col">Standards</th><th scope="col">Notes</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>
+      <colgroup><col class="c-proj"><col class="c-mech"><col class="c-std"><col class="c-notes"></colgroup>
+      <thead><tr><th scope="col">Project</th><th scope="col">Integration mechanism</th><th scope="col">Standards</th><th scope="col">Notes</th></tr></thead><tbody>
       ${list.map(o => { const s = toolStats(o.name); const long = (o.notes || "").length > 140; return `<tr>
-        <td data-label="Project"><div class="cell-tool">${logoImg(o, 32)}<div class="cell-tool-txt"><a href="#map/${esc(o.id)}"><b>${esc(o.name)}</b></a><div class="meta">${esc(o.org)}</div><div class="meta">${esc([o.license || "Licence not specified", place(o)].filter(Boolean).join(" · "))}</div></div></div></td>
+        <td data-label="Project"><div class="cell-tool">${logoImg(o, 32)}<div class="cell-tool-txt"><a href="#map/${esc(o.id)}"><b>${esc(o.name)}</b></a><div class="meta">${esc(o.org)}</div><div class="meta">${esc([o.license || "Licence not specified", place(o)].filter(Boolean).join(" · "))}</div>${s.n ? `<div class="meta">${s.n} scorecard${s.n > 1 ? "s" : ""} · best ${s.best ?? "—"}/${s.maxStd ?? "—"}</div>` : ""}</div></div></td>
         <td data-label="Integration mechanism">${esc(o.mech)}</td>
         <td data-label="Standards"><div class="tags">${familyTags(o)}</div></td>
-        <td data-label="Notes" class="meta"><div class="clamp ${long ? "is-long" : ""}">${esc(o.notes || "—")}</div>${long ? `<button class="linkbtn more" aria-expanded="false">More</button>` : ""}</td>
-        <td data-label="Scorecards" class="cell-act">${s.n ? `<span class="meta">${s.n} · best ${s.best ?? "—"}/${s.maxStd ?? "—"}</span>` : ""}<button class="btn sm" data-score="${esc(o.id)}">Score →</button></td></tr>`; }).join("")}
+        <td data-label="Notes" class="meta"><div class="clamp ${long ? "is-long" : ""}">${esc(o.notes || "—")}</div>${long ? `<button class="linkbtn more" aria-expanded="false">More</button>` : ""}</td></tr>`; }).join("")}
     </tbody></table></div>`;
     $("#oresults").querySelectorAll(".more").forEach(b => b.onclick = () => { const c = b.previousElementSibling, open = !c.classList.contains("open"); c.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); b.textContent = open ? "Less" : "More"; });
     wireToolActions($("#oresults"));
@@ -964,7 +956,7 @@ function renderSubmissions() {
 function renderAbout() {
   const steps = [
     ["Map", "#map", "See who builds open-source lab orchestration software, where, and how each one talks to instruments."],
-    ["Orchestrators", "#orchestrators", "Filter the 16 surveyed tools by integration approach, standard, region or licence."],
+    ["Orchestrators", "#orchestrators", `Filter the ${window.TOOLS.length} surveyed tools by integration approach, standard, region or licence.`],
     ["Scenarios", "#scenarios", "Answer four questions about your lab and get a recommended default integration standard."],
     ["Scorecard", "#scorecard", "Before buying an instrument, check whether its control interface is ready for autonomous use."],
     ["Compare", "#compare", "Put several scored instruments side by side."]

@@ -1,6 +1,6 @@
 id: chemos2
 name: ChemOS 2.0
-ref: '35'
+ref: '38'
 paper: https://doi.org/10.1016/j.matt.2024.04.022
 org: Aspuru-Guzik Group, University of Toronto / Acceleration Consortium
 city: Toronto, ON
@@ -16,6 +16,6 @@ enforced: true
 mech: SiLA 2 (required for all device drivers)
 standards:
 - SiLA 2
-notes: All servers and clients are built on the sila2 bindings; no alternative integration path.
+notes: All servers and clients built on the sila2 bindings; no alternative integration path.
 license: MIT
 verified: true

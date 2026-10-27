@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-10-27T18:56:16.154Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "chemios",
@@ -19,7 +19,7 @@
     "integrationMechanism": "Custom pump and instrument classes",
     "standards": [],
     "standardsBase": [],
-    "notes": "pyserial and minimalmodbus for direct hardware access. Pumps, spectrometers and temperature controllers; last repository activity 2021.",
+    "notes": "pyserial and minimalmodbus for direct hardware access.",
     "license": "MIT",
     "links": {
       "website": "https://chemios.readthedocs.io",

@@ -1,6 +1,6 @@
 id: minerva
 name: MINERVA-OS
-ref: '22'
+ref: '24'
 paper: https://doi.org/10.1021/acsnano.4c17504
 org: Federal Institute for Materials Research and Testing (BAM), Division 6.7
 city: Berlin
@@ -14,8 +14,7 @@ logo: https://github.com/BAMresearch.png?size=96
 family: bespoke
 mech: Custom ABC hierarchy
 standards: []
-notes: pyserial and pythonnet for proprietary instruments. Components published with the ACS Nano paper
-  and its SI.
+notes: pyserial and pythonnet for proprietary instruments.
 license: MIT
 verified: false
 unverified: No public repository located; the project describes all components as publicly available.

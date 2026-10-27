@@ -1,6 +1,6 @@
 id: place
 name: PLACE
-ref: '46'
+ref: '50'
 paper: https://doi.org/10.1177/2211068214553022
 org: Physical Acoustics Lab, University of Auckland
 city: Auckland
@@ -14,6 +14,6 @@ logo: https://github.com/PALab.png?size=96
 family: bespoke
 mech: Custom Instrument base class with plugin-per-vendor
 standards: []
-notes: Each vendor device is implemented as a separate plugin.
+notes: Each vendor device implemented as a separate plugin.
 license: LGPL-3.0
 verified: true

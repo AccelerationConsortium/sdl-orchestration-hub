@@ -1,6 +1,6 @@
 id: helao
 name: HELAO-async
-ref: '37'
+ref: '41'
 paper: https://doi.org/10.1002/admi.202101987
 org: High-Throughput Experimentation group (Gregoire), Caltech; with KIT / Helmholtz Institute Ulm
 city: Pasadena, CA
@@ -15,9 +15,8 @@ family: formal
 optional: true
 mech: Custom HelaoDriver abstract base class
 standards:
-- OPC UA (declared dependency)
-- Modbus (declared dependency)
-notes: asyncua and pymodbus are declared dependencies; shipped drivers use vendor-specific protocols (Biologic,
-  Gamry, Galil).
+- OPC UA (declared dependency, asyncua)
+- Modbus (declared dependency, pymodbus)
+notes: Shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).
 license: MIT
 verified: true

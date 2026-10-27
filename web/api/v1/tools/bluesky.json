@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-10-27T18:56:16.154Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "bluesky",
@@ -18,10 +18,10 @@
     "standardRequired": false,
     "integrationMechanism": "Ophyd hardware-abstraction layer; Bluesky itself is protocol-agnostic",
     "standards": [
-      "EPICS",
-      "Tango",
-      "SCPI",
-      "yaq"
+      "EPICS (most common)",
+      "Tango (via Ophyd sub-packages)",
+      "SCPI (via Ophyd sub-packages)",
+      "yaq (via Ophyd sub-packages)"
     ],
     "standardsBase": [
       "EPICS",
@@ -29,7 +29,7 @@
       "SCPI",
       "yaq"
     ],
-    "notes": "Reference deployment at NSLS-II uses EPICS via pyepics (the most common backend); Tango, SCPI and yaq via Ophyd sub-packages. Bluesky documentation disclaims direct hardware support.",
+    "notes": "Reference deployment at NSLS-II uses EPICS via pyepics; Bluesky documentation disclaims direct hardware support.",
     "license": "BSD-3-Clause",
     "links": {
       "website": "https://blueskyproject.io",

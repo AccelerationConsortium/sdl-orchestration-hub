@@ -1,7 +1,7 @@
 # SDL Device Integration Toolkit
 
 Static web tool (no build step, no framework) based on *"Talking to instruments: device-integration
-standards for self-driving laboratories"* (Gottstein, Pablo-García et al., draft of 16 Sep 2026) and its
+standards for self-driving laboratories"* (Gottstein, Bromig et al., ChemRxiv preprint, 2026, [doi:10.26434/chemrxiv.15009990/v2](https://doi.org/10.26434/chemrxiv.15009990/v2)) and its
 Supplementary Note S1 / Table S1.
 
 ## Source of truth

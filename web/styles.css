@@ -565,7 +565,7 @@ td.num{white-space:nowrap}
 /* ---------- Orchestrators table: fits its column, no horizontal scroll ---------- */
 .tablewrap{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:hidden}
 .otable{table-layout:fixed;width:100%}
-.otable .c-proj{width:27%}.otable .c-mech{width:22%}.otable .c-std{width:17%}.otable .c-notes{width:auto}.otable .c-act{width:104px}
+.otable .c-proj{width:27%}.otable .c-mech{width:22%}.otable .c-std{width:17%}.otable .c-notes{width:auto}
 .otable td,.otable th{overflow-wrap:anywhere;word-break:normal;hyphens:auto}
 .otable thead th{white-space:normal}
 .otable .tag{white-space:normal;text-align:left}
@@ -574,10 +574,6 @@ td.num{white-space:nowrap}
 .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .clamp.open{display:block;-webkit-line-clamp:unset}
 .otable .more{min-height:24px;padding:0;margin-top:var(--sp-1)}
-.cell-act{display:table-cell}
-.cell-act>*{display:block}
-.cell-act .meta{font-size:var(--fs-xs);margin-bottom:var(--sp-2)}
-.cell-act .btn{width:100%}
 @media (max-width:1100px) and (min-width:900px){.otable col.c-notes,.otable td:nth-child(4),.otable th:nth-child(4){display:none}.otable .c-proj{width:36%}.otable .c-mech{width:34%}.otable .c-std{width:auto}}
 @media (max-width:639px){
   .otable,.otable tbody,.otable tr,.otable td{display:block;width:100%}
@@ -586,10 +582,6 @@ td.num{white-space:nowrap}
   .otable tbody tr:last-child{border-bottom:0}
   .otable td{border:0;padding:var(--sp-1) 0}
   .otable td[data-label]:not(:first-child)::before{content:attr(data-label);display:block;font-size:var(--fs-xs);font-weight:700;color:var(--mute);margin-bottom:2px}
-  .otable td.cell-act::before{display:none}
-  .otable .cell-act{display:flex;align-items:center;gap:var(--sp-3);padding-top:var(--sp-2)}
-  .otable .cell-act .btn{width:auto;margin-left:auto}
-  .otable .cell-act .meta{margin:0}
 }
 
 /* ---------- Team ---------- */

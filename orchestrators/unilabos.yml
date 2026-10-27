@@ -1,6 +1,6 @@
 id: unilabos
 name: UniLabOS
-ref: '48'
+ref: '52'
 paper: https://arxiv.org/abs/2512.21766
 org: DP Technology / DeepModeling community
 city: Beijing
@@ -14,9 +14,9 @@ logo: https://github.com/deepmodeling.png?size=96
 family: formal
 mech: ROS 2 (primary communication fabric)
 standards:
-- ROS 2
-- OPC UA (adapter)
-- Modbus (adapter)
+- ROS 2 (primary)
+- OPC UA (adapter module)
+- Modbus (adapter module)
 notes: Dedicated device_comms/opcua_client/ module; asyncua and pymodbus declared dependencies.
 license: GPL-3.0
 verified: true
