@@ -1,8 +1,10 @@
-# SDL Device Integration Toolkit
+# SDL Orchestration Hub
 
-Static web tool (no build step, no framework) based on *"Talking to instruments: device-integration
-standards for self-driving laboratories"* (Gottstein, Bromig et al., ChemRxiv preprint, 2026, [doi:10.26434/chemrxiv.15009990/v2](https://doi.org/10.26434/chemrxiv.15009990/v2)) and its
-Supplementary Note S1 / Table S1.
+Static website (no build step, no framework) about workflow orchestration for self-driving labs, with
+device integration as its main sub-topic. Companion to *"Talking to instruments: device-integration
+standards for self-driving laboratories"* (Gottstein et al., ChemRxiv preprint, 2026,
+[doi:10.26434/chemrxiv.15009990/v2](https://doi.org/10.26434/chemrxiv.15009990/v2)) and its
+Supplementary Notes S1 / S2.
 
 ## Source of truth
 
@@ -31,20 +33,24 @@ python3 -m http.server 4377 --directory web
 then open http://localhost:4377. (Opening `index.html` directly also works; the map needs internet
 access for the Leaflet library and CARTO/OpenStreetMap tiles.)
 
-## Tabs
+## Pages
 
-| Tab | What it is | Source in the paper |
+| Route | What it is | Source in the paper |
 |---|---|---|
-| **Map** | Scrollable, searchable list of orchestrators (filter by family, arrow keys to step through) beside a world map; selecting either shows logo, links, integration mechanism and your scorecards for it. "+ Add a tool" stores new entries locally. | Table 2 + external lookup |
-| **Orchestrators** | Explorer in the DIY Biofabrication Atlas style: filter rail (search, family, standard, region, licence, "More filters" toggles), live count, Clear filters, Cards/Table view; filters are kept in the URL (e.g. `#orchestrators?std=SiLA%202&region=Europe`). | Table 2 |
-| **Scenarios & standards** | Picks one of five deployment archetypes and shows the standards comparison. | Tables 4, 5 |
-| **Scorecard** | Cybersecurity precondition → 21 criteria → floors → weighted total; remediation commitments with dates, gap acceptance, external mitigations, C6/C17 annotations, C21 fallback cap, tunable weights, RFP evidence pack. | Tables 6, 7; Fig. 5; Note S1 |
-| **Compare** | Side-by-side grades, CSV export. | — |
-| **Team** | Paper authors and affiliations; **Contribute** forms that open prefilled GitHub issues (new orchestrator, new scorecard, correction). | Title page |
-| **API** | Endpoint list, code samples for search / compare / evaluate, `window.SDL` browser interface, URL interface, live check. | — |
-| **About** | Plain-language overview, verdict logic, glossary, limitations. | "What this scorecard does not cover" |
+| `#home` | Landing page: what the site covers, task shortcuts, the five-layer stack (orchestration on top, device integration beneath), why it matters, the paper. | Abstract, Table 1, Fig. 2 |
+| `#orchestrators` | One page for the orchestrator survey: filter rail (search, family, standard, region, licence, more filters) with **Map**, **Cards** and **Table** views; cards and table show each tool's links, location, mechanism, notes and licence in place. `#orchestrators/<id>` selects a tool (detail beside the map, or the highlighted card / row). Filters and view live in the URL; `#map/<id>` still works. | Table 2 + external lookup |
+| `#standards` | Four questions → one of five deployment archetypes, plus the standards comparison. `#scenarios` still works. | Tables 4, 5 |
+| `#instruments` | Instrument finder: filter scored instruments by task/type, group, interface, workcell use, eligibility and minimum grades per criterion (with presets); **Compare** tab for a shortlist (`#compare` still works). | Tables 6, 7; scope statement |
+| `#scorecard` | The criteria, browsable (search, tier filter, deep links `#scorecard/C7`), how the verdict is reached, your saved evaluations, weights, offline downloads. | Tables 6, 7; Fig. 5; Note S1 |
+| `#score/<id>` | Step-by-step evaluation wizard: instrument → deployment → security precondition → Critical → Important → Cell integration → review & share. Criteria one at a time (keys 1–4 grade, ←/→ move) or all on one page; live verdict beside it. `#score/new` starts one. | Note S1, Fig. 5 |
+| `#tutorials` | Learning path for building device connectors (2026 Device Integration Hackathon resources), the paper's advice for connector authors, reference implementations. | Scenario guidance; hackathon site |
+| `#submissions`, `#api`, `#about` | Open submissions, API docs, background and glossary. | — |
 
 Built-in check: loading the *Reader X* example reproduces Table S1 — 36/46 standalone, 39/52 cell-integrated.
+
+Accessibility: keyboard-only use throughout (skip link, focus moved to the page heading on navigation,
+a list alternative to the map, native radio groups for grades), symbols as well as colours for grades,
+light/dark themes, reduced motion respected. `axe-core` reports no WCAG 2.2 AA violations on any page.
 
 ## Machine-readable API
 
@@ -80,8 +86,8 @@ GitHub renders both the same way, so `issues.js` parses either into a pending en
 it looks for are exported from the templates by `build/build_web.py`, so editing a form label does
 not break parsing.
 
-Open submission issues show up as **pending**: in the **Submissions** tab, as faded markers on the
-map (orchestrators with coordinates) and as a separate group in Compare (scorecards). The site reads
+Open submission issues show up as **pending**: on the **Submissions** page, as faded markers on the
+map (orchestrators with coordinates) and in the instrument finder and comparison (scorecards). The site reads
 them live from the GitHub API (cached for 10 minutes per tab; anonymous requests are limited to 60 an
 hour per visitor) and falls back to `api/v1/submissions.json`, a snapshot the Pages workflow writes on
 every push, on every issue change and every six hours. While the repository is private, only the
@@ -101,28 +107,32 @@ node web/scripts/test-issues.mjs                                       # parser 
 |---|---|
 | `tools.js` | **Generated** orchestrator registry, from `orchestrators/*.yml` (see below). |
 | `scorecards.js` | Public scorecard registry (seeded with Reader X). |
-| `team.js` | Authors and affiliations from the manuscript. |
 | `score.js` | Shared scoring engine (site, API build, agents). |
 | `config.js` | Submission repository, public URL, API version. |
 | `scripts/build-api.mjs` | Generates `api/v1/` and `llms.txt`. |
-| `data.js` | Standards comparison, scenarios, cybersecurity deliverables, criteria (Table 7), RFP evidence list. |
+| `data.js` | Standards comparison, scenarios, cybersecurity deliverables, criteria (Table 7), RFP evidence list, the five-layer stack, instrument groups/tasks, finder requirement labels and presets, tutorials. |
 | `grading.js` | Pass / Partial / Fail rules per criterion (paraphrased from Note S1) and the Reader X example. |
 | `scorecard-data.js` | **Generated** by `build/build_web.py` from `criteria/*.yml`, `meta.yml`, `devices/*.yml`. |
 | `issues.js` | Parses submission issues (either form, either path) into pending orchestrators and evaluations. |
 | `scripts/fetch-submissions.mjs` | Writes the `api/v1/submissions.json` snapshot. |
 | `scripts/test-issues.mjs` | Parser tests. |
 | `sync.js` | Applies `scorecard-data.js` over the defaults and adds device evaluations to the public scorecards. |
-| `app.js`, `styles.css`, `index.html` | The app. |
+| `app.js` | Core: state, scoring wrappers, routing, shared helpers, `window.SDL`. |
+| `pages-explore.js` | Home, Orchestrators (map + explorer), Standards & scenarios. |
+| `pages-scorecard.js` | Criteria overview, your evaluations, the scoring wizard. |
+| `pages-instruments.js` | Instrument finder and comparison. |
+| `pages-more.js` | Tutorials, Submissions, API, About. |
+| `styles.css`, `index.html` | Styles and the page shell. |
 
 Evaluations, weight overrides and locally added tools are kept in the browser's `localStorage`
-(key `sdl-scorecard-v2`). Use *Export JSON* / *Import* on the Scorecard tab to move them between machines.
+(key `sdl-scorecard-v2`). Use *Export* / *Import JSON* on the Scorecard page to move them between machines.
 
 ## Adding a tool
 
 Orchestrators live in the repository's `orchestrators/<id>.yml`, one file per tool, validated
 against `schema/orchestrator.schema.json`. `web/tools.js` is **generated** from them by
 `build/build_web.py`; do not edit it. To add a tool, create `orchestrators/<id>.yml` (or use
-**+ Add a tool** on the Map tab and submit the issue form), then run `uv run python build/build_web.py`.
+**Propose a tool** on the Orchestrators page and submit the issue form), then run `uv run python build/build_web.py`.
 
 ```yaml
 id: mytool                        # required, unique, URL-safe; must match the file name
@@ -149,16 +159,16 @@ verified: true                    # required; false → the UI shows a ⚠ with 
 unverified: which fields are uncertain
 ```
 
-Projects the paper excludes are listed in `orchestrators/_excluded.yml`. The Orchestrators tab, the
-map, the scorecard's orchestrator autocomplete and the per-tool score panel all read from this data.
+Projects the paper excludes are listed in `orchestrators/_excluded.yml`. The Orchestrators page
+(map, cards and table) reads from this data. Orchestrators and instrument scorecards are kept
+independent: a scorecard does not name a target orchestrator.
 
 ## Provenance of locations and links
 
 Table 2 gives mechanism, standards, notes and licence but no institution or URL. Those were looked up
-from the cited papers and public repositories (Oct 2026). Three entries are flagged in the UI:
+from the cited papers and public repositories (Oct 2026). Two entries are flagged in the UI:
 
 - **Chemios** — institution inferred from the lead contributor; not stated by the project.
-- **MINERVA-OS** — no public repository found; the ACS Nano paper says the components are published with it.
 - **OChRA** — the project publishes no affiliation; placed at the host of its 2025 AIchemy workshop.
 
 ## Caveats
@@ -167,5 +177,3 @@ from the cited papers and public repositories (Oct 2026). Three entries are flag
   panel lets you tune them and shows the paper value alongside.
 - Grading text is paraphrased from Note S1; read the criterion card in the supplement before relying on
   a rule in a real RFP.
-- The paper scores instruments, not orchestrators. The "score" shown for an orchestrator is an aggregate
-  of *your* saved instrument scorecards that name it as the target.

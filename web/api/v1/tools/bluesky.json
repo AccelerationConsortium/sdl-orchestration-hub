@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-27T18:56:16.154Z",
+  "generated": "2026-10-30T01:38:31.054Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "bluesky",
@@ -40,8 +40,7 @@
     },
     "verified": true,
     "unverifiedFields": null,
-    "publicScorecards": [],
     "href": "/api/v1/tools/bluesky.json",
-    "webUrl": "/#map/bluesky"
+    "webUrl": "/#orchestrators/bluesky"
   }
 }

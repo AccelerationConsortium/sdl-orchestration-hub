@@ -26,7 +26,7 @@ window.GRADING = {
 
 /* Supplementary Table S1: Case A "Reader X", SiLA 2 plate reader (36/46 standalone, 39/52 cell). */
 window.READER_X = {
-  vendor: "Reader X (worked example)", endpoint: "SiLA 2", arch: "Native endpoint", orch: "ChemOS 2.0",
+  vendor: "Reader X (worked example)", endpoint: "SiLA 2", arch: "Native endpoint",
   annot: { 6: "a-no-b" },
   remedDate: { 1: "2027-03-31", 12: "2027-06-30", 16: "2027-06-30" },
   grades: {1:"P",2:"G",3:"G",4:"G",5:"G",6:"P",7:"G",8:"G",9:"P",10:"G",11:"P",12:"F",13:"G",14:"P",15:"G",16:"F",17:"G",18:"G",19:"P",20:"P",21:"P"},

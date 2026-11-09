@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SDL Device Integration Toolkit API",
+    "title": "SDL Orchestration Hub API",
     "version": "v1",
     "description": "Static, read-only JSON describing open-source SDL orchestrators, the autonomous-readiness criteria and public instrument scorecards. All endpoints are plain files; filter client-side."
   },
@@ -13,7 +13,7 @@
   "paths": {
     "/api/v1/tools.json": {
       "get": {
-        "summary": "All surveyed orchestrators with location, links, integration mechanism, standards and linked public scorecards.",
+        "summary": "All surveyed orchestrators with location, links, integration mechanism and standards.",
         "operationId": "tools",
         "responses": {
           "200": {
@@ -143,6 +143,42 @@
       "get": {
         "summary": "Deployment archetypes with recommended default integration boundary.",
         "operationId": "scenarios",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instrument-groups.json": {
+      "get": {
+        "summary": "Instrument groups (from the paper's scope statement) with suggested types and tasks, used to tag scorecards.",
+        "operationId": "instrument_groups",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tutorials.json": {
+      "get": {
+        "summary": "Learning path and resources for building device connectors (2026 Device Integration Hackathon), plus the paper's advice for connector authors.",
+        "operationId": "tutorials",
         "responses": {
           "200": {
             "description": "OK",

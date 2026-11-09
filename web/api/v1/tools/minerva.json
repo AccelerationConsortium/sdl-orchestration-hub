@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-27T18:56:16.154Z",
+  "generated": "2026-10-30T01:38:31.054Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "minerva",
@@ -23,15 +23,14 @@
     "license": "MIT",
     "links": {
       "website": "https://www.bam.de",
-      "repository": null,
+      "repository": "https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva",
       "docs": null,
       "paper": "https://doi.org/10.1021/acsnano.4c17504",
       "logo": "https://github.com/BAMresearch.png?size=96"
     },
-    "verified": false,
-    "unverifiedFields": "No public repository located; the project describes all components as publicly available.",
-    "publicScorecards": [],
+    "verified": true,
+    "unverifiedFields": null,
     "href": "/api/v1/tools/minerva.json",
-    "webUrl": "/#map/minerva"
+    "webUrl": "/#orchestrators/minerva"
   }
 }

@@ -12,7 +12,10 @@
       "properties": {
         "vendor":           {"type": "string", "minLength": 1},
         "model":            {"type": "string", "minLength": 1},
-        "category":         {"type": ["string", "null"], "description": "e.g. plate reader, HPLC, liquid handler"},
+        "category":         {"type": ["string", "null"], "description": "instrument type, e.g. plate reader, HPLC, liquid handler"},
+        "group":            {"enum": ["measurement", "reaction", "sample-handling", "process-control", "labware-robot", null], "description": "instrument group (paper scope statement): measurement and analysis | reaction hardware | sample handling and preparation | process sensing and control | labware-moving robots"},
+        "tasks":            {"type": ["array", "null"], "items": {"type": "string", "minLength": 1}, "description": "what the instrument is used for, e.g. [absorbance, fluorescence]; used by the web tool's instrument finder"},
+        "interfaces":       {"type": ["array", "null"], "items": {"type": "string", "minLength": 1}, "description": "every control interface the vendor offers, e.g. [SiLA 2, REST + OpenAPI]; the one evaluated goes in `interface`"},
         "interface":        {"type": ["string", "null"], "description": "protocol evaluated, e.g. SiLA 2, OPC UA/LADS, REST"},
         "architecture":     {"enum": ["Native endpoint", "Vendor edge-controller", "Third-party gateway", null], "description": "C1 endpoint architecture, recorded separately from the C1 grade"},
         "firmware_version": {"type": ["string", "null"]},

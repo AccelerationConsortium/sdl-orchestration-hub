@@ -1,15 +1,20 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-27T18:56:16.154Z",
+  "generated": "2026-10-30T01:38:31.054Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "reader-x",
     "instrument": "Reader X (worked example)",
     "instrumentClass": "Fluorescence plate reader",
+    "group": "measurement",
+    "tasks": [
+      "fluorescence"
+    ],
     "endpoint": "SiLA 2",
+    "interfaces": [
+      "SiLA 2"
+    ],
     "architecture": "Native endpoint",
-    "targetOrchestrator": "ChemOS 2.0",
-    "targetOrchestratorId": "chemos2",
     "date": "2026-09-16",
     "source": "Worked example",
     "submittedBy": "Toolkit maintainers",
@@ -131,7 +136,6 @@
       "vendor": "Reader X (worked example)",
       "endpoint": "SiLA 2",
       "arch": "Native endpoint",
-      "orch": "ChemOS 2.0",
       "annot": {
         "6": "a-no-b"
       },
@@ -199,6 +203,13 @@
       },
       "id": "reader-x",
       "instrumentClass": "Fluorescence plate reader",
+      "group": "measurement",
+      "tasks": [
+        "fluorescence"
+      ],
+      "interfaces": [
+        "SiLA 2"
+      ],
       "source": "Worked example",
       "submittedBy": "Toolkit maintainers",
       "date": "2026-09-16",

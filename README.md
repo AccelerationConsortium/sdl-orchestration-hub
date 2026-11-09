@@ -25,8 +25,10 @@ among vendors that already clear the floors — **eligibility is decided by the 
 (Critical, Important, cell-integration), not by the total. See `scorecard.md` for the exact
 floor rules.
 
-- **[`web/`](web/)** — an interactive web tool: guided scorecard with verdict logic, side-by-side
-  comparison, an orchestrator map and explorer, deployment scenarios, and a static JSON API.
+- **[`web/`](web/)** — the **SDL Orchestration Hub** website: a landing page on workflow orchestration
+  and device integration, an orchestrator explorer (map, cards, table), deployment scenarios and
+  standards, an instrument finder with side-by-side comparison, the browsable criteria with a
+  step-by-step scoring wizard, tutorials for building device connectors, and a static JSON API.
   Run it with `python3 -m http.server 4377 --directory web` and open http://localhost:4377.
   See [`web/README.md`](web/README.md). Pushes to `main` publish it to GitHub Pages
   (`.github/workflows/pages.yml`; enable Pages with source "GitHub Actions" in the repository settings).
@@ -136,7 +138,8 @@ devices/<slug>.md         # GENERATED per-device card — do not edit
 devices/README.md         # GENERATED index of all contributed devices — do not edit
 ```
 
-1. Copy `devices/_template.yml` to `devices/<vendor>-<model>.yml` (lowercase, hyphenated).
+1. Copy `devices/_template.yml` to `devices/<vendor>-<model>.yml` (lowercase, hyphenated). Fill in the
+   optional `group`, `tasks` and `interfaces` fields too: the website's instrument finder filters on them.
 2. Grade each criterion **Pass / Partial / Fail** (or **N/A** where the criterion's
    `grade_options` allow it). Add a short `note` and an `evidence` link wherever you can.
 3. Record who you are (`evaluator`, may be a pseudonym), the `date`, the `scorecard_version`
@@ -155,7 +158,7 @@ devices/README.md         # GENERATED index of all contributed devices — do no
 No Git? Open a **[device evaluation issue](../../issues/new?template=device-scorecard.yml)** (or use
 **Submit to public registry** in the web tool, which opens the same form prefilled) and a maintainer
 will convert it into a `devices/*.yml` file. Open submission issues, labelled `submission`, appear in
-the web tool's **Submissions** tab, on the map and in Compare as *pending* until they are merged and
+the website's **Submissions** page, on the map and in the instrument finder as *pending* until they are merged and
 the issue is closed.
 
 Notes: evaluations are **contributor assessments, not endorsements**; a `verified: true` mark is

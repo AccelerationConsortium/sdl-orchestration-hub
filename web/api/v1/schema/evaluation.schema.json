@@ -29,10 +29,6 @@
         "Third-party gateway"
       ]
     },
-    "orch": {
-      "type": "string",
-      "description": "Target orchestrator name (a tools.json name, or free text)"
-    },
     "date": {
       "type": "string",
       "format": "date"
@@ -166,6 +162,35 @@
     },
     "model": {
       "type": "string"
+    },
+    "instrumentClass": {
+      "type": "string",
+      "description": "Instrument type, e.g. plate reader"
+    },
+    "group": {
+      "enum": [
+        "",
+        "measurement",
+        "reaction",
+        "sample-handling",
+        "process-control",
+        "labware-robot"
+      ],
+      "description": "Instrument group (see instrument-groups.json)"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What the instrument is used for"
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Every control interface the vendor offers"
     },
     "scorecardVersion": {
       "type": "string",

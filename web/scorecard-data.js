@@ -1183,6 +1183,13 @@ window.SCORECARD_SOURCE = {
    "vendor": "Anonymized (paper Case A)",
    "model": "Reader X",
    "category": "fluorescence plate reader",
+   "group": "measurement",
+   "tasks": [
+    "fluorescence"
+   ],
+   "interfaces": [
+    "SiLA 2"
+   ],
    "interface": "SiLA 2",
    "architecture": "Native endpoint",
    "firmwareVersion": null,
@@ -1254,8 +1261,11 @@ window.SCORECARD_SOURCE = {
    "fields": {
     "Vendor": "vendor",
     "Model": "model",
+    "Instrument group (optional)": "group",
     "Category (optional)": "category",
+    "Tasks (optional)": "tasks",
     "Interface evaluated": "interface",
+    "Other interfaces offered (optional)": "interfaces",
     "C1 endpoint architecture": "architecture",
     "Deployment evaluated": "deployment",
     "Evidence basis": "evidence_basis",

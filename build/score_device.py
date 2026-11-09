@@ -135,6 +135,11 @@ def fmt_total(t):
     return f"{a} / {appmax}"
 
 
+GROUPS = {"measurement": "Measurement and analysis", "reaction": "Reaction hardware",
+          "sample-handling": "Sample handling and preparation", "process-control": "Process sensing and control",
+          "labware-robot": "Labware-moving robots"}
+
+
 def render_device_md(dev, res, crits):
     o = io.StringIO(); w = o.write
     d = dev["device"]; e = dev["evaluation"]
@@ -147,6 +152,9 @@ def render_device_md(dev, res, crits):
         meta_bits.append(f"C1 architecture: {d['architecture']}")
     meta_bits += [
                  f"Category: {d.get('category') or 'n/a'}",
+                 *([f"Group: {GROUPS.get(d['group'], d['group'])}"] if d.get("group") else []),
+                 *([f"Tasks: {', '.join(d['tasks'])}"] if d.get("tasks") else []),
+                 *([f"Interfaces offered: {', '.join(d['interfaces'])}"] if d.get("interfaces") else []),
                  f"Deployment: {e['deployment']}",
                  f"Evidence: {e['evidence_basis']}",
                  f"Evaluator: {e['evaluator']}",

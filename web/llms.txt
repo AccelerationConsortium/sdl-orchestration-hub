@@ -1,6 +1,6 @@
-# SDL Device Integration Toolkit
+# SDL Orchestration Hub
 
-> Machine-readable companion to the SDL Device Integration Toolkit. It lists open-source SDL orchestrators, defines 21 testable criteria for autonomous-ready instrument interfaces, and publishes instrument scorecards. All data is static JSON; there is no server-side search — fetch and filter.
+> Machine-readable companion to the SDL Orchestration Hub (workflow orchestration and device integration for self-driving labs). It lists open-source SDL orchestrators, defines 21 testable criteria for autonomous-ready instrument interfaces, and publishes instrument scorecards. All data is static JSON; there is no server-side search — fetch and filter.
 
 ## Start here
 - [API index](/api/v1/index.json): every endpoint, counts, URL interface, submission links
@@ -12,6 +12,8 @@
 - [Scoring rules](/api/v1/rules.json): decision order and floors — apply in order; a later step never overrides an earlier one
 - [Public scorecards](/api/v1/scorecards.json): instrument evaluations with computed status and totals
 - [Scenarios](/api/v1/scenarios.json) and [standards comparison](/api/v1/standards.json)
+- [Instrument groups](/api/v1/instrument-groups.json): the group ids, types and tasks used to tag scorecards
+- [Tutorials](/api/v1/tutorials.json): learning path for building device connectors
 
 ## Evaluate an instrument
 1. Build an object matching [evaluation.schema.json](/api/v1/schema/evaluation.schema.json). Grades: "G" Pass, "P" Partial, "F" Fail, "NA" (C5, C19, C21 only), keyed by criterion number.

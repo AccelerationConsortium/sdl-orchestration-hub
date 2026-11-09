@@ -7,7 +7,10 @@ device:
   vendor: "Anonymized (paper Case A)"
   model: "Reader X"
   category: fluorescence plate reader
+  group: measurement
+  tasks: [fluorescence]
   interface: SiLA 2
+  interfaces: [SiLA 2]
   architecture: Native endpoint
   firmware_version: null
   product_url: null

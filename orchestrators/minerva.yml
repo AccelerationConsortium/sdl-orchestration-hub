@@ -8,7 +8,7 @@ country: Germany
 lat: 52.43
 lng: 13.53
 website: https://www.bam.de
-repo: ""
+repo: https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva
 docs: ""
 logo: https://github.com/BAMresearch.png?size=96
 family: bespoke
@@ -16,5 +16,4 @@ mech: Custom ABC hierarchy
 standards: []
 notes: pyserial and pythonnet for proprietary instruments.
 license: MIT
-verified: false
-unverified: No public repository located; the project describes all components as publicly available.
+verified: true

@@ -1,8 +1,8 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-27T18:56:16.154Z",
+  "generated": "2026-10-30T01:38:31.054Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
-  "name": "SDL Device Integration Toolkit API",
+  "name": "SDL Orchestration Hub API",
   "version": "v1",
   "docs": "/#api",
   "llms": "/llms.txt",
@@ -16,7 +16,7 @@
     {
       "path": "/api/v1/tools.json",
       "href": "/api/v1/tools.json",
-      "description": "All surveyed orchestrators with location, links, integration mechanism, standards and linked public scorecards.",
+      "description": "All surveyed orchestrators with location, links, integration mechanism and standards.",
       "schema": "/api/v1/schema/tool.schema.json"
     },
     {
@@ -52,6 +52,18 @@
       "path": "/api/v1/scenarios.json",
       "href": "/api/v1/scenarios.json",
       "description": "Deployment archetypes with recommended default integration boundary.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/instrument-groups.json",
+      "href": "/api/v1/instrument-groups.json",
+      "description": "Instrument groups (from the paper's scope statement) with suggested types and tasks, used to tag scorecards.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/tutorials.json",
+      "href": "/api/v1/tutorials.json",
+      "description": "Learning path and resources for building device connectors (2026 Device Integration Hackathon), plus the paper's advice for connector authors.",
       "schema": null
     },
     {
@@ -92,9 +104,11 @@
     }
   ],
   "urlInterface": {
-    "map": "/#map/{toolId}",
-    "orchestrators": "/#orchestrators?q={text}&fam={formal,hal,agentic,bespoke}&std={standard,...}&region={region,...}&lic={licence,...}&req=1&repo=1&docs=1&scored=1&verified=1",
-    "scorecard": "/#scorecard"
+    "orchestrator": "/#orchestrators/{toolId}",
+    "orchestrators": "/#orchestrators?view={map,cards,table}&q={text}&fam={formal,hal,agentic,bespoke}&std={standard,...}&region={region,...}&lic={licence,...}&req=1&repo=1&docs=1&verified=1&nopend=1",
+    "instruments": "/#instruments?q={task or type}&grp={group,...}&ifc={interface,...}&elig=1&cell=1&req={C7:P,C14:G,...}",
+    "scorecard": "/#scorecard",
+    "criterion": "/#scorecard/C{n}"
   },
   "submit": {
     "newOrchestrator": "https://github.com/willigott/device-integration-scorecard/issues/new?template=new-orchestrator.yml",
