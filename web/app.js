@@ -113,8 +113,8 @@ const icon = (name, size = 16) => `<svg class="ic" width="${size}" height="${siz
 const extLink = (url, label, cls = "") => url ? `<a ${cls ? `class="${cls}" ` : ""}href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}<span class="sr-only"> (opens in a new tab)</span></a>` : "";
 const gradePill = (g, opts = {}) => g ? `<span class="g ${g}"${opts.title ? ` title="${esc(opts.title)}"` : ""}><span aria-hidden="true">${GICON[g]}</span> ${GL[g]}</span>` : `<span class="g U">—<span class="sr-only">not graded</span></span>`;
 const verdictPill = r => `<span class="vpill ${r.cls}">${esc(r.verdict)}</span>`;
-function pageHead(title, lede = "", aside = "", eyebrow = "") {
-  return `<header class="page-head"><div>${eyebrow ? `<p class="eyebrow">${eyebrow}</p>` : ""}<h1 class="page-title" id="page-title" tabindex="-1">${title}</h1>${lede ? `<p class="lede">${lede}</p>` : ""}</div>${aside ? `<div class="page-actions">${aside}</div>` : ""}</header>`;
+function pageHead(title, lede = "", aside = "", eyebrow = "", cls = "") {
+  return `<header class="page-head${cls ? " " + cls : ""}"><div>${eyebrow ? `<p class="eyebrow">${eyebrow}</p>` : ""}<h1 class="page-title" id="page-title" tabindex="-1">${title}</h1>${lede ? `<p class="lede">${lede}</p>` : ""}</div>${aside ? `<div class="page-actions">${aside}</div>` : ""}</header>`;
 }
 const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
 const regionOf = t => REGION[t.country] || "Other";

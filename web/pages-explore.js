@@ -11,7 +11,7 @@ const CITATION = "Gottstein, W. et al. Talking to instruments: device-integratio
 function renderHome() {
   const T = window.TOOLS;
   const tasks = [
-    ["compass", "Explore orchestrators", "#orchestrators", `Map, compare and filter the ${T.length} open-source orchestrators by how they connect to instruments.`],
+    ["compass", "Explore orchestrators", "#orchestrators", "Map, compare and filter open-source orchestrators by how they connect to instruments."],
     ["layers", "Pick an integration standard", "#standards", "Four questions about your lab give you the paper’s recommended starting point, with the trade-offs."],
     ["search", "Find an instrument", "#instruments", "Filter evaluated instruments by task, interface and the capabilities your workflow needs."],
     ["clipboard", "Score an instrument", "#score/new", "Check an instrument’s control interface before you buy: 21 criteria, three floors, one verdict."],
@@ -81,11 +81,10 @@ const ORCH_TOGGLES = [
   { key: "verified", label: "Hide entries with unverified fields", match: t => t.verified !== false },
   { key: "nopend", label: "Hide pending submissions", match: t => !t.pending }
 ];
-const VIEWS = [["map", "Map", "map"], ["cards", "Cards", "grid"], ["table", "Table", "table"]];
+const VIEWS = [["cards", "Cards", "grid"], ["map", "Map", "map"], ["table", "Table", "table"]];
 const of = { q: "", sel: {}, tog: {}, view: null, selected: null, railOpen: false, qs: null };
-try { of.stored = localStorage.getItem("sdl-orch-view"); } catch (e) {}
 const dataset = () => allTools().concat(PENDING.tools).sort((a, b) => a.name.localeCompare(b.name));
-const defaultView = () => of.stored || (matchMedia("(min-width: 900px)").matches ? "map" : "cards");
+const defaultView = () => of.stored || "cards";
 function readOrchParams(p) {
   of.q = p.get("q") || "";
   of.sel = {}; for (const f of ORCH_FILTERS) { const v = (p.get(f.key) || "").split(",").map(s => s.trim()).filter(Boolean); if (v.length) of.sel[f.key] = v; }
@@ -124,16 +123,8 @@ function renderOrch(arg, params) {
   of.selected = arg || null;
   leaflet = null; markers = {};
   const curated = allTools(), O = dataset();
-  const formal = curated.filter(o => o.family === "formal").length, enforced = curated.filter(o => o.enforced).length;
-  const nCountries = new Set(curated.map(t => t.country)).size;
   view.innerHTML = `
-  ${pageHead("Orchestrators", `Open-source software that composes instrument operations into experiments — and how each one connects to instruments. ${curated.length} projects across ${nCountries} countries, classified from their source code (Table 2 of the paper).`, `<button class="btn" id="addtool">${icon("plus", 14)} Propose a tool</button>`)}
-  <div class="stats">
-    <div class="stat"><b>${curated.length}</b><span>open-source orchestrators</span></div>
-    <div class="stat"><b>${formal}</b><span>use a formally governed standard</span></div>
-    <div class="stat"><b>${enforced}</b><span>require one for every driver</span></div>
-    <div class="stat"><b>${curated.length - formal}</b><span>bespoke, HAL or model-facing</span></div>
-  </div>
+  ${pageHead("Orchestrators", "Explore the open-source orchestrators used in self-driving labs and identify the ones that suit your setup. For each project you see who develops it, how it connects to instruments, which device-integration standards it supports and its licence, with links to its code, documentation and paper. Narrow the list by integration approach, standard, region or licence, and switch between a map, cards and a comparison table.", "", "", "wide")}
   <details class="note"><summary>What is included, and the four families</summary>
     <p>Included: an open-source licence and public source; an explicit device-integration layer that commands physical instruments; evidence of use in at least one SDL. Classifications rest on code and documentation review, not maintainer interviews — ${H.REPO ? extLink(`https://github.com/${H.REPO}/issues/new?title=${encodeURIComponent("[Correction] ")}`, "corrections are welcome") : "corrections are welcome"}.</p>
     <p>Families summarise Table 2’s “primary integration mechanism”: <b>formal standard</b> (SiLA 2 or OPC UA consumed as a driver contract), <b>hardware-abstraction layer</b> (e.g. Ophyd over EPICS), <b>model-facing</b> (MCP tool contracts) and <b>bespoke conventions</b> (the project’s own base classes or plugins).</p>
@@ -157,13 +148,15 @@ function renderOrch(arg, params) {
       <details class="filter-expand" ${togCount() ? "open" : ""}><summary><span>More filters</span><span class="plus" aria-hidden="true">+</span></summary>
         <div class="toggles">${ORCH_TOGGLES.map(t => `<label class="toggle"><input type="checkbox" data-otoggle="${t.key}" ${of.tog[t.key] ? "checked" : ""}><span>${t.label}</span></label>`).join("")}</div></details>
       </div>
-      <div class="filter-actions"><span class="count" id="ocount" aria-live="polite"></span><button class="linkbtn" id="oclear" hidden>Clear filters</button></div>
+      <div class="filter-actions" id="oactions" hidden><button class="linkbtn" id="oclear">Clear filters</button></div>
     </div></section>
     <div class="results">
       <h2 class="sr-only">Results</h2>
+      <p class="sr-only" id="ocount" aria-live="polite"></p>
       <div class="results-bar"><div class="active-chips" id="ochips" aria-label="Active filters"></div>
         <div class="seg seg-sm seg-ic" role="group" aria-label="Show results as">
-          ${VIEWS.map(([k, l, ic]) => `<button data-oview="${k}" aria-pressed="${of.view === k}" class="${of.view === k ? "on" : ""}">${icon(ic, 14)}${l}</button>`).join("")}</div></div>
+          ${VIEWS.map(([k, l, ic]) => `<button data-oview="${k}" aria-pressed="${of.view === k}" class="${of.view === k ? "on" : ""}">${icon(ic, 14)}${l}</button>`).join("")}</div>
+        <button class="btn sm" id="addtool">${icon("plus", 14)} Propose a tool</button></div>
       <div id="oresults"></div>
     </div>
   </section>
@@ -197,7 +190,7 @@ function renderOrch(arg, params) {
   const draw = () => {
     const list = O.filter(o => orchMatches(o));
     $("#ocount").textContent = `${list.length} of ${O.length} orchestrators`;
-    $("#oclear").hidden = !orchActive();
+    $("#oactions").hidden = !orchActive();
     const res = $("#oresults");
     if (of.view === "map") drawMapView(res, O, list);
     else {
@@ -262,7 +255,7 @@ function renderOrch(arg, params) {
   if (of.railOpen) { rail.classList.add("open"); ft.setAttribute("aria-expanded", "true"); }
   ft.onclick = () => { of.railOpen = !rail.classList.contains("open"); rail.classList.toggle("open", of.railOpen); ft.setAttribute("aria-expanded", String(of.railOpen)); };
   const setView = (v, persist = true) => {
-    of.view = v; if (persist) { of.stored = v; try { localStorage.setItem("sdl-orch-view", v); } catch (e) {} }
+    of.view = v; if (persist) of.stored = v;
     $$("[data-oview]", view).forEach(x => { const on = x.dataset.oview === v; x.classList.toggle("on", on); x.setAttribute("aria-pressed", String(on)); });
     draw();
     if (of.selected && v !== "map") selectTool(of.selected, { fromRoute: true });
@@ -296,9 +289,8 @@ function selectTool(id, { fly = true, scroll = false, fromRoute = false, opener 
 }
 function emptyDetail() {
   const d = $("#tooldetail"); if (!d) return;
-  const curated = allTools();
   d.innerHTML = `<div class="empty-detail"><h2>Select an orchestrator</h2><p class="hint">Choose a marker on the map or a name below it to see its institution, links and how it talks to instruments.</p>
-    <div class="kpis"><div><b>${curated.length}</b><span>tools</span></div><div><b>${curated.filter(t => t.family === "formal").length}</b><span>formal standard</span></div><div><b>${new Set(curated.map(t => t.country)).size}</b><span>countries</span></div></div></div>`;
+    </div>`;
 }
 function paintSelection() {
   $$(".mchip", view).forEach(b => b.setAttribute("aria-current", String(b.dataset.sel === of.selected)));
