@@ -3,7 +3,7 @@
    `siteUrl` is the public base URL (used in API docs and llms.txt); leave "" to use the
    page's own origin. */
 window.SITE = {
-  repo: "willigott/device-integration-scorecard",
+  repo: "AccelerationConsortium/sdl-orchestration-hub",
   siteUrl: "",
   apiVersion: "v1"
 };

@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-11-10T18:35:10.772Z",
+  "generated": "2026-11-10T19:22:31.024Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "name": "SDL Orchestration Hub API",
   "version": "v1",
@@ -111,7 +111,7 @@
     "criterion": "/#scorecard/C{n}"
   },
   "submit": {
-    "newOrchestrator": "https://github.com/willigott/device-integration-scorecard/issues/new?template=new-orchestrator.yml",
-    "newScorecard": "https://github.com/willigott/device-integration-scorecard/issues/new?template=device-scorecard.yml"
+    "newOrchestrator": "https://github.com/AccelerationConsortium/sdl-orchestration-hub/issues/new?template=new-orchestrator.yml",
+    "newScorecard": "https://github.com/AccelerationConsortium/sdl-orchestration-hub/issues/new?template=device-scorecard.yml"
   }
 }

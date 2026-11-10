@@ -20,7 +20,7 @@ const { SITE, SCORECARD_SOURCE: S } = ctx;
 const { parse, isSubmission, trim } = createRequire(import.meta.url)(path.join(WEB, "issues.js"));
 
 async function fetchOpenIssues(repo) {
-  const headers = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "device-integration-scorecard-web" };
+  const headers = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "sdl-orchestration-hub-web" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   const all = [];
   for (let page = 1; page <= 10; page++) {

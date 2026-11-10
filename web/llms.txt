@@ -25,8 +25,8 @@
 - An instrument’s score belongs to the endpoint scored (SiLA 2, OPC UA + LADS, REST, MCP); it does not transfer to other endpoints.
 
 ## Contribute
-- New orchestrator: https://github.com/willigott/device-integration-scorecard/issues/new?template=new-orchestrator.yml
-- New scorecard: https://github.com/willigott/device-integration-scorecard/issues/new?template=device-scorecard.yml
+- New orchestrator: https://github.com/AccelerationConsortium/sdl-orchestration-hub/issues/new?template=new-orchestrator.yml
+- New scorecard: https://github.com/AccelerationConsortium/sdl-orchestration-hub/issues/new?template=device-scorecard.yml
 
 ## Caveats
 - Grading text is condensed; confirm the full criterion definition before relying on it. Weights are proposed defaults.
