@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-11-10T18:32:15.234Z",
+  "generated": "2026-11-10T18:35:10.772Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "grades": {
     "G": {
@@ -18,7 +18,7 @@
     "NA": {
       "label": "N/A",
       "value": null,
-      "note": "Excluded from the denominator. Allowed only for C5, C19, C21."
+      "note": "Excluded from the denominator. Allowed only for C7, C19, C20, C21."
     }
   },
   "tiers": {

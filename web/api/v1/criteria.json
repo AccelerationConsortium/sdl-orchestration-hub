@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-11-10T18:32:15.234Z",
+  "generated": "2026-11-10T18:35:10.772Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "count": 21,
   "items": [
@@ -78,7 +78,7 @@
       "name": "Control-accessible result retrieval",
       "tier": "critical",
       "weight": 3,
-      "naAllowed": true,
+      "naAllowed": false,
       "checks": "Headless operation outcomes and applicable measurement results and metadata, unambiguously linked to execution.",
       "test": "Retrieve a representative result from a non-vendor host with headless, licence-compliant tooling. The payload and its metadata (IDs, status, units, timestamps, quality flags) must be bound to the execution ID, inline or via separate properties. Encrypted proprietary formats readable only in vendor software fail.",
       "effort": "S",
@@ -112,7 +112,7 @@
       "name": "Observable command and property state",
       "tier": "important",
       "weight": 2,
-      "naAllowed": false,
+      "naAllowed": true,
       "checks": "Concurrent non-blocking execution status and progress subscriptions, with recommended property and event subscriptions.",
       "test": "Start a long command; status queries must return without blocking and progress/phase must stream. Conditional floor: for hazardous actuation or shared-resource blocking (most HPLCs, incubators, NMRs, centrifuges) it must score at least Partial.",
       "effort": "S",
@@ -126,7 +126,7 @@
     {
       "id": "C8",
       "n": 8,
-      "name": "Reference client implementation provided",
+      "name": "Reference client implementation",
       "tier": "important",
       "weight": 2,
       "naAllowed": false,
@@ -333,7 +333,7 @@
       "name": "Access and motion-readiness coordination",
       "tier": "cell_integration",
       "weight": 2,
-      "naAllowed": false,
+      "naAllowed": true,
       "checks": "Accurate, mutually consistent applicable access, motion and presence states, with a local robot-access indication where applicable.",
       "test": "Door/lid/shutter, axis position and motion, clamp/gripper and labware-presence states, and a robot-access state that reports clear only when all are arm-safe. The vendor declares which categories apply; undeclared means all apply. Documenting latency is optional. These are automation primitives, not safety primitives.",
       "effort": "S",

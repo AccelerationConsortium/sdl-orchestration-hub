@@ -16,7 +16,7 @@
 - [Tutorials](/api/v1/tutorials.json): learning path for building device connectors
 
 ## Evaluate an instrument
-1. Build an object matching [evaluation.schema.json](/api/v1/schema/evaluation.schema.json). Grades: "G" Pass, "P" Partial, "F" Fail, "NA" (C5, C19, C21 only), keyed by criterion number.
+1. Build an object matching [evaluation.schema.json](/api/v1/schema/evaluation.schema.json). Grades: "G" Pass, "P" Partial, "F" Fail, "NA" (C7, C19, C20, C21 only), keyed by criterion number.
 2. Score it with [score.js](/score.js): `require("./score.js").evaluate(evaluation, { criteria })` where `criteria` is criteria.json items mapped to `{ n, tier: "C"|"I"|"X", w: weight }`.
 3. Status is one of blocked, not_eligible, incomplete, conditionally_eligible, eligible. Rank only eligible / conditionally eligible instruments by total.
 
