@@ -1,8 +1,8 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
-  "count": 16,
+  "count": 17,
   "items": [
     {
       "id": "alabos",
@@ -32,9 +32,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/alabos.json",
-      "webUrl": "/#map/alabos"
+      "webUrl": "/#orchestrators/alabos"
     },
     {
       "id": "ares",
@@ -50,11 +49,11 @@
       "family": "bespoke",
       "familyLabel": "Bespoke conventions",
       "standardRequired": false,
-      "integrationMechanism": "Custom plugin architecture (Devices, Analysis, Planning plugins over gRPC/Protobuf; PyAres for Python modules)",
+      "integrationMechanism": "Custom plugin architecture",
       "standards": [],
       "standardsBase": [],
-      "notes": "Devices, Analysis and Planning plugin pattern. C#/.NET core with Blazor front end; PyAres wraps the gRPC/Protobuf API for Python devices and planners.",
-      "license": "USAF Open Source Agreement 1.0",
+      "notes": "Devices, Analysis, and Planning plugin pattern.",
+      "license": "MIT",
       "links": {
         "website": "https://afrl-ares.github.io",
         "repository": "https://github.com/AFRL-ARES/ARES",
@@ -64,9 +63,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/ares.json",
-      "webUrl": "/#map/ares"
+      "webUrl": "/#orchestrators/ares"
     },
     {
       "id": "bluesky",
@@ -84,10 +82,10 @@
       "standardRequired": false,
       "integrationMechanism": "Ophyd hardware-abstraction layer; Bluesky itself is protocol-agnostic",
       "standards": [
-        "EPICS",
-        "Tango",
-        "SCPI",
-        "yaq"
+        "EPICS (most common)",
+        "Tango (via Ophyd sub-packages)",
+        "SCPI (via Ophyd sub-packages)",
+        "yaq (via Ophyd sub-packages)"
       ],
       "standardsBase": [
         "EPICS",
@@ -95,7 +93,7 @@
         "SCPI",
         "yaq"
       ],
-      "notes": "Reference deployment at NSLS-II uses EPICS via pyepics (the most common backend); Tango, SCPI and yaq via Ophyd sub-packages. Bluesky documentation disclaims direct hardware support.",
+      "notes": "Reference deployment at NSLS-II uses EPICS via pyepics; Bluesky documentation disclaims direct hardware support.",
       "license": "BSD-3-Clause",
       "links": {
         "website": "https://blueskyproject.io",
@@ -106,9 +104,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/bluesky.json",
-      "webUrl": "/#map/bluesky"
+      "webUrl": "/#orchestrators/bluesky"
     },
     {
       "id": "chemios",
@@ -127,7 +124,7 @@
       "integrationMechanism": "Custom pump and instrument classes",
       "standards": [],
       "standardsBase": [],
-      "notes": "pyserial and minimalmodbus for direct hardware access. Pumps, spectrometers and temperature controllers; last repository activity 2021.",
+      "notes": "pyserial and minimalmodbus for direct hardware access.",
       "license": "MIT",
       "links": {
         "website": "https://chemios.readthedocs.io",
@@ -138,9 +135,8 @@
       },
       "verified": false,
       "unverifiedFields": "Home institution and location inferred from the lead contributor; not confirmed by the project.",
-      "publicScorecards": [],
       "href": "/api/v1/tools/chemios.json",
-      "webUrl": "/#map/chemios"
+      "webUrl": "/#orchestrators/chemios"
     },
     {
       "id": "chemos2",
@@ -163,7 +159,7 @@
       "standardsBase": [
         "SiLA 2"
       ],
-      "notes": "All servers and clients are built on the sila2 bindings; no alternative integration path.",
+      "notes": "All servers and clients built on the sila2 bindings; no alternative integration path.",
       "license": "MIT",
       "links": {
         "website": "https://acceleration.utoronto.ca",
@@ -174,19 +170,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [
-        {
-          "id": "reader-x",
-          "status": "eligible",
-          "standalone": {
-            "points": 36,
-            "max": 46
-          },
-          "href": "/api/v1/scorecards/reader-x.json"
-        }
-      ],
       "href": "/api/v1/tools/chemos2.json",
-      "webUrl": "/#map/chemos2"
+      "webUrl": "/#orchestrators/chemos2"
     },
     {
       "id": "eos",
@@ -209,7 +194,7 @@
       "standardsBase": [
         "SiLA 2"
       ],
-      "notes": "SilaDeviceMixin and an optional sila2 dependency group; the primary path remains the custom plugin model.",
+      "notes": "SilaDeviceMixin and optional sila2 dependency group; primary path remains the custom plugin model.",
       "license": "BSD-3-Clause",
       "links": {
         "website": "https://unc-robotics.github.io/eos/",
@@ -220,9 +205,57 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/eos.json",
-      "webUrl": "/#map/eos"
+      "webUrl": "/#orchestrators/eos"
+    },
+    {
+      "id": "glas",
+      "name": "GLAS",
+      "organisation": "Swiss Cat+ West Hub, École Polytechnique Fédérale de Lausanne (EPFL)",
+      "city": "Lausanne",
+      "country": "Switzerland",
+      "region": "Europe",
+      "location": {
+        "lat": 46.5191,
+        "lng": 6.5668
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom hierarchical Node/Workflow architecture over REST",
+      "standards": [
+        "REST (scheduler interface)",
+        "ROS 2 (device/adapter layer)",
+        "RTDE (device/adapter layer)",
+        "TCP (device/adapter layer)",
+        "ADS (device/adapter layer)",
+        "Serial (device/adapter layer)",
+        "DLL (device/adapter layer)",
+        "Vendor-specific APIs (device/adapter layer)"
+      ],
+      "standardsBase": [
+        "REST",
+        "ROS 2",
+        "RTDE",
+        "TCP",
+        "ADS",
+        "Serial",
+        "DLL",
+        "Vendor-specific APIs"
+      ],
+      "notes": "Git-based Python framework with layered main and sub-schedulers; JSON task submission; protocol-agnostic device adapters; MySQL-backed task, node, workflow, state and log persistence; deployed at Swiss Cat+.",
+      "license": "MIT",
+      "links": {
+        "website": "https://swisscatplus.ch",
+        "repository": "https://github.com/swisscatplus/glas",
+        "docs": "https://github.com/swisscatplus/glas/wiki",
+        "paper": "https://doi.org/10.1039/D4DD00253A",
+        "logo": "https://github.com/swisscatplus.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/glas.json",
+      "webUrl": "/#orchestrators/glas"
     },
     {
       "id": "helao",
@@ -240,14 +273,14 @@
       "standardRequired": false,
       "integrationMechanism": "Custom HelaoDriver abstract base class",
       "standards": [
-        "OPC UA (declared dependency)",
-        "Modbus (declared dependency)"
+        "OPC UA (declared dependency, asyncua)",
+        "Modbus (declared dependency, pymodbus)"
       ],
       "standardsBase": [
         "OPC UA",
         "Modbus"
       ],
-      "notes": "asyncua and pymodbus are declared dependencies; shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
+      "notes": "Shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
       "license": "MIT",
       "links": {
         "website": "https://github.com/High-Throughput-Experimentation/helao-async",
@@ -258,9 +291,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/helao.json",
-      "webUrl": "/#map/helao"
+      "webUrl": "/#orchestrators/helao"
     },
     {
       "id": "ivoryos",
@@ -279,7 +311,7 @@
       "integrationMechanism": "Dynamic function introspection (Flask)",
       "standards": [],
       "standardsBase": [],
-      "notes": "Standard-agnostic by design: exposes any Python module via a dynamically generated web interface.",
+      "notes": "Standard-agnostic by design: exposes any module via a dynamically generated web interface.",
       "license": "MIT",
       "links": {
         "website": "https://ivoryos.ai",
@@ -290,9 +322,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/ivoryos.json",
-      "webUrl": "/#map/ivoryos"
+      "webUrl": "/#orchestrators/ivoryos"
     },
     {
       "id": "madsci",
@@ -308,7 +339,7 @@
       "family": "formal",
       "familyLabel": "Formal standard",
       "standardRequired": false,
-      "integrationMechanism": "Custom AbstractNode / RestNode module over REST",
+      "integrationMechanism": "Custom AbstractNode/RestNode module over REST",
       "standards": [
         "SiLA 2 (optional)"
       ],
@@ -326,9 +357,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/madsci.json",
-      "webUrl": "/#map/madsci"
+      "webUrl": "/#orchestrators/madsci"
     },
     {
       "id": "minerva",
@@ -347,20 +377,19 @@
       "integrationMechanism": "Custom ABC hierarchy",
       "standards": [],
       "standardsBase": [],
-      "notes": "pyserial and pythonnet for proprietary instruments. Components published with the ACS Nano paper and its SI.",
+      "notes": "pyserial and pythonnet for proprietary instruments.",
       "license": "MIT",
       "links": {
         "website": "https://www.bam.de",
-        "repository": null,
+        "repository": "https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva",
         "docs": null,
         "paper": "https://doi.org/10.1021/acsnano.4c17504",
         "logo": "https://github.com/BAMresearch.png?size=96"
       },
-      "verified": false,
-      "unverifiedFields": "No public repository located; the project describes all components as publicly available.",
-      "publicScorecards": [],
+      "verified": true,
+      "unverifiedFields": null,
       "href": "/api/v1/tools/minerva.json",
-      "webUrl": "/#map/minerva"
+      "webUrl": "/#orchestrators/minerva"
     },
     {
       "id": "nimo",
@@ -376,14 +405,14 @@
       "family": "agentic",
       "familyLabel": "Model-facing (MCP)",
       "standardRequired": false,
-      "integrationMechanism": "MCP (model-facing, agentic)",
+      "integrationMechanism": "MCP",
       "standards": [
-        "MCP"
+        "MCP (information-exchange layer)"
       ],
       "standardsBase": [
         "MCP"
       ],
-      "notes": "Device integration is provided by the NIMO Controller; MCP connects a language-model agent to the decision engine and to laboratory devices. MCP is a model-facing natural-language interface, not a formally governed type system.",
+      "notes": "Device integration provided by the NIMO Controller; MCP connects a language-model agent to the NIMO decision engine and to laboratory devices. MCP is a governed model-facing tool protocol with JSON Schema typing, but without a shared laboratory-device vocabulary.",
       "license": "MIT",
       "links": {
         "website": "https://github.com/NIMS-DA/nimo",
@@ -394,9 +423,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/nimo.json",
-      "webUrl": "/#map/nimo"
+      "webUrl": "/#orchestrators/nimo"
     },
     {
       "id": "ochra",
@@ -426,9 +454,8 @@
       },
       "verified": false,
       "unverifiedFields": "The project publishes no affiliation; location placed at the host of its 2025 AIchemy workshop.",
-      "publicScorecards": [],
       "href": "/api/v1/tools/ochra.json",
-      "webUrl": "/#map/ochra"
+      "webUrl": "/#orchestrators/ochra"
     },
     {
       "id": "octopus",
@@ -458,9 +485,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/octopus.json",
-      "webUrl": "/#map/octopus"
+      "webUrl": "/#orchestrators/octopus"
     },
     {
       "id": "place",
@@ -479,7 +505,7 @@
       "integrationMechanism": "Custom Instrument base class with plugin-per-vendor",
       "standards": [],
       "standardsBase": [],
-      "notes": "Each vendor device is implemented as a separate plugin.",
+      "notes": "Each vendor device implemented as a separate plugin.",
       "license": "LGPL-3.0",
       "links": {
         "website": "https://place.auckland.ac.nz",
@@ -490,9 +516,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/place.json",
-      "webUrl": "/#map/place"
+      "webUrl": "/#orchestrators/place"
     },
     {
       "id": "robochem",
@@ -511,7 +536,7 @@
       "integrationMechanism": "Custom BaseDevice abstraction with protocol- and vendor-specific subclasses",
       "standards": [],
       "standardsBase": [],
-      "notes": "Common device interface exposes named parameters and metadata; subclasses support serial, TCP socket, Modbus and vendor XML; USB-serial devices are auto-identified from stored hardware IDs.",
+      "notes": "Common device interface exposes named parameters and associated metadata; device-specific implementations support serial, TCP socket, Modbus and vendor-specific XML communication; USB-serial devices are auto-identified from stored hardware identifiers.",
       "license": "Apache-2.0",
       "links": {
         "website": "https://hims.uva.nl",
@@ -522,9 +547,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/robochem.json",
-      "webUrl": "/#map/robochem"
+      "webUrl": "/#orchestrators/robochem"
     },
     {
       "id": "unilabos",
@@ -542,9 +566,9 @@
       "standardRequired": false,
       "integrationMechanism": "ROS 2 (primary communication fabric)",
       "standards": [
-        "ROS 2",
-        "OPC UA (adapter)",
-        "Modbus (adapter)"
+        "ROS 2 (primary)",
+        "OPC UA (adapter module)",
+        "Modbus (adapter module)"
       ],
       "standardsBase": [
         "ROS 2",
@@ -562,9 +586,8 @@
       },
       "verified": true,
       "unverifiedFields": null,
-      "publicScorecards": [],
       "href": "/api/v1/tools/unilabos.json",
-      "webUrl": "/#map/unilabos"
+      "webUrl": "/#orchestrators/unilabos"
     }
   ],
   "excluded": [

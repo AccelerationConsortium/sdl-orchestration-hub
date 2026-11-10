@@ -10,8 +10,11 @@
 device:
   vendor: Example Vendor
   model: Example Model 100
-  category: plate reader            # optional
+  category: plate reader            # optional: instrument type
+  group: measurement                # optional: measurement | reaction | sample-handling | process-control | labware-robot
+  tasks: [absorbance, fluorescence] # optional: what it is used for (shown in the web tool's instrument finder)
   interface: SiLA 2                 # protocol you evaluated
+  interfaces: [SiLA 2]              # optional: every control interface the vendor offers
   architecture: Native endpoint     # C1 architecture: Native endpoint | Vendor edge-controller | Third-party gateway
   firmware_version: null            # optional
   product_url: null                 # optional

@@ -1,6 +1,6 @@
 id: nimo
 name: NIMO
-ref: 40–43
+ref: 44–47
 paper: https://arxiv.org/abs/2605.15227
 org: National Institute for Materials Science (NIMS), Center for Basic Research on Materials
 city: Tsukuba
@@ -12,11 +12,11 @@ repo: https://github.com/NIMS-DA/nimo
 docs: ""
 logo: https://github.com/NIMS-DA.png?size=96
 family: agentic
-mech: MCP (model-facing, agentic)
+mech: MCP
 standards:
-- MCP
-notes: Device integration is provided by the NIMO Controller; MCP connects a language-model agent to the
-  decision engine and to laboratory devices. MCP is a model-facing natural-language interface, not a formally
-  governed type system.
+- MCP (information-exchange layer)
+notes: Device integration provided by the NIMO Controller; MCP connects a language-model agent to the
+  NIMO decision engine and to laboratory devices. MCP is a governed model-facing tool protocol with JSON
+  Schema typing, but without a shared laboratory-device vocabulary.
 license: MIT
 verified: true

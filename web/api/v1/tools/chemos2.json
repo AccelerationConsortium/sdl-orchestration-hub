@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "chemos2",
@@ -23,7 +23,7 @@
     "standardsBase": [
       "SiLA 2"
     ],
-    "notes": "All servers and clients are built on the sila2 bindings; no alternative integration path.",
+    "notes": "All servers and clients built on the sila2 bindings; no alternative integration path.",
     "license": "MIT",
     "links": {
       "website": "https://acceleration.utoronto.ca",
@@ -34,18 +34,7 @@
     },
     "verified": true,
     "unverifiedFields": null,
-    "publicScorecards": [
-      {
-        "id": "reader-x",
-        "status": "eligible",
-        "standalone": {
-          "points": 36,
-          "max": 46
-        },
-        "href": "/api/v1/scorecards/reader-x.json"
-      }
-    ],
     "href": "/api/v1/tools/chemos2.json",
-    "webUrl": "/#map/chemos2"
+    "webUrl": "/#orchestrators/chemos2"
   }
 }

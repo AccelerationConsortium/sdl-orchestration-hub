@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "helao",
@@ -18,14 +18,14 @@
     "standardRequired": false,
     "integrationMechanism": "Custom HelaoDriver abstract base class",
     "standards": [
-      "OPC UA (declared dependency)",
-      "Modbus (declared dependency)"
+      "OPC UA (declared dependency, asyncua)",
+      "Modbus (declared dependency, pymodbus)"
     ],
     "standardsBase": [
       "OPC UA",
       "Modbus"
     ],
-    "notes": "asyncua and pymodbus are declared dependencies; shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
+    "notes": "Shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
     "license": "MIT",
     "links": {
       "website": "https://github.com/High-Throughput-Experimentation/helao-async",
@@ -36,8 +36,7 @@
     },
     "verified": true,
     "unverifiedFields": null,
-    "publicScorecards": [],
     "href": "/api/v1/tools/helao.json",
-    "webUrl": "/#map/helao"
+    "webUrl": "/#orchestrators/helao"
   }
 }

@@ -110,9 +110,6 @@
         "null"
       ]
     },
-    "publicScorecards": {
-      "type": "array"
-    },
     "href": {
       "type": "string"
     },

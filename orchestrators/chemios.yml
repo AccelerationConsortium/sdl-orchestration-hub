@@ -1,6 +1,6 @@
 id: chemios
 name: Chemios
-ref: '34'
+ref: '37'
 paper: https://github.com/Chemios/chemios
 org: Chemios contributors (K. Felton)
 city: Raleigh, NC
@@ -14,8 +14,7 @@ logo: https://github.com/Chemios.png?size=96
 family: bespoke
 mech: Custom pump and instrument classes
 standards: []
-notes: pyserial and minimalmodbus for direct hardware access. Pumps, spectrometers and temperature controllers;
-  last repository activity 2021.
+notes: pyserial and minimalmodbus for direct hardware access.
 license: MIT
 verified: false
 unverified: Home institution and location inferred from the lead contributor; not confirmed by the project.

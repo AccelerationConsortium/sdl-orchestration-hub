@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "place",
@@ -19,7 +19,7 @@
     "integrationMechanism": "Custom Instrument base class with plugin-per-vendor",
     "standards": [],
     "standardsBase": [],
-    "notes": "Each vendor device is implemented as a separate plugin.",
+    "notes": "Each vendor device implemented as a separate plugin.",
     "license": "LGPL-3.0",
     "links": {
       "website": "https://place.auckland.ac.nz",
@@ -30,8 +30,7 @@
     },
     "verified": true,
     "unverifiedFields": null,
-    "publicScorecards": [],
     "href": "/api/v1/tools/place.json",
-    "webUrl": "/#map/place"
+    "webUrl": "/#orchestrators/place"
   }
 }

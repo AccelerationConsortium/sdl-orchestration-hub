@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "madsci",
@@ -16,7 +16,7 @@
     "family": "formal",
     "familyLabel": "Formal standard",
     "standardRequired": false,
-    "integrationMechanism": "Custom AbstractNode / RestNode module over REST",
+    "integrationMechanism": "Custom AbstractNode/RestNode module over REST",
     "standards": [
       "SiLA 2 (optional)"
     ],
@@ -34,8 +34,7 @@
     },
     "verified": true,
     "unverifiedFields": null,
-    "publicScorecards": [],
     "href": "/api/v1/tools/madsci.json",
-    "webUrl": "/#map/madsci"
+    "webUrl": "/#orchestrators/madsci"
   }
 }

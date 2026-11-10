@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "alabos",
@@ -30,8 +30,7 @@
     },
     "verified": true,
     "unverifiedFields": null,
-    "publicScorecards": [],
     "href": "/api/v1/tools/alabos.json",
-    "webUrl": "/#map/alabos"
+    "webUrl": "/#orchestrators/alabos"
   }
 }

@@ -25,6 +25,7 @@ const allPass = Object.fromEntries(S.criteria.map(c => [c.n, "Pass"]));
 const dev = parse({ number: 7, title: "[device]: Acme Reader 9", html_url: "https://github.com/x/y/issues/7", user: { login: "alice" },
   created_at: "2026-10-01T10:00:00Z", labels: [{ name: "submission" }, { name: "device" }],
   body: render("device", { vendor: "Acme", model: "Reader 9", interface: "SiLA 2", architecture: "Vendor edge-controller", deployment: "standalone",
+    group: "Measurement and analysis", tasks: "absorbance, fluorescence", interfaces: "REST + OpenAPI",
     evidence_basis: "hands-on-test", evaluator: "Alice Lab",
     scores: scores({ ...allPass, 12: "Fail (no calibration state)", 17: "Partial (P-GAP — partial test coverage) https://example.org/cert", 19: "N/A", 20: "Pass", 21: "N/A" }) }) }, opts);
 assert.equal(dev.kind, "device");
@@ -32,6 +33,9 @@ assert.deepEqual(dev.errors, []);
 const e = dev.evaluation;
 assert.equal(e.vendor, "Acme Reader 9");
 assert.equal(e.arch, "Vendor edge-controller");
+assert.equal(e.group, "measurement");
+assert.deepEqual([...e.tasks], ["absorbance", "fluorescence"]);
+assert.deepEqual([...e.interfaces], ["REST + OpenAPI"]);
 assert.equal(e.grades[12], "F");
 assert.equal(e.notes[12], "no calibration state");
 assert.equal(e.grades[17], "P");

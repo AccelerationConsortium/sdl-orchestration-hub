@@ -13,6 +13,8 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
   const GRADE = { pass: "G", partial: "P", fail: "F", "n/a": "NA", na: "NA" };
+  const GROUP = { "measurement and analysis": "measurement", "reaction hardware": "reaction", "sample handling and preparation": "sample-handling", "process sensing and control": "process-control", "labware-moving robots": "labware-robot" };
+  const list = t => String(t || "").split(/[,;\n]/).map(s => s.trim()).filter(Boolean);
   const FAMILY = { "formal standard": "formal", "hardware-abstraction layer": "hal", "model-facing (mcp)": "agentic", "bespoke conventions": "bespoke" };
   const slug = t => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const labelsOf = issue => (issue.labels || []).map(l => typeof l === "string" ? l : l.name);
@@ -84,8 +86,9 @@
       evaluation: {
         id: `issue-${issue.number}`,
         vendor: [f.vendor, f.model].filter(Boolean).join(" ") || issue.title,
-        model: f.model || "", endpoint: f.interface || "", arch, orch: "",
+        model: f.model || "", endpoint: f.interface || "", arch,
         instrumentClass: f.category || "", firmware: f.firmware || "", productUrl: f.product_url || "",
+        group: GROUP[String(f.group || "").toLowerCase()] || "", tasks: list(f.tasks), interfaces: list(f.interfaces),
         evidenceBasis: f.evidence_basis || "", deployment: f.deployment || "",
         submittedBy: f.evaluator || (issue.user && issue.user.login) || "",
         date: String(issue.created_at || "").slice(0, 10),

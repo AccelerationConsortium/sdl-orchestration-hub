@@ -4,7 +4,7 @@ window.TOOLS = [
  {
   "id": "alabos",
   "name": "AlabOS",
-  "ref": "31",
+  "ref": "34",
   "paper": "https://doi.org/10.1039/D4DD00129J",
   "org": "Ceder Group, Lawrence Berkeley National Laboratory / UC Berkeley",
   "city": "Berkeley, CA",
@@ -25,7 +25,7 @@ window.TOOLS = [
  {
   "id": "ares",
   "name": "ARES OS 2.0",
-  "ref": "32",
+  "ref": "35",
   "paper": "https://arxiv.org/abs/2604.03440",
   "org": "Air Force Research Laboratory, Materials and Manufacturing Directorate",
   "city": "Wright-Patterson AFB, Dayton, OH",
@@ -37,16 +37,16 @@ window.TOOLS = [
   "docs": "https://afrl-ares.github.io",
   "logo": "https://github.com/AFRL-ARES.png?size=96",
   "family": "bespoke",
-  "mech": "Custom plugin architecture (Devices, Analysis, Planning plugins over gRPC/Protobuf; PyAres for Python modules)",
+  "mech": "Custom plugin architecture",
   "standards": [],
-  "notes": "Devices, Analysis and Planning plugin pattern. C#/.NET core with Blazor front end; PyAres wraps the gRPC/Protobuf API for Python devices and planners.",
-  "license": "USAF Open Source Agreement 1.0",
+  "notes": "Devices, Analysis, and Planning plugin pattern.",
+  "license": "MIT",
   "verified": true
  },
  {
   "id": "bluesky",
   "name": "Bluesky + Ophyd",
-  "ref": "33",
+  "ref": "36",
   "paper": "https://doi.org/10.1080/08940886.2019.1608121",
   "org": "NSLS-II, Brookhaven National Laboratory",
   "city": "Upton, NY",
@@ -60,19 +60,19 @@ window.TOOLS = [
   "family": "hal",
   "mech": "Ophyd hardware-abstraction layer; Bluesky itself is protocol-agnostic",
   "standards": [
-   "EPICS",
-   "Tango",
-   "SCPI",
-   "yaq"
+   "EPICS (most common)",
+   "Tango (via Ophyd sub-packages)",
+   "SCPI (via Ophyd sub-packages)",
+   "yaq (via Ophyd sub-packages)"
   ],
-  "notes": "Reference deployment at NSLS-II uses EPICS via pyepics (the most common backend); Tango, SCPI and yaq via Ophyd sub-packages. Bluesky documentation disclaims direct hardware support.",
+  "notes": "Reference deployment at NSLS-II uses EPICS via pyepics; Bluesky documentation disclaims direct hardware support.",
   "license": "BSD-3-Clause",
   "verified": true
  },
  {
   "id": "chemios",
   "name": "Chemios",
-  "ref": "34",
+  "ref": "37",
   "paper": "https://github.com/Chemios/chemios",
   "org": "Chemios contributors (K. Felton)",
   "city": "Raleigh, NC",
@@ -86,7 +86,7 @@ window.TOOLS = [
   "family": "bespoke",
   "mech": "Custom pump and instrument classes",
   "standards": [],
-  "notes": "pyserial and minimalmodbus for direct hardware access. Pumps, spectrometers and temperature controllers; last repository activity 2021.",
+  "notes": "pyserial and minimalmodbus for direct hardware access.",
   "license": "MIT",
   "verified": false,
   "unverified": "Home institution and location inferred from the lead contributor; not confirmed by the project."
@@ -94,7 +94,7 @@ window.TOOLS = [
  {
   "id": "chemos2",
   "name": "ChemOS 2.0",
-  "ref": "35",
+  "ref": "38",
   "paper": "https://doi.org/10.1016/j.matt.2024.04.022",
   "org": "Aspuru-Guzik Group, University of Toronto / Acceleration Consortium",
   "city": "Toronto, ON",
@@ -111,14 +111,14 @@ window.TOOLS = [
   "standards": [
    "SiLA 2"
   ],
-  "notes": "All servers and clients are built on the sila2 bindings; no alternative integration path.",
+  "notes": "All servers and clients built on the sila2 bindings; no alternative integration path.",
   "license": "MIT",
   "verified": true
  },
  {
   "id": "eos",
   "name": "EOS",
-  "ref": "36",
+  "ref": "39",
   "paper": "https://doi.org/10.1109/ICRA55743.2025.11128578",
   "org": "UNC Robotics, University of North Carolina at Chapel Hill",
   "city": "Chapel Hill, NC",
@@ -135,14 +135,44 @@ window.TOOLS = [
   "standards": [
    "SiLA 2 (optional)"
   ],
-  "notes": "SilaDeviceMixin and an optional sila2 dependency group; the primary path remains the custom plugin model.",
+  "notes": "SilaDeviceMixin and optional sila2 dependency group; primary path remains the custom plugin model.",
   "license": "BSD-3-Clause",
+  "verified": true
+ },
+ {
+  "id": "glas",
+  "name": "GLAS",
+  "ref": "40",
+  "paper": "https://doi.org/10.1039/D4DD00253A",
+  "org": "Swiss Cat+ West Hub, École Polytechnique Fédérale de Lausanne (EPFL)",
+  "city": "Lausanne",
+  "country": "Switzerland",
+  "lat": 46.5191,
+  "lng": 6.5668,
+  "website": "https://swisscatplus.ch",
+  "repo": "https://github.com/swisscatplus/glas",
+  "docs": "https://github.com/swisscatplus/glas/wiki",
+  "logo": "https://github.com/swisscatplus.png?size=96",
+  "family": "bespoke",
+  "mech": "Custom hierarchical Node/Workflow architecture over REST",
+  "standards": [
+   "REST (scheduler interface)",
+   "ROS 2 (device/adapter layer)",
+   "RTDE (device/adapter layer)",
+   "TCP (device/adapter layer)",
+   "ADS (device/adapter layer)",
+   "Serial (device/adapter layer)",
+   "DLL (device/adapter layer)",
+   "Vendor-specific APIs (device/adapter layer)"
+  ],
+  "notes": "Git-based Python framework with layered main and sub-schedulers; JSON task submission; protocol-agnostic device adapters; MySQL-backed task, node, workflow, state and log persistence; deployed at Swiss Cat+.",
+  "license": "MIT",
   "verified": true
  },
  {
   "id": "helao",
   "name": "HELAO-async",
-  "ref": "37",
+  "ref": "41",
   "paper": "https://doi.org/10.1002/admi.202101987",
   "org": "High-Throughput Experimentation group (Gregoire), Caltech; with KIT / Helmholtz Institute Ulm",
   "city": "Pasadena, CA",
@@ -157,17 +187,17 @@ window.TOOLS = [
   "optional": true,
   "mech": "Custom HelaoDriver abstract base class",
   "standards": [
-   "OPC UA (declared dependency)",
-   "Modbus (declared dependency)"
+   "OPC UA (declared dependency, asyncua)",
+   "Modbus (declared dependency, pymodbus)"
   ],
-  "notes": "asyncua and pymodbus are declared dependencies; shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
+  "notes": "Shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
   "license": "MIT",
   "verified": true
  },
  {
   "id": "ivoryos",
   "name": "IvoryOS",
-  "ref": "38",
+  "ref": "42",
   "paper": "https://doi.org/10.1038/s41467-025-60514-w",
   "org": "Hein Group, University of British Columbia",
   "city": "Vancouver, BC",
@@ -181,14 +211,14 @@ window.TOOLS = [
   "family": "bespoke",
   "mech": "Dynamic function introspection (Flask)",
   "standards": [],
-  "notes": "Standard-agnostic by design: exposes any Python module via a dynamically generated web interface.",
+  "notes": "Standard-agnostic by design: exposes any module via a dynamically generated web interface.",
   "license": "MIT",
   "verified": true
  },
  {
   "id": "madsci",
   "name": "MADSci",
-  "ref": "39",
+  "ref": "43",
   "paper": "https://doi.org/10.21105/joss.09416",
   "org": "Argonne National Laboratory, Data Science and Learning Division",
   "city": "Lemont, IL",
@@ -201,7 +231,7 @@ window.TOOLS = [
   "logo": "https://github.com/AD-SDL.png?size=96",
   "family": "formal",
   "optional": true,
-  "mech": "Custom AbstractNode / RestNode module over REST",
+  "mech": "Custom AbstractNode/RestNode module over REST",
   "standards": [
    "SiLA 2 (optional)"
   ],
@@ -212,7 +242,7 @@ window.TOOLS = [
  {
   "id": "minerva",
   "name": "MINERVA-OS",
-  "ref": "22",
+  "ref": "24",
   "paper": "https://doi.org/10.1021/acsnano.4c17504",
   "org": "Federal Institute for Materials Research and Testing (BAM), Division 6.7",
   "city": "Berlin",
@@ -220,21 +250,20 @@ window.TOOLS = [
   "lat": 52.43,
   "lng": 13.53,
   "website": "https://www.bam.de",
-  "repo": "",
+  "repo": "https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva",
   "docs": "",
   "logo": "https://github.com/BAMresearch.png?size=96",
   "family": "bespoke",
   "mech": "Custom ABC hierarchy",
   "standards": [],
-  "notes": "pyserial and pythonnet for proprietary instruments. Components published with the ACS Nano paper and its SI.",
+  "notes": "pyserial and pythonnet for proprietary instruments.",
   "license": "MIT",
-  "verified": false,
-  "unverified": "No public repository located; the project describes all components as publicly available."
+  "verified": true
  },
  {
   "id": "nimo",
   "name": "NIMO",
-  "ref": "40–43",
+  "ref": "44–47",
   "paper": "https://arxiv.org/abs/2605.15227",
   "org": "National Institute for Materials Science (NIMS), Center for Basic Research on Materials",
   "city": "Tsukuba",
@@ -246,18 +275,18 @@ window.TOOLS = [
   "docs": "",
   "logo": "https://github.com/NIMS-DA.png?size=96",
   "family": "agentic",
-  "mech": "MCP (model-facing, agentic)",
+  "mech": "MCP",
   "standards": [
-   "MCP"
+   "MCP (information-exchange layer)"
   ],
-  "notes": "Device integration is provided by the NIMO Controller; MCP connects a language-model agent to the decision engine and to laboratory devices. MCP is a model-facing natural-language interface, not a formally governed type system.",
+  "notes": "Device integration provided by the NIMO Controller; MCP connects a language-model agent to the NIMO decision engine and to laboratory devices. MCP is a governed model-facing tool protocol with JSON Schema typing, but without a shared laboratory-device vocabulary.",
   "license": "MIT",
   "verified": true
  },
  {
   "id": "ochra",
   "name": "OChRA",
-  "ref": "44",
+  "ref": "48",
   "paper": "https://github.com/OChRA-lab/ochra",
   "org": "OChRA team (Open Chemistry Robotics and Automation)",
   "city": "Liverpool",
@@ -279,7 +308,7 @@ window.TOOLS = [
  {
   "id": "octopus",
   "name": "OCTOPUS",
-  "ref": "45",
+  "ref": "49",
   "paper": "https://doi.org/10.1038/s41467-024-54067-7",
   "org": "Korea Institute of Science and Technology (KIST), Computational Science Research Center",
   "city": "Seoul",
@@ -300,7 +329,7 @@ window.TOOLS = [
  {
   "id": "place",
   "name": "PLACE",
-  "ref": "46",
+  "ref": "50",
   "paper": "https://doi.org/10.1177/2211068214553022",
   "org": "Physical Acoustics Lab, University of Auckland",
   "city": "Auckland",
@@ -314,14 +343,14 @@ window.TOOLS = [
   "family": "bespoke",
   "mech": "Custom Instrument base class with plugin-per-vendor",
   "standards": [],
-  "notes": "Each vendor device is implemented as a separate plugin.",
+  "notes": "Each vendor device implemented as a separate plugin.",
   "license": "LGPL-3.0",
   "verified": true
  },
  {
   "id": "robochem",
   "name": "RoboChem-Flex / OmniPlatypus",
-  "ref": "47",
+  "ref": "51",
   "paper": "https://doi.org/10.1038/s44160-026-01053-0",
   "org": "Noël Group, Van ’t Hoff Institute for Molecular Sciences, University of Amsterdam",
   "city": "Amsterdam",
@@ -335,14 +364,14 @@ window.TOOLS = [
   "family": "bespoke",
   "mech": "Custom BaseDevice abstraction with protocol- and vendor-specific subclasses",
   "standards": [],
-  "notes": "Common device interface exposes named parameters and metadata; subclasses support serial, TCP socket, Modbus and vendor XML; USB-serial devices are auto-identified from stored hardware IDs.",
+  "notes": "Common device interface exposes named parameters and associated metadata; device-specific implementations support serial, TCP socket, Modbus and vendor-specific XML communication; USB-serial devices are auto-identified from stored hardware identifiers.",
   "license": "Apache-2.0",
   "verified": true
  },
  {
   "id": "unilabos",
   "name": "UniLabOS",
-  "ref": "48",
+  "ref": "52",
   "paper": "https://arxiv.org/abs/2512.21766",
   "org": "DP Technology / DeepModeling community",
   "city": "Beijing",
@@ -356,9 +385,9 @@ window.TOOLS = [
   "family": "formal",
   "mech": "ROS 2 (primary communication fabric)",
   "standards": [
-   "ROS 2",
-   "OPC UA (adapter)",
-   "Modbus (adapter)"
+   "ROS 2 (primary)",
+   "OPC UA (adapter module)",
+   "Modbus (adapter module)"
   ],
   "notes": "Dedicated device_comms/opcua_client/ module; asyncua and pymodbus declared dependencies.",
   "license": "GPL-3.0",
@@ -369,19 +398,19 @@ window.TOOLS = [
 /* Projects the paper deliberately excludes (orchestrators/_excluded.yml). */
 window.EXCLUDED = [
  {
-  "name": "FireWorks [26]",
+  "name": "FireWorks [29]",
   "why": "Computational-workflow manager for HPC jobs."
  },
  {
-  "name": "AiiDA [27]",
+  "name": "AiiDA [30]",
   "why": "Computational-workflow manager for HPC jobs."
  },
  {
-  "name": "FINALES2 [28]",
+  "name": "FINALES2 [31]",
   "why": "Inter-lab federation broker."
  },
  {
-  "name": "XDL [29, 30]",
+  "name": "XDL [32, 33]",
   "why": "Procedure-level description language that compiles to platform-specific execution."
  }
 ];

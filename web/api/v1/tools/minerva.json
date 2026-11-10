@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-18T03:32:22.579Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "item": {
     "id": "minerva",
@@ -19,19 +19,18 @@
     "integrationMechanism": "Custom ABC hierarchy",
     "standards": [],
     "standardsBase": [],
-    "notes": "pyserial and pythonnet for proprietary instruments. Components published with the ACS Nano paper and its SI.",
+    "notes": "pyserial and pythonnet for proprietary instruments.",
     "license": "MIT",
     "links": {
       "website": "https://www.bam.de",
-      "repository": null,
+      "repository": "https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva",
       "docs": null,
       "paper": "https://doi.org/10.1021/acsnano.4c17504",
       "logo": "https://github.com/BAMresearch.png?size=96"
     },
-    "verified": false,
-    "unverifiedFields": "No public repository located; the project describes all components as publicly available.",
-    "publicScorecards": [],
+    "verified": true,
+    "unverifiedFields": null,
     "href": "/api/v1/tools/minerva.json",
-    "webUrl": "/#map/minerva"
+    "webUrl": "/#orchestrators/minerva"
   }
 }

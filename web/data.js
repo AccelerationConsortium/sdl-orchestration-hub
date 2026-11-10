@@ -145,3 +145,100 @@ window.EVIDENCE = [
   "Result-retrieval example",
   "Description of recovery behaviour after communication loss or process restart"
 ];
+
+/* The paper's five-layer model (Table 1, Fig. 2), top to bottom, with where each layer is
+   covered on this site. MCP is a peer interface spanning layers 4 and 3, not a layer above. */
+window.STACK = [
+  { n: 5, name: "Orchestration", does: "Composes device operations into experiments and workflows: scheduling, labware state, recovery, audit.",
+    examples: "ChemOS 2.0, Bluesky, MADSci, AlabOS …", scope: "Surveyed", links: [["#orchestrators", "Orchestrators"]] },
+  { n: 4, name: "Information exchange", does: "Defines what messages carry: typed commands, properties, state, events and errors in a domain vocabulary.",
+    examples: "SiLA 2, OPC UA + LADS, REST + OpenAPI, MCP tool contracts", scope: "Primary focus", focus: true, links: [["#standards", "Standards"], ["#scorecard", "Scorecard"], ["#tutorials", "Tutorials"]] },
+  { n: 3, name: "Consumer / client", does: "A client on one host that turns workflow intent into concrete device calls.",
+    examples: "SiLA / OPC UA clients, vendor SDKs, PyLabRobot backends, connectors", scope: "Secondary focus", links: [["#tutorials", "Tutorials"]] },
+  { n: 2, name: "Communication protocol", does: "Message framing, addressing and request/response semantics.",
+    examples: "gRPC, HTTP, Modbus, OPC UA binary", scope: "Precondition" },
+  { n: 1, name: "Transport", does: "Moves bytes between two endpoints.",
+    examples: "USB, RS-232/485, Ethernet, TCP/IP", scope: "Precondition" }
+];
+
+/* Instrument groups, from the paper's scope statement. `id` is what devices/*.yml stores in
+   device.group; `types` and `tasks` are suggestions for the scorecard form and the finder. */
+window.INSTRUMENT_GROUPS = [
+  { id: "measurement", name: "Measurement and analysis", examples: "plate readers, HPLCs, spectrometers",
+    types: ["Plate reader", "HPLC / UHPLC", "Gas chromatograph", "Mass spectrometer", "NMR spectrometer", "Spectrometer (UV-Vis, IR, Raman)", "Microscope / imager", "Flow cytometer", "Sequencer", "Electrochemical workstation"],
+    tasks: ["absorbance", "fluorescence", "luminescence", "chromatography", "mass spectrometry", "NMR", "spectroscopy", "imaging", "electrochemistry", "cell analysis"] },
+  { id: "reaction", name: "Reaction hardware", examples: "batch and flow reactors",
+    types: ["Batch reactor", "Flow reactor", "Photoreactor", "Parallel synthesizer"],
+    tasks: ["synthesis", "flow chemistry", "photochemistry", "heating / cooling"] },
+  { id: "sample-handling", name: "Sample handling and preparation", examples: "liquid handlers, sealers, heater-shakers, centrifuges, autosamplers",
+    types: ["Liquid handler", "Dispenser", "Plate sealer / peeler", "Heater-shaker", "Centrifuge", "Incubator", "Autosampler", "Automated store / plate hotel"],
+    tasks: ["liquid transfer", "dispensing", "sealing", "mixing / shaking", "centrifugation", "incubation", "sample injection", "storage"] },
+  { id: "process-control", name: "Process sensing and control", examples: "balances, sensors, pumps, valves, flow controllers, cameras",
+    types: ["Balance", "pH / conductivity meter", "Temperature / pressure sensor", "Pump", "Valve", "Flow sensor / controller", "Chiller / thermostat", "Camera / vision sensor", "Barcode / RFID reader"],
+    tasks: ["weighing", "pH measurement", "temperature control", "pressure control", "pumping", "flow control", "visual inspection", "sample tracking"] },
+  { id: "labware-robot", name: "Labware-moving robots", examples: "plate movers, robot arms, mobile manipulators",
+    types: ["Plate mover / robot arm", "Mobile manipulator", "Gantry / track"],
+    tasks: ["labware transport", "pick and place"] }
+];
+
+/* Control interfaces an evaluation can name (the endpoint scored, and others offered). */
+window.INTERFACES = ["SiLA 2", "OPC UA + LADS", "REST + OpenAPI", "MCP", "Vendor SDK", "Other"];
+
+/* Instrument finder: plain-language requirement for each criterion, and presets built from the
+   paper's guidance (conditional floors, cell-integration floors, regulated use). */
+window.REQ_LABELS = {
+  1: "Controllable over the network from the orchestrator", 2: "Typed parameters with units and limits", 3: "Machine-readable errors",
+  4: "API access included; integration code reusable", 5: "Results retrievable without the vendor GUI", 6: "Describes its own capabilities at runtime",
+  7: "Reports progress and state while running", 8: "Ships a working reference client", 9: "Safe locking when several clients connect",
+  10: "Reports idle / busy / error states", 11: "Results survive restarts and are addressable", 12: "Reports calibration and maintenance state",
+  13: "Versioned API with deprecation policy", 14: "Simulator for testing before purchase", 15: "Detects lost control and supports a safe state",
+  16: "Classifies errors for automatic recovery", 17: "Conformance or certification evidence", 18: "Works from any operating system",
+  19: "A robot can load and unload it", 20: "Tells a robot when it is safe to reach in", 21: "Reports hardware safety stops"
+};
+window.REQ_PRESETS = [
+  { id: "unattended", name: "Unattended, hazardous operation", why: "The C7 and C15 conditional floors, plus C21 for hazardous motion.", req: { 7: "P", 15: "P", 21: "P" } },
+  { id: "workcell", name: "Robotic workcell", why: "Cell-integration floor (C19) and the C20/C21 local floors.", req: { 19: "P", 20: "P", 21: "P" }, cell: true },
+  { id: "offline-dev", name: "Develop before the instrument arrives", why: "A simulator and a reference client let you build the integration first.", req: { 8: "G", 14: "G" } },
+  { id: "regulated", name: "Regulated or validated lab", why: "Version pinning, conformance evidence and self-state for qualification.", req: { 12: "P", 13: "G", 17: "G" } }
+];
+
+/* Tutorials: resources from the 2026 Device Integration Hackathon
+   (https://sites.google.com/view/deviceintegrationhackathon/home/links-and-resources). */
+window.TUTORIALS = {
+  source: { name: "Device Integration Hackathon 2026", url: "https://sites.google.com/view/deviceintegrationhackathon/home", resources: "https://sites.google.com/view/deviceintegrationhackathon/home/links-and-resources", contact: "willi.gottstein@utoronto.ca" },
+  path: [
+    { step: "Set up", title: "Prepare your computer", items: [
+      { title: "Installation guide", url: "https://docs.unitelabs.io/connector-development/getting-started/installation/#prerequisites", kind: "Docs", by: "UniteLabs", desc: "Setup steps for building connectors with the Connector Development Kit (CDK)." },
+      { title: "Hardware requirements and a complete minimal example", url: "https://docs.google.com/document/d/1TVBsz6kFL6aHarG8sddsYICyvp7qM-5MikkWJVkFVhQ/edit?usp=sharing", kind: "Google Doc", by: "Hackathon", desc: "The hardware you need, plus a fully worked minimal example." }
+    ] },
+    { step: "Learn", title: "Learn SiLA 2 and the CDK", items: [
+      { title: "Connector Development Kit documentation", url: "https://docs.unitelabs.io/connector-development/", kind: "Docs", by: "UniteLabs", desc: "A tutorial on SiLA basics and writing SiLA servers with the CDK, plus guides on configuration and error handling." },
+      { title: "Tutorial connector", url: "https://gitlab.com/unitelabs/examples/tutorial", kind: "Code (GitLab)", by: "UniteLabs", desc: "A pre-written connector with all of the documentation's example code, for working through the tutorial interactively." },
+      { title: "From manual to SiLA server (slides)", url: "https://docs.google.com/presentation/d/1ym9iJ2CFji4BOO8w0RxeLiL7oA1wouZbJY7tP0LjVQQ/edit?usp=sharing", kind: "Slides", by: "Hackathon", desc: "A practical guide to building a SiLA server with the Python CDK. The deep dive is in hidden slides for reference." }
+    ] },
+    { step: "Design", title: "Turn instrument documentation into SiLA Features", items: [
+      { title: "Intro to the SiLA Feature Generator (slides)", url: "https://drive.google.com/file/d/1YpGhqRno8xzIolZ0NM_3KmTyKgBmDnOh/view?usp=drive_link", kind: "Slides", by: "Hackathon", desc: "How to turn instrument documentation into downloadable SiLA 2 Feature XML definitions." },
+      { title: "SiLA Feature XML Generator", url: "https://sila-feature-gen.pages.dev/", kind: "Tool", by: "Hackathon", desc: "Extracts and designs Feature XMLs from device documentation.", note: "Registered participants only.", extra: { title: "Registration form", url: "https://airtable.com/appYBjHgttvBuz3XR/paga3fOK3rkLzXhYc/form" } }
+    ] },
+    { step: "Build", title: "Start your own connector", items: [
+      { title: "Connector Factory project template", url: "https://gitlab.com/unitelabs/cdk/connector-factory", kind: "Code (GitLab)", by: "UniteLabs", desc: "Boilerplate for starting a Python connector application." },
+      { title: "Hackathon code repository", url: "https://gitlab.com/unitelabs/events/device-integration-hackathon-2026", kind: "Code (GitLab)", by: "Hackathon", desc: "Additional coding resources from the hackathon, for public use." }
+    ] }
+  ],
+  /* Paper-grounded advice for anyone writing a driver or connector (Scenario-driven guidance and C-criteria rationale). */
+  tips: [
+    ["Type it from day one", "Even in a frugal setup, put device code behind a minimal typed interface with units, constraints and error objects, so wrapping it later as a SiLA 2 or LADS service is a refactor, not a rewrite."],
+    ["Keep the wrapper thin", "A connector exposes the instrument. Labware state, scheduling and coordination belong in the orchestrator."],
+    ["Never block the event loop", "Call blocking vendor SDKs, serial ports or COM/.NET code from worker threads or processes."],
+    ["Map command lifecycles", "Bridge Started / Running / Finished / Cancelled into the orchestrator's state machine so progress and recovery stay observable (C7, C10)."],
+    ["Errors are data", "Return structured errors with a stable identifier and context (C3, C16). The same holds for MCP servers: define types, units and output schemas deliberately."],
+    ["Ship a simulator", "A drop-in simulator with fault injection lets others build and test against your connector before touching hardware (C14)."]
+  ],
+  /* Reference implementations and generic clients named in the paper. */
+  refs: [
+    { title: "SiLA 2 open-source implementations", url: "https://gitlab.com/SiLA2", desc: "The SiLA Consortium's GitLab group: reference implementations in several languages." },
+    { title: "LADS OPC UA", url: "https://github.com/opcua-lads", desc: "Open-source LADS examples and tooling from the OPC UA LADS community." },
+    { title: "PyLabRobot", url: "https://github.com/PyLabRobot/pylabrobot", desc: "Hardware-agnostic Python interface for liquid handlers and accessories, with a browser simulator." },
+    { title: "MCP Inspector", url: "https://github.com/modelcontextprotocol/inspector", desc: "Generic client for testing Model Context Protocol servers." }
+  ]
+};

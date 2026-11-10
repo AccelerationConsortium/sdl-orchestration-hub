@@ -15,10 +15,10 @@ const OUT = path.join(ROOT, "api", "v1");
 const ctx = { console };
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ["config.js", "tools.js", "data.js", "grading.js", "scorecards.js", "scorecard-data.js", "sync.js", "team.js", "score.js"]) {
+for (const f of ["config.js", "tools.js", "data.js", "grading.js", "scorecards.js", "scorecard-data.js", "sync.js", "score.js"]) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), ctx, { filename: f });
 }
-const { SITE, TOOLS, EXCLUDED, STANDARDS, SCENARIOS, CYBER, CRITERIA, EVIDENCE, GRADING, PUBLIC_SCORECARDS, SDLScore } = ctx;
+const { SITE, TOOLS, EXCLUDED, STANDARDS, SCENARIOS, CYBER, CRITERIA, EVIDENCE, GRADING, PUBLIC_SCORECARDS, SDLScore, INSTRUMENT_GROUPS, TUTORIALS } = ctx;
 const VERSION = SITE.apiVersion || "v1";
 const BASE = (SITE.siteUrl || "").replace(/\/$/, "");
 const href = p => `${BASE}/api/${VERSION}/${p}`;
@@ -33,7 +33,7 @@ const meta = extra => Object.assign({ api: `sdl-device-integration/${VERSION}`, 
 
 const FAMILY = { formal: "Formal standard", hal: "Hardware-abstraction layer", agentic: "Model-facing (MCP)", bespoke: "Bespoke conventions" };
 const TIER = { C: "critical", I: "important", X: "cell_integration" };
-const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
+const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Switzerland: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
 const stdBase = s => s.replace(/\s*\(.*\)\s*$/, "").trim();
 const NA_OK = new Set(ctx.NA_OK || []);
 
@@ -41,8 +41,8 @@ const NA_OK = new Set(ctx.NA_OK || []);
 const scorecards = PUBLIC_SCORECARDS.map(sc => {
   const r = SDLScore.evaluate(sc, { criteria: CRITERIA, cyberCount: CYBER.length });
   return {
-    id: sc.id, instrument: sc.vendor, instrumentClass: sc.instrumentClass || null, endpoint: sc.endpoint, architecture: sc.arch,
-    targetOrchestrator: sc.orch || null, targetOrchestratorId: (TOOLS.find(t => t.name === sc.orch) || {}).id || null,
+    id: sc.id, instrument: sc.vendor, instrumentClass: sc.instrumentClass || null, group: sc.group || null, tasks: sc.tasks || [],
+    endpoint: sc.endpoint, interfaces: sc.interfaces || [], architecture: sc.arch,
     date: sc.date || null, source: sc.source || null, submittedBy: sc.submittedBy || null,
     deployment: sc.ctx,
     grades: Object.fromEntries(CRITERIA.map(c => [`C${c.n}`, sc.grades[c.n] ?? null])),
@@ -58,8 +58,11 @@ const scorecards = PUBLIC_SCORECARDS.map(sc => {
 });
 
 /* ---------- tools ---------- */
+// Every curated orchestrator's country must map to a region (the map/explorer filter and
+// tools.json use it); keep this list in sync with REGION in app.js.
+const unmapped = [...new Set(TOOLS.map(t => t.country).filter(c => c && !REGION[c]))];
+if (unmapped.length) { console.error(`REGION has no entry for: ${unmapped.join(", ")} (add them here and in app.js)`); process.exit(1); }
 const tools = TOOLS.map(t => {
-  const own = scorecards.filter(s => s.targetOrchestratorId === t.id);
   return {
     id: t.id, name: t.name,
     organisation: t.org, city: t.city || null, country: t.country || null, region: REGION[t.country] || "Other",
@@ -69,8 +72,7 @@ const tools = TOOLS.map(t => {
     notes: t.notes || null, license: t.license || null,
     links: { website: t.website || null, repository: t.repo || null, docs: t.docs || null, paper: t.paper || null, logo: t.logo || null },
     verified: t.verified !== false, unverifiedFields: t.verified === false ? t.unverified || null : null,
-    publicScorecards: own.map(s => ({ id: s.id, status: s.result.status, standalone: s.result.standalone, href: href(`scorecards/${s.id}.json`) })),
-    href: href(`tools/${t.id}.json`), webUrl: `${BASE}/#map/${t.id}`
+    href: href(`tools/${t.id}.json`), webUrl: `${BASE}/#orchestrators/${t.id}`
   };
 });
 
@@ -118,7 +120,6 @@ const evaluationSchema = {
     vendor: { type: "string", description: "Instrument / vendor name" },
     endpoint: { enum: ["SiLA 2", "OPC UA + LADS", "REST + OpenAPI", "MCP", "Other"] },
     arch: { enum: ["Native endpoint", "Vendor edge-controller", "Third-party gateway"] },
-    orch: { type: "string", description: "Target orchestrator name (a tools.json name, or free text)" },
     date: { type: "string", format: "date" },
     ctx: { type: "object", properties: Object.fromEntries(["cell", "hazard", "unattended", "networked", "isolated", "isoAccepted", "surfaceDoc", "c20local", "c21local"].map(k => [k, { type: "boolean" }])), additionalProperties: false },
     cyber: { type: "array", items: { type: "boolean" }, minItems: CYBER.length, maxItems: CYBER.length, description: "Precondition deliverables, in the order of rules.json preconditionDeliverables" },
@@ -135,7 +136,11 @@ const evaluationSchema = {
     c21fallback: { type: "boolean" }, c21aNA: { type: "boolean" },
     c21powerPath: { type: "boolean", description: "C21 sub-test (a) via power-interruption exception path without cell-controller evidence (caps C21 at Partial)" },
     c21naVerified: { type: "boolean", description: "C21 N/A verified by schematic, safety I/O declaration or integrator" },
-    model: { type: "string" }, scorecardVersion: { type: "string", description: "Criteria-set version the evaluation was scored against" },
+    model: { type: "string" }, instrumentClass: { type: "string", description: "Instrument type, e.g. plate reader" },
+    group: { enum: ["", ...INSTRUMENT_GROUPS.map(g => g.id)], description: "Instrument group (see instrument-groups.json)" },
+    tasks: { type: "array", items: { type: "string" }, description: "What the instrument is used for" },
+    interfaces: { type: "array", items: { type: "string" }, description: "Every control interface the vendor offers" },
+    scorecardVersion: { type: "string", description: "Criteria-set version the evaluation was scored against" },
     reqChecks: { type: "object", description: "Ticked MUST/SHOULD requirement items per criterion" },
     evidence: { type: "array", items: { type: "boolean" } }
   }
@@ -153,7 +158,7 @@ const toolSchema = {
     notes: { type: ["string", "null"] }, license: { type: ["string", "null"] },
     links: { type: "object", additionalProperties: { type: ["string", "null"] } },
     verified: { type: "boolean" }, unverifiedFields: { type: ["string", "null"] },
-    publicScorecards: { type: "array" }, href: { type: "string" }, webUrl: { type: "string" }
+    href: { type: "string" }, webUrl: { type: "string" }
   }
 };
 
@@ -165,7 +170,7 @@ fs.rmSync(OUT, { recursive: true, force: true });
 if (snap) { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(SNAP, snap); }
 const endpoints = [];
 const add = (rel, data, description, schema) => { write(rel, data); endpoints.push({ path: `/api/${VERSION}/${rel}`, href: href(rel), description, schema: schema || null }); };
-add("tools.json", meta({ count: tools.length, items: tools, excluded: EXCLUDED.map(x => ({ name: x.name.replace(/\s*\[[^\]]*\]/, ""), why: x.why })) }), "All surveyed orchestrators with location, links, integration mechanism, standards and linked public scorecards.", href("schema/tool.schema.json"));
+add("tools.json", meta({ count: tools.length, items: tools, excluded: EXCLUDED.map(x => ({ name: x.name.replace(/\s*\[[^\]]*\]/, ""), why: x.why })) }), "All surveyed orchestrators with location, links, integration mechanism and standards.", href("schema/tool.schema.json"));
 for (const t of tools) write(`tools/${t.id}.json`, meta({ item: t }));
 endpoints.push({ path: `/api/${VERSION}/tools/{id}.json`, href: href("tools/{id}.json"), description: "One orchestrator by id.", schema: href("schema/tool.schema.json") });
 add("criteria.json", meta({ count: criteria.length, items: criteria }), "Criteria C1–C21: tier, default weight, what each checks, how to test it, and the Pass/Partial/Fail rule.");
@@ -174,6 +179,8 @@ add("scorecards.json", meta({ count: scorecards.length, items: scorecards }), "P
 for (const s of scorecards) write(`scorecards/${s.id}.json`, meta({ item: s }));
 endpoints.push({ path: `/api/${VERSION}/scorecards/{id}.json`, href: href("scorecards/{id}.json"), description: "One public scorecard by id." });
 add("scenarios.json", meta({ count: SCENARIOS.length, items: SCENARIOS.map(s => ({ id: s.id, name: s.name, profile: s.profile, recommendation: s.rec, why: s.why, tradeoffs: s.tradeoff, recommendedStandards: (s.stdCols || []).map(i => STANDARDS.cols[i]) })), precedence: ["multisite", "robotics", "regulated", "instrument count (few → frugal, many → shared)"] }), "Deployment archetypes with recommended default integration boundary.");
+add("instrument-groups.json", meta({ items: INSTRUMENT_GROUPS }), "Instrument groups (from the paper's scope statement) with suggested types and tasks, used to tag scorecards.");
+add("tutorials.json", meta(TUTORIALS), "Learning path and resources for building device connectors (2026 Device Integration Hackathon), plus the paper's advice for connector authors.");
 add("standards.json", meta({ interfaces: STANDARDS.cols, criteria: STANDARDS.rows.map(([name, vals]) => ({ criterion: name, ratings: Object.fromEntries(STANDARDS.cols.map((c, i) => [c, vals[i]])) })), note: STANDARDS.note }), "Standards comparison: SiLA 2, OPC UA + LADS, typical REST, MCP.");
 write("schema/evaluation.schema.json", evaluationSchema);
 write("schema/tool.schema.json", toolSchema);
@@ -186,7 +193,7 @@ endpoints.push({ path: "/score.js", href: `${BASE}/score.js`, description: "Scor
 /* OpenAPI 3.1 for the static GET endpoints */
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "SDL Device Integration Toolkit API", version: VERSION, description: "Static, read-only JSON describing open-source SDL orchestrators, the autonomous-readiness criteria and public instrument scorecards. All endpoints are plain files; filter client-side." },
+  info: { title: "SDL Orchestration Hub API", version: VERSION, description: "Static, read-only JSON describing open-source SDL orchestrators, the autonomous-readiness criteria and public instrument scorecards. All endpoints are plain files; filter client-side." },
   servers: [{ url: BASE || "/" }],
   paths: Object.fromEntries(endpoints.filter(e => e.path.startsWith("/api/")).map(e => [e.path, { get: {
     summary: e.description, operationId: e.path.replace(/^\/api\/v\d+\//, "").replace(/[{}]/g, "").replace(/[^a-zA-Z0-9]+/g, "_").replace(/_json$/, ""),
@@ -198,21 +205,23 @@ write("openapi.json", openapi);
 endpoints.push({ path: `/api/${VERSION}/openapi.json`, href: href("openapi.json"), description: "OpenAPI 3.1 description of these endpoints." });
 
 write("index.json", meta({
-  name: "SDL Device Integration Toolkit API", version: VERSION, docs: `${BASE}/#api`, llms: `${BASE}/llms.txt`,
+  name: "SDL Orchestration Hub API", version: VERSION, docs: `${BASE}/#api`, llms: `${BASE}/llms.txt`,
   counts: { tools: tools.length, criteria: criteria.length, scorecards: scorecards.length, scenarios: SCENARIOS.length },
   endpoints,
   urlInterface: {
-    map: `${BASE}/#map/{toolId}`,
-    orchestrators: `${BASE}/#orchestrators?q={text}&fam={formal,hal,agentic,bespoke}&std={standard,...}&region={region,...}&lic={licence,...}&req=1&repo=1&docs=1&scored=1&verified=1`,
-    scorecard: `${BASE}/#scorecard`
+    orchestrator: `${BASE}/#orchestrators/{toolId}`,
+    orchestrators: `${BASE}/#orchestrators?view={map,cards,table}&q={text}&fam={formal,hal,agentic,bespoke}&std={standard,...}&region={region,...}&lic={licence,...}&req=1&repo=1&docs=1&verified=1&nopend=1`,
+    instruments: `${BASE}/#instruments?q={task or type}&grp={group,...}&ifc={interface,...}&elig=1&cell=1&req={C7:P,C14:G,...}`,
+    scorecard: `${BASE}/#scorecard`,
+    criterion: `${BASE}/#scorecard/C{n}`
   },
   submit: SITE.repo ? { newOrchestrator: `https://github.com/${SITE.repo}/issues/new?template=new-orchestrator.yml`, newScorecard: `https://github.com/${SITE.repo}/issues/new?template=device-scorecard.yml` } : null
 }));
 
 /* llms.txt — concise guide for language-model agents */
-const llms = `# SDL Device Integration Toolkit
+const llms = `# SDL Orchestration Hub
 
-> Machine-readable companion to the SDL Device Integration Toolkit. It lists open-source SDL orchestrators, defines 21 testable criteria for autonomous-ready instrument interfaces, and publishes instrument scorecards. All data is static JSON; there is no server-side search — fetch and filter.
+> Machine-readable companion to the SDL Orchestration Hub (workflow orchestration and device integration for self-driving labs). It lists open-source SDL orchestrators, defines 21 testable criteria for autonomous-ready instrument interfaces, and publishes instrument scorecards. All data is static JSON; there is no server-side search — fetch and filter.
 
 ## Start here
 - [API index](${href("index.json")}): every endpoint, counts, URL interface, submission links
@@ -224,6 +233,8 @@ const llms = `# SDL Device Integration Toolkit
 - [Scoring rules](${href("rules.json")}): decision order and floors — apply in order; a later step never overrides an earlier one
 - [Public scorecards](${href("scorecards.json")}): instrument evaluations with computed status and totals
 - [Scenarios](${href("scenarios.json")}) and [standards comparison](${href("standards.json")})
+- [Instrument groups](${href("instrument-groups.json")}): the group ids, types and tasks used to tag scorecards
+- [Tutorials](${href("tutorials.json")}): learning path for building device connectors
 
 ## Evaluate an instrument
 1. Build an object matching [evaluation.schema.json](${href("schema/evaluation.schema.json")}). Grades: "G" Pass, "P" Partial, "F" Fail, "NA" (${(ctx.NA_OK || []).map(n => "C" + n).join(", ")} only), keyed by criterion number.
