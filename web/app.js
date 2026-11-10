@@ -116,7 +116,8 @@ const verdictPill = r => `<span class="vpill ${r.cls}">${esc(r.verdict)}</span>`
 function pageHead(title, lede = "", aside = "", eyebrow = "", cls = "") {
   return `<header class="page-head${cls ? " " + cls : ""}"><div>${eyebrow ? `<p class="eyebrow">${eyebrow}</p>` : ""}<h1 class="page-title" id="page-title" tabindex="-1">${title}</h1>${lede ? `<p class="lede">${lede}</p>` : ""}</div>${aside ? `<div class="page-actions">${aside}</div>` : ""}</header>`;
 }
-const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
+// Keep in sync with REGION in scripts/build-api.mjs (the API build fails on an unmapped country).
+const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Switzerland: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
 const regionOf = t => REGION[t.country] || "Other";
 const stdBase = s => s.replace(/\s*\(.*\)\s*$/, "").trim();
 const uniq = a => [...new Set(a)].sort((x, y) => x.localeCompare(y));

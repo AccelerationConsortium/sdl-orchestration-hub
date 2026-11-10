@@ -33,7 +33,7 @@ const meta = extra => Object.assign({ api: `sdl-device-integration/${VERSION}`, 
 
 const FAMILY = { formal: "Formal standard", hal: "Hardware-abstraction layer", agentic: "Model-facing (MCP)", bespoke: "Bespoke conventions" };
 const TIER = { C: "critical", I: "important", X: "cell_integration" };
-const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
+const REGION = { USA: "North America", Canada: "North America", Germany: "Europe", UK: "Europe", Netherlands: "Europe", Switzerland: "Europe", Japan: "Asia", China: "Asia", "Republic of Korea": "Asia", "New Zealand": "Oceania" };
 const stdBase = s => s.replace(/\s*\(.*\)\s*$/, "").trim();
 const NA_OK = new Set(ctx.NA_OK || []);
 
@@ -58,6 +58,10 @@ const scorecards = PUBLIC_SCORECARDS.map(sc => {
 });
 
 /* ---------- tools ---------- */
+// Every curated orchestrator's country must map to a region (the map/explorer filter and
+// tools.json use it); keep this list in sync with REGION in app.js.
+const unmapped = [...new Set(TOOLS.map(t => t.country).filter(c => c && !REGION[c]))];
+if (unmapped.length) { console.error(`REGION has no entry for: ${unmapped.join(", ")} (add them here and in app.js)`); process.exit(1); }
 const tools = TOOLS.map(t => {
   return {
     id: t.id, name: t.name,

@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-10-30T01:38:31.054Z",
+  "generated": "2026-11-09T23:25:45.832Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "count": 17,
   "items": [
@@ -214,7 +214,7 @@
       "organisation": "Swiss Cat+ West Hub, École Polytechnique Fédérale de Lausanne (EPFL)",
       "city": "Lausanne",
       "country": "Switzerland",
-      "region": "Other",
+      "region": "Europe",
       "location": {
         "lat": 46.5191,
         "lng": 6.5668
