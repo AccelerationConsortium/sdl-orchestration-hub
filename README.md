@@ -6,7 +6,9 @@ accompanying paper into a usable, fillable tool: 21 criteria (C1–C21), each gr
 **Fail / Partial / Pass** (some also **N/A**), weighted, and gated by three pass floors.
 
 > This is the **living** version of the scorecard. The paper's supplement is a frozen snapshot;
-> this repository is where the criteria evolve. *(Add paper/DOI link here.)*
+> this repository is where the criteria evolve. Paper (preprint):
+> [Talking to instruments: device-integration standards for self-driving laboratories](https://doi.org/10.26434/chemrxiv.15009990/v2),
+> ChemRxiv, 2026, doi:10.26434/chemrxiv.15009990/v2.
 
 ## Using the scorecard
 
@@ -38,7 +40,7 @@ floor rules.
 There is **one source of truth** and everything else is generated from it:
 
 ```
-criteria/C01.yml … C20.yml   # SOURCE OF TRUTH: one file per criterion
+criteria/C1.yml … C21.yml    # SOURCE OF TRUTH: one file per criterion
 meta.yml                     # SOURCE OF TRUTH: tiers, totals/maxima, pass floors
 schema/criterion.schema.json # the contract each criterion file must satisfy
 build/generate.py            # criteria/*.yml + meta.yml  ->  the files below
@@ -191,4 +193,19 @@ tag to Zenodo for a citable DOI.
 ## License
 
 Content (criteria, scoring model, generated checklists): **CC BY 4.0**. Code under `build/`:
-**MIT**. See [`LICENSE`](LICENSE). If you use the scorecard, please cite the accompanying paper.
+**MIT**. See [`LICENSE`](LICENSE). If you use the scorecard, please cite the accompanying paper:
+
+> Gottstein, W., Bromig, L., et al., Pablo-García, S. *Talking to instruments: device-integration
+> standards for self-driving laboratories.* ChemRxiv (2026).
+> [doi:10.26434/chemrxiv.15009990/v2](https://doi.org/10.26434/chemrxiv.15009990/v2)
+
+```bibtex
+@article{gottstein_talking_2026,
+  title   = {Talking to instruments: device-integration standards for self-driving laboratories},
+  author  = {Gottstein, Willi and Bromig, Lukas and others and Pablo-Garc{\'i}a, Sergio},
+  journal = {ChemRxiv},
+  year    = {2026},
+  doi     = {10.26434/chemrxiv.15009990/v2},
+  url     = {https://doi.org/10.26434/chemrxiv.15009990/v2}
+}
+```

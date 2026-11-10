@@ -3,29 +3,29 @@ name: Orchestrator-reachable programmatic control
 tier: Critical
 weight: 3
 effort: M/L
-summary:
+summary: |-
+  Network-reachable control with operation-correlated reconnect state and a documented, supported endpoint architecture
 applicability:
 requirement: |-
   The autonomous control endpoint, whether native to the instrument or provided through a vendor-supported edge controller, MUST expose documented programmatic control through a network-reachable application protocol over a standard network transport (in practice TCP/IP; current examples include HTTPS, gRPC over HTTP/2, and OPC UA UA-TCP), with documented authentication, session management, and documented behavior when the control connection is lost or interrupted mid-session (the reconnect behavior specified below). The cybersecurity baseline is required as a deployment precondition (enumerated with the other deployment preconditions in the main text) and is not re-scored here. Pass-grade reconnect behavior is one of: successful resumption with state recovery (the server brings the reconnecting client back in sync with the still-running command), clean abort with reported state and defined execution error, or wait-for-explicit-clearance from the reconnecting client. In all three cases, the reconnect response MUST allow the reconnecting client to determine unambiguously—using only a state token exchanged at reconnect time (a command identifier, operation identifier, monotonic state revision, or equivalent value the client compares against its last-known value), without requiring inference from subsequent events or a polling loop after reconnection—whether the previously interrupted command is still active, has completed, has aborted, or is awaiting clearance. A reconnect response that conveys only a human-readable status string is not sufficient, because it does not let the client distinguish "the command you are asking about" from "a different command that happens to be in the same state." For example, an instrument in this mode that is disconnected mid-run holds in a safe state and, on reconnect, neither resumes nor aborts on its own; it waits until the reconnecting orchestrator explicitly commands resume or abort, preventing an unattended disconnect from silently restarting a hazardous step.
 
   Two architectural paths can satisfy this functional requirement, with different operational profiles:
 
-  - Native endpoint: the instrument or its embedded controller exposes the network interface directly, without requiring an external host running vendor software to mediate.
+  - 1) Native endpoint: the instrument or its embedded controller exposes the network interface directly, without requiring an external host running vendor software to mediate.
 
-  - Vendor-supported edge controller meeting the integration-grade bar: a vendor PC, embedded appliance, or workstation that mediates network control, where all of the following are documented and operationally acceptable:
+  - 2) Vendor-supported edge controller meeting the integration-grade bar: a vendor PC, embedded appliance, or workstation that mediates network control, where all of the following are documented and operationally acceptable:
 
-  - supported operating system with a published support window of at least five years from instrument purchase, with a documented path to extend security support for the expected validated lifetime of the instrument (regulated and pharma settings should target seven to ten years or include a migration or upgrade commitment);
+    - (a) supported operating system with a published support window of at least five years from instrument purchase, with a documented path to extend security support for the expected validated lifetime of the instrument (regulated and pharma settings should target seven to ten years or include a migration or upgrade commitment);
 
-  - edge-controller watchdog and recovery behavior: a watchdog timer or supervisory process running on the edge controller itself that automatically detects a crashed or hung control service and triggers a defined recovery action (service or process restart, controller reboot, or failover), as opposed to an external or fleet-monitoring tool; the instrument-side response while the controller is unavailable is covered in item (e);
+    - (b) edge-controller watchdog and recovery behavior: a watchdog timer or supervisory process running on the edge controller itself that automatically detects a crashed or hung control service and triggers a defined recovery action (service or process restart, controller reboot, or failover), as opposed to an external or fleet-monitoring tool; the instrument-side response while the controller is unavailable is covered in item (e);
 
-  - a failure-mode table covering at least edge-controller crash, edge-controller hang, network loss between edge and orchestrator, network loss between edge and instrument, and license-server unavailability;
+    - (c) a failure-mode table covering at least edge-controller crash, edge-controller hang, network loss between edge and orchestrator, network loss between edge and instrument and license-server unavailability;
 
-  - licensing terms disclosed and evaluated under criterion 4 rather than re-scored here;
+    - (d) licensing terms disclosed and evaluated under criterion 4 rather than re-scored here;
 
-  - instrument-side behavior on edge-controller failure consistent with the control-loss handling defined in C15.
+    - (e) instrument-side behavior on edge-controller failure consistent with the control-loss handling defined in C15.
 
-  The architecture path MUST be recorded in the scorecard alongside the C1 entry (as a separate architecture-type annotation,
-  not folded into the numeric C1 grade) as Native endpoint, Vendor edge-controller, or Third-party gateway. A third-party gateway may be recorded as an accepted external mitigation but does not constitute vendor compliance with C1 unless the vendor supports, documents, and validates that gateway as part of the delivered control surface.
+  The architecture path MUST be recorded in the scorecard alongside the C1 entry (as a separate architecture-type annotation, not folded into the numeric C1 grade) as Native endpoint, Vendor edge-controller, or Third-party gateway. A third-party gateway may be recorded as an accepted external mitigation but does not constitute vendor compliance with C1 unless the vendor supports, documents, and validates that gateway as part of the delivered control surface.
 grade_options:
 - Pass
 - Partial
@@ -35,4 +35,4 @@ grading: |-
 test: |-
   From a machine that is not the vendor-supplied workstation, open a connection, issue a documented command, then sever and re-establish the network link mid-session, and verify that the reconnect behavior is one of the three Pass-grade modes above. For edge-controller architectures, additionally request the documentation covering items (a)–(e); verify that the support window, watchdog and recovery behavior, failure-mode table, licensing model, and instrument-side operational response behavior are documented and acceptable.
 rationale: |-
-  Remote programmatic control is the baseline condition for participation in a multi-device orchestrator; closed-loop operation is not possible without it . Native endpoints reduce lifecycle surface, simplify patch management, avoid the physical footprint and license-server dependencies of an external host, and have a smaller failure perimeter. Vendor-supported edge controllers may nevertheless be the only realistic route for high-end analytical instruments whose validated control stack is architecturally inseparable from the vendor workstation (HPLC, GC, mass spectrometers, NMR, electron microscopes). Buyers SHOULD record the endpoint architecture separately from the C1 score and prefer native endpoints when two offerings are otherwise equivalent.
+  Remote programmatic control is the baseline condition for participation in a multi-device orchestrator; closed-loop operation is not possible without it (Abolhasani et al., 2026). Native endpoints reduce lifecycle surface, simplify patch management, avoid the physical footprint and license-server dependencies of an external host, and have a smaller failure perimeter. Vendor-supported edge controllers may nevertheless be the only realistic route for high-end analytical instruments whose validated control stack is architecturally inseparable from the vendor workstation (HPLC, GC, mass spectrometers, NMR, electron microscopes). Buyers SHOULD record the endpoint architecture separately from the C1 score and prefer native endpoints when two offerings are otherwise equivalent.

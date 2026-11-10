@@ -48,10 +48,10 @@ scores:
   C16: { grade: Fail }
   C17: { grade: Fail }
   C18: { grade: Fail }
-  # Cell-integration tier. C19 and C21 may be N/A if you evaluated standalone only.
-  # C20 does not permit N/A in the current criteria set, so it must be graded.
+  # Cell-integration tier — grade only if you evaluated workcell deployment,
+  # otherwise use N/A (or omit if deployment: standalone).
   C19: { grade: "N/A" }
-  C20: { grade: Fail }
+  C20: { grade: "N/A" }
   C21: { grade: "N/A" }
 
 # vendor_response: null             # optional right-of-reply

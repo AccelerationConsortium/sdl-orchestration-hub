@@ -6,7 +6,7 @@ C4,Open API access,Critical,6,,,
 C5,Control-accessible result retrieval,Critical,3,,,
 C6,Runtime self-description,Important,2,,,
 C7,Observable command and property state,Important,2,,,
-C8,Reference client implementation provided,Important,2,,,
+C8,Reference client implementation,Important,2,,,
 C9,Concurrent-access discipline,Important,2,,,
 C10,Machine-readable device and readiness state,Important,2,,,
 C11,Result addressability and durability,Important,2,,,
@@ -21,5 +21,5 @@ C19,Automated load/unload,Cell-integration,2,,,
 C20,Access and motion-readiness coordination,Cell-integration,2,,,
 C21,Safety-event participation,Cell-integration,2,,,
 
-,Standalone total (C1-C17),,,,,max 44
-,Cell-integrated total (C1-C20),,,,,max 50
+,Standalone total (C1-C18),,,,,max 46
+,Cell-integrated total (C1-C21),,,,,max 52

@@ -55,6 +55,7 @@ def render_requirements(text):
     sentences stay as plain bullets. No text is dropped."""
     lines = []
     for seg in text.split("\n"):
+        depth = (len(seg) - len(seg.lstrip(" "))) // 2   # "  - " = nested list item
         seg = seg.strip()
         if not seg:
             continue
@@ -68,7 +69,7 @@ def render_requirements(text):
             if m:
                 disp = re.sub(r'\b' + re.escape(m) + r'\b', f"**{m}**", disp, count=1)
             box = "[ ] " if m in ("MUST", "MUST NOT", "SHOULD", "SHOULD NOT") else ""
-            indent = "  " if sub else ""
+            indent = "  " * (1 + depth) if sub else ""
             lines.append(f"{indent}- {box}{disp}")
     return "\n".join(lines)
 
@@ -110,8 +111,9 @@ def build_markdown(crits, meta):
     for c in crits:
         opts = " ".join(f"☐ {g}" for g in c["grade_options"])
         w(f"| {c['id']} | {c['name']} | {c['tier']} | {c['weight']} | {opts} |\n")
-    w(f"| | **Standalone max (C1–C17)** | | **{meta['totals']['standalone']['max']}** | |\n")
-    w(f"| | **Cell-integrated max (C1–C20)** | | **{meta['totals']['cell_integrated']['max']}** | |\n\n")
+    std, cel = meta["totals"]["standalone"], meta["totals"]["cell_integrated"]
+    w(f"| | **Standalone max ({std['criteria'].replace('-', '–')})** | | **{std['max']}** | |\n")
+    w(f"| | **Cell-integrated max ({cel['criteria'].replace('-', '–')})** | | **{cel['max']}** | |\n\n")
 
     # per-criterion cards
     w("## Criteria\n\n")
@@ -144,8 +146,9 @@ def build_csv(crits, meta):
     for c in crits:
         wr.writerow([c["id"], c["name"], c["tier"], c["weight"], "", "", ""])
     wr.writerow([])
-    wr.writerow(["", "Standalone total (C1-C17)", "", "", "", "", "max 44"])
-    wr.writerow(["", "Cell-integrated total (C1-C20)", "", "", "", "", "max 50"])
+    std, cel = meta["totals"]["standalone"], meta["totals"]["cell_integrated"]
+    wr.writerow(["", f"Standalone total ({std['criteria']})", "", "", "", "", f"max {std['max']}"])
+    wr.writerow(["", f"Cell-integrated total ({cel['criteria']})", "", "", "", "", f"max {cel['max']}"])
     return o.getvalue()
 
 

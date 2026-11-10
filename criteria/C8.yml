@@ -1,19 +1,20 @@
 id: C8
-name: Reference client implementation provided
+name: Reference client implementation
 tier: Important
 weight: 2
 effort: S
-summary:
+summary: |-
+  A usable source, generated-client or protocol-example path, with basic and representative workflow examples
 applicability:
 requirement: |-
-  The vendor SHOULD ship a reference client library, as readable source code rather than only a compiled binary, that is at least one of: a Python or C/C# reference client; a client generated from an open IDL or information model (SiLA FDL, OPC UA NodeSet, OpenAPI, or equivalent); or language-neutral protocol examples sufficient to implement a client without vendor binaries. Because the reference client is example and integration code rather than the vendor's proprietary core, its source can be shipped even where the vendor's own implementation source remains confidential (criterion C4). The client MUST run from a buyer-controlled host, not only from the vendor-supplied workstation. The reference package SHOULD include documented installation steps, working "hello world" example code, and at least one worked example for a nontrivial workflow representative of the instrument class (for a plate reader, load rightarrow kinetic absorbance series rightarrow result retrieval; for an HPLC, method load rightarrow single injection run rightarrow chromatogram result retrieval; for a robot arm, pick-place-handoff to a downstream device).
+  The vendor SHOULD ship a reference client library, as readable source code rather than only a compiled binary, that is at least one of: a Python or C/C# reference client; a client generated from an open IDL or information model (SiLA FDL, OPC UA NodeSet, OpenAPI, or equivalent); or language-neutral protocol examples sufficient to implement a client without vendor binaries. Because the reference client is example and integration code rather than the vendor's proprietary core, its source can be shipped even where the vendor's own implementation source remains confidential (criterion C4). The client MUST run from a buyer-controlled host, not only from the vendor-supplied workstation. The reference package SHOULD include documented installation steps, working "hello world" example code, and at least one worked example for a non-trivial workflow representative of the instrument class (for a plate reader, load → kinetic absorbance series → result retrieval; for an HPLC, method load → single injection run → chromatogram result retrieval; for a robot arm, pick-place-handoff to a downstream device).
 grade_options:
 - Pass
 - Partial
 - Fail
 grading: |-
-  Pass requires both examples reaching their documented end state. Partial covers a working "hello world" without a nontrivial worked example, or a worked example that does not reach its documented end state on a fresh machine. Fail covers no reference package, no generated-client path, and no documented protocol examples sufficient to implement a client without vendor binaries.
+  Pass requires that the reference client is available in one of the acceptable delivery forms and runs from a buyer-controlled host, and that both examples reach their documented end state. Partial covers a working "hello world" without a non-trivial worked example, or a worked example that does not reach its documented end state on a fresh machine. Fail covers no reference package, no generated-client path, and no documented protocol examples sufficient to implement a client without vendor binaries.
 test: |-
-  Follow both the "hello world" and the nontrivial worked example on a fresh machine and verify that each reaches its documented end state.
+  On a buyer-controlled host that is not the vendor-supplied workstation, obtain the reference client in one of its acceptable forms (readable source, a client generated from an open IDL or information model, or documented protocol examples sufficient to implement a client without vendor binaries), then follow both the "hello world" and the non-trivial worked example and verify that each reaches its documented end state.
 rationale: |-
-  A working client library plus a representative worked example often turns first integration from a protocol-engineering task into an installation-and-example task .
+  A working client library plus a representative worked example often turns first integration from a protocol-engineering task into an installation-and-example task (Abolhasani et al., 2026).
