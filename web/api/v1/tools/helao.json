@@ -1,0 +1,42 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "helao",
+    "name": "HELAO-async",
+    "organisation": "High-Throughput Experimentation group (Gregoire), Caltech; with KIT / Helmholtz Institute Ulm",
+    "city": "Pasadena, CA",
+    "country": "USA",
+    "region": "North America",
+    "location": {
+      "lat": 34.1377,
+      "lng": -118.1253
+    },
+    "family": "formal",
+    "familyLabel": "Formal standard",
+    "standardRequired": false,
+    "integrationMechanism": "Custom HelaoDriver abstract base class",
+    "standards": [
+      "OPC UA (declared dependency, asyncua)",
+      "Modbus (declared dependency, pymodbus)"
+    ],
+    "standardsBase": [
+      "OPC UA",
+      "Modbus"
+    ],
+    "notes": "Shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
+    "license": "MIT",
+    "links": {
+      "website": "https://github.com/High-Throughput-Experimentation/helao-async",
+      "repository": "https://github.com/High-Throughput-Experimentation/helao-async",
+      "docs": null,
+      "paper": "https://doi.org/10.1002/admi.202101987",
+      "logo": "https://github.com/High-Throughput-Experimentation.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "href": "/api/v1/tools/helao.json",
+    "webUrl": "/#orchestrators/helao"
+  }
+}

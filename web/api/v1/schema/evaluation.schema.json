@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/api/v1/schema/evaluation.schema.json",
+  "title": "Instrument scorecard evaluation",
+  "description": "One instrument endpoint scored against criteria C1–C21. Same shape the web app exports/imports and score.js evaluates. Grades are keyed by criterion number.",
+  "type": "object",
+  "required": [
+    "vendor",
+    "grades"
+  ],
+  "properties": {
+    "vendor": {
+      "type": "string",
+      "description": "Instrument / vendor name"
+    },
+    "endpoint": {
+      "enum": [
+        "SiLA 2",
+        "OPC UA + LADS",
+        "REST + OpenAPI",
+        "MCP",
+        "Other"
+      ]
+    },
+    "arch": {
+      "enum": [
+        "Native endpoint",
+        "Vendor edge-controller",
+        "Third-party gateway"
+      ]
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "ctx": {
+      "type": "object",
+      "properties": {
+        "cell": {
+          "type": "boolean"
+        },
+        "hazard": {
+          "type": "boolean"
+        },
+        "unattended": {
+          "type": "boolean"
+        },
+        "networked": {
+          "type": "boolean"
+        },
+        "isolated": {
+          "type": "boolean"
+        },
+        "isoAccepted": {
+          "type": "boolean"
+        },
+        "surfaceDoc": {
+          "type": "boolean"
+        },
+        "c20local": {
+          "type": "boolean"
+        },
+        "c21local": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cyber": {
+      "type": "array",
+      "items": {
+        "type": "boolean"
+      },
+      "minItems": 10,
+      "maxItems": 10,
+      "description": "Precondition deliverables, in the order of rules.json preconditionDeliverables"
+    },
+    "grades": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^([1-9]|1[0-9]|2[01])$"
+      },
+      "additionalProperties": {
+        "enum": [
+          "G",
+          "P",
+          "F",
+          "NA"
+        ]
+      }
+    },
+    "notes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "remed": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Remediation commitment text per criterion"
+    },
+    "remedDate": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "format": "date"
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Documented gap acceptance for Important Fails"
+    },
+    "mit": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Documented external mechanism for C15 control-session loss"
+    },
+    "annot": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "C6 partial case; C17 reason code (P-OLD, P-GAP, P-UNDOC)"
+    },
+    "annotDate": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "format": "date"
+      },
+      "description": "C17 P-OLD re-certification roadmap target date"
+    },
+    "c15noReconnect": {
+      "type": "boolean",
+      "description": "C15 reconnect semantics not explicit (caps C15 at Partial)"
+    },
+    "c15fixedDefault": {
+      "type": "boolean",
+      "description": "C15 safe default not configurable/overridable (caps C15 at Partial)"
+    },
+    "c21fallback": {
+      "type": "boolean"
+    },
+    "c21aNA": {
+      "type": "boolean"
+    },
+    "c21powerPath": {
+      "type": "boolean",
+      "description": "C21 sub-test (a) via power-interruption exception path without cell-controller evidence (caps C21 at Partial)"
+    },
+    "c21naVerified": {
+      "type": "boolean",
+      "description": "C21 N/A verified by schematic, safety I/O declaration or integrator"
+    },
+    "model": {
+      "type": "string"
+    },
+    "instrumentClass": {
+      "type": "string",
+      "description": "Instrument type, e.g. plate reader"
+    },
+    "group": {
+      "enum": [
+        "",
+        "measurement",
+        "reaction",
+        "sample-handling",
+        "process-control",
+        "labware-robot"
+      ],
+      "description": "Instrument group (see instrument-groups.json)"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What the instrument is used for"
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Every control interface the vendor offers"
+    },
+    "scorecardVersion": {
+      "type": "string",
+      "description": "Criteria-set version the evaluation was scored against"
+    },
+    "reqChecks": {
+      "type": "object",
+      "description": "Ticked MUST/SHOULD requirement items per criterion"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "boolean"
+      }
+    }
+  }
+}

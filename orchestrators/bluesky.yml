@@ -1,0 +1,24 @@
+id: bluesky
+name: Bluesky + Ophyd
+ref: '36'
+paper: https://doi.org/10.1080/08940886.2019.1608121
+org: NSLS-II, Brookhaven National Laboratory
+city: Upton, NY
+country: USA
+lat: 40.8687
+lng: -72.8786
+website: https://blueskyproject.io
+repo: https://github.com/bluesky/bluesky
+docs: https://blueskyproject.io
+logo: https://github.com/bluesky.png?size=96
+family: hal
+mech: Ophyd hardware-abstraction layer; Bluesky itself is protocol-agnostic
+standards:
+- EPICS (most common)
+- Tango (via Ophyd sub-packages)
+- SCPI (via Ophyd sub-packages)
+- yaq (via Ophyd sub-packages)
+notes: Reference deployment at NSLS-II uses EPICS via pyepics; Bluesky documentation disclaims direct
+  hardware support.
+license: BSD-3-Clause
+verified: true

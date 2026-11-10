@@ -1,0 +1,36 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "minerva",
+    "name": "MINERVA-OS",
+    "organisation": "Federal Institute for Materials Research and Testing (BAM), Division 6.7",
+    "city": "Berlin",
+    "country": "Germany",
+    "region": "Europe",
+    "location": {
+      "lat": 52.43,
+      "lng": 13.53
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom ABC hierarchy",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "pyserial and pythonnet for proprietary instruments.",
+    "license": "MIT",
+    "links": {
+      "website": "https://www.bam.de",
+      "repository": "https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva",
+      "docs": null,
+      "paper": "https://doi.org/10.1021/acsnano.4c17504",
+      "logo": "https://github.com/BAMresearch.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "href": "/api/v1/tools/minerva.json",
+    "webUrl": "/#orchestrators/minerva"
+  }
+}

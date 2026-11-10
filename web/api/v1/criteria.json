@@ -1,0 +1,365 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "count": 21,
+  "items": [
+    {
+      "id": "C1",
+      "n": 1,
+      "name": "Orchestrator-reachable programmatic control",
+      "tier": "critical",
+      "weight": 3,
+      "naAllowed": false,
+      "checks": "Network-reachable control with operation-correlated reconnect state and a documented, supported endpoint architecture.",
+      "test": "From a machine that is not the vendor workstation, issue a command, sever and re-establish the network link mid-session, and determine whether the run completed, aborted or awaits clearance via a command/operation identifier. A human-readable status string alone does not pass. Accepted: native endpoint, or a vendor-supported edge controller with documented OS support window, watchdog behaviour, failure-mode table and instrument-side response if the controller fails.",
+      "effort": "M/L",
+      "grading": {
+        "pass": "Reconnect mode and identifier mechanism documented well enough to implement without trial and error; for edge controllers, items (a)–(e) documented and acceptable (OS support ≥5 yr, watchdog, failure-mode table, licensing under C4, instrument-side response per C15).",
+        "partial": "Reconnect documented but ambiguous (“best-effort”, “graceful”) or without saying how client correlates state; or edge controller falls short on one element (e.g. shorter support window, licence server single point of failure).",
+        "fail": "No reconnect documentation; or undocumented, unsupported, GUI-bound or contractually restricted gateway.",
+        "note": "Record architecture separately: Native endpoint / Vendor edge-controller / Third-party gateway."
+      }
+    },
+    {
+      "id": "C2",
+      "n": 2,
+      "name": "Strong typing with units and constraints",
+      "tier": "critical",
+      "weight": 3,
+      "naAllowed": false,
+      "checks": "Typed inputs and outputs; machine-readable units, constraints, precision and resolution; runtime validation of declared constraints.",
+      "test": "Introspect a parameter and a return value that carry units: expect type, unit, range, resolution and nullability/enum in the contract. Units must come from a declared vocabulary (UCUM, QUDT, SiLA FDL, OPC UA EUInformation/UNECE). Then send an out-of-range value or invalid enum: expect a typed error. Silent coercion or truncation is Partial.",
+      "effort": "S",
+      "grading": {
+        "pass": "Declared types for all parameters and returns; units from a declared vocabulary; machine-readable precision/resolution and constraints (ranges, enums, nullability), plus rounding where the format has a field for it; invalid input rejected with a typed error.",
+        "partial": "Types and units present but precision/resolution or some constraints not machine-readable (e.g. only in free-text docs), or constraints not enforced at runtime (invalid input silently coerced, truncated or accepted).",
+        "fail": "Free-text or absent units; types or units only in docs; no declared types; no machine-readable contract.",
+        "note": null
+      }
+    },
+    {
+      "id": "C3",
+      "n": 3,
+      "name": "Structured error reporting",
+      "tier": "critical",
+      "weight": 3,
+      "naAllowed": false,
+      "checks": "Declared, retrievable typed errors with a message, structured context and a qualifying timestamp or event-sequence record.",
+      "test": "Induce failures from at least two categories: an operational fault (missing sample, door open) and a command/constraint error (out-of-range input, invalid state). Each needs a stable machine-readable identifier, human message, at least one structured context field and a device-anchored timestamp or monotonic sequence ID. Errors must be declared in the contract and persisted. GUI dialogs, log-only diagnostics and silent failures fail.",
+      "effort": "S",
+      "grading": {
+        "pass": "Typed identifier + human message + ≥1 structured context field + timing record (device timestamp with zone and clock-source metadata, or monotonic sequence ID with epoch plus gateway timestamp); error catalog declared in the contract and errors persisted.",
+        "partial": "Identifier and message but no structured context; or all of a–c with only a bare sequence ID (documented why). Error catalog not declared in the contract, or errors not logged/persisted retrievably, caps at Partial.",
+        "fail": "Free-text errors without a stable identifier; GUI-only, log-only or silent failures; or a–c with no timing record and no documented reason.",
+        "note": null
+      }
+    },
+    {
+      "id": "C4",
+      "n": 4,
+      "name": "Open API access",
+      "tier": "critical",
+      "weight": 6,
+      "naAllowed": false,
+      "checks": "Included baseline autonomous API access; reusable and publishable buyer-written integrations; no baseline deployment royalties; documentation where required.",
+      "test": "Read the contract. Is baseline API access in the quoted package without post-purchase gating? (Separately priced optional services that leave it intact are fine.) Can buyer-written integration code be published, reused and run under third-party orchestrators? Assessable by procurement without an engineer. Highest weight because it cannot be fixed by engineering after purchase.",
+      "effort": "M/L",
+      "grading": {
+        "pass": "API access included in the quoted package with no post-purchase gating; buyer-written integration code publishable and reusable under third-party orchestrators; terms explicit at bid time (manual included at no extra cost if the interface is not self-descriptive).",
+        "partial": "Reserved for genuinely ambiguous clauses (whose broadest reading would not itself be a Fail) resolved by a written amendment before purchase.",
+        "fail": "API unavailable for the intended workflow, gated after purchase, restricted to vendor-approved integrations, per-deployment royalties, or ban on publishing/reusing integration code; a Fail-type clause stays Fail unless an amendment fully removes it. Also Fail: manual missing or paywalled when the interface is not self-descriptive.",
+        "note": null
+      }
+    },
+    {
+      "id": "C5",
+      "n": 5,
+      "name": "Control-accessible result retrieval",
+      "tier": "critical",
+      "weight": 3,
+      "naAllowed": false,
+      "checks": "Headless operation outcomes and applicable measurement results and metadata, unambiguously linked to execution.",
+      "test": "Retrieve a representative result from a non-vendor host with headless, licence-compliant tooling. The payload and its metadata (IDs, status, units, timestamps, quality flags) must be bound to the execution ID, inline or via separate properties. Encrypted proprietary formats readable only in vendor software fail.",
+      "effort": "S",
+      "grading": {
+        "pass": "Headless retrieval of the result data itself (the measurement payload) with all applicable mandatory metadata, linked to the control interface.",
+        "partial": "Headless path with the traceability set (execution ID, instrument ID, status, start timestamp with zone, units) and ≤2 other applicable fields missing.",
+        "fail": "GUI-only or manual-export-only retrieval; encrypted or proprietary format readable only in vendor software; traceability IDs not obtainable and bindable to the result.",
+        "note": null
+      }
+    },
+    {
+      "id": "C6",
+      "n": 6,
+      "name": "Runtime self-description",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Runtime capability introspection matching the deployed firmware, installed hardware and module configuration.",
+      "test": "A generic client should enumerate the command surface with no prior knowledge. A served OpenAPI document can pass capability introspection (a), and also state-aware availability (b) if it is scoped to the unit’s actual module configuration.",
+      "effort": "S",
+      "grading": {
+        "pass": "Both sub-tests: (a) runtime capability introspection and (b) state/configuration-aware availability matching the deployed hardware and modules.",
+        "partial": "(a) without (b), or a static contract (OpenAPI/JSON Schema/IDL) without runtime introspection. Record which case applies.",
+        "fail": "No machine-readable contract.",
+        "note": null
+      }
+    },
+    {
+      "id": "C7",
+      "n": 7,
+      "name": "Observable command and property state",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": true,
+      "checks": "Concurrent non-blocking execution status and progress subscriptions, with recommended property and event subscriptions.",
+      "test": "Start a long command; status queries must return without blocking and progress/phase must stream. Conditional floor: for hazardous actuation or shared-resource blocking (most HPLCs, incubators, NMRs, centrifuges) it must score at least Partial.",
+      "effort": "S",
+      "grading": {
+        "pass": "Subscription-based progress for long-running commands and non-blocking concurrent status queries.",
+        "partial": "Either one but not both (a coarse running/idle/complete status queryable concurrently earns ≥ Partial).",
+        "fail": "Neither.",
+        "note": "Conditional floor: hazardous actuation or shared-resource blocking (heuristic: operations routinely >~60 s) MUST score ≥ Partial. A concurrent running/idle status meets the floor."
+      }
+    },
+    {
+      "id": "C8",
+      "n": 8,
+      "name": "Reference client implementation",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "A usable source, generated-client or protocol-example path, with basic and representative workflow examples.",
+      "test": "A working client library plus at least one non-trivial integration example representative of the instrument class.",
+      "effort": "S",
+      "grading": {
+        "pass": "Reference client (source, generated-client or protocol-example path) runs from a buyer-controlled host and both a hello-world and a non-trivial representative example reach their documented end state.",
+        "partial": "Working hello-world only, or a worked example that fails on a fresh machine.",
+        "fail": "No reference package, generated-client path or protocol examples sufficient without vendor binaries.",
+        "note": null
+      }
+    },
+    {
+      "id": "C9",
+      "n": 9,
+      "name": "Concurrent-access discipline",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Atomic locking or documented single-controller exclusion, with ownership, lease and reconnect behaviour and gated clearing where provided.",
+      "test": "Documented atomic lock acquisition, lock-state and ownership visibility, lease/reconnect behaviour, role-gated administrative clear. Persistent audit log is left to the integration layer.",
+      "effort": "M",
+      "grading": {
+        "pass": "Documented atomic locking, lock-state/ownership visibility, lease and reconnect behaviour and role-gated preemption/clear (or, for declared single-controller devices, documented rejection, busy/owned state and lease/reconnect).",
+        "partial": "A subset documented; a bare LockController-style primitive; a single-controller declaration missing owner identity or monitoring exposure; or role-gated preemption whose actions are not attributable.",
+        "fail": "No documented concurrency model, or an ungated clear/preemption any client can use.",
+        "note": null
+      }
+    },
+    {
+      "id": "C10",
+      "n": 10,
+      "name": "Machine-readable device and readiness state",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Named operational states (idle, busy, error, maintenance, awaiting intervention) and machine-readable recovery transitions.",
+      "test": "Read the state after cold boot, initialization, a long operation and an induced failure; each must be a fixed state code. Recovery transitions must be machine-readable; a PDF-only table does not pass.",
+      "effort": "S",
+      "grading": {
+        "pass": "Named operational states exposed through the API and recovery transitions documented in machine-readable form.",
+        "partial": "States without machine-readable transitions, or only a subset of expected states (e.g. idle/busy but no error or maintenance state).",
+        "fail": "No machine-readable state, or only a human-readable status message instead of a fixed state code.",
+        "note": null
+      }
+    },
+    {
+      "id": "C11",
+      "n": 11,
+      "name": "Result addressability and durability",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Stable, execution-linked results retrievable after restart; in-flight and interrupted-run results where applicable.",
+      "test": "Restart client and instrument; the most recent result must remain retrievable by stable ID. Progressive outputs (kinetic reads, chromatograms) should be available incrementally.",
+      "effort": "M",
+      "grading": {
+        "pass": "Stable identifier; result retrievable after client and instrument restart; in-flight increment access for progressive-output instruments.",
+        "partial": "IDs that do not survive a restart; in-flight increment access without command-result linkage; or durable IDs with no in-flight access to increments (the most common gap for plate readers and NMRs).",
+        "fail": "No stable-identifier addressability.",
+        "note": "If a pre-purchase power-cycle test is not feasible, request the result-storage architecture; absence of non-volatile result storage counts toward Partial."
+      }
+    },
+    {
+      "id": "C12",
+      "n": 12,
+      "name": "Instrument self-state",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Applicable calibration and qualification state, usage counters, device configuration and out-of-spec indications through the API.",
+      "test": "Calibration status, qualification state, usage/maintenance counters (lamp hours, cycles, injections) and out-of-spec flags, readable on the same API as commands.",
+      "effort": "S",
+      "grading": {
+        "pass": "Live or triggerable evidence that calibration, qualification/readiness, usage or out-of-spec changes update the exposed self-state through the same API.",
+        "partial": "Documented payloads, static factory evidence or simulator evidence without triggerable state changes.",
+        "fail": "No machine-readable self-state, stale or hard-coded state, or GUI-only.",
+        "note": null
+      }
+    },
+    {
+      "id": "C13",
+      "n": 13,
+      "name": "Versioning discipline",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Version pinning, published versioning and deprecation policies, with deployment-appropriate support commitments.",
+      "test": "Published versioning policy; a deployment can stay on a validated version; long-term support scaled to research vs regulated use.",
+      "effort": "S/M",
+      "grading": {
+        "pass": "Published versioning policy, changelog and deprecation policy; deployment can stay on its validated version. Research-only: ≥1 minor release of notice. Regulated: LTS, ≥12 months’ notice, overlap period, migration and validation guide.",
+        "partial": "Version pinning possible but deployment-appropriate forced-migration conditions not met.",
+        "fail": "No published policy, or breaking changes forced onto running deployments.",
+        "note": null
+      }
+    },
+    {
+      "id": "C14",
+      "n": 14,
+      "name": "Simulation or emulation mode",
+      "tier": "important",
+      "weight": 3,
+      "naAllowed": false,
+      "checks": "A drop-in simulator with configurable fault injection, monotonic event/progress reporting and access/motion-state fidelity.",
+      "test": "Vendor-supplied virtual device exposing the same programmatic interface, able to be driven into failure states on demand, so recovery branches can be exercised before purchase.",
+      "effort": "M",
+      "grading": {
+        "pass": "Drop-in simulator with configurable fault injection, monotonic event/progress reporting and access/motion-state fidelity (sub-tests a–d).",
+        "partial": "Drop-in simulator that can be made to fail (even only via invalid inputs/sequences) but not meeting all of a–d; note the specific gap.",
+        "fail": "No simulator, not drop-in, or can only return success.",
+        "note": null
+      }
+    },
+    {
+      "id": "C15",
+      "n": 15,
+      "name": "Control-loss observability and safe-state support",
+      "tier": "important",
+      "weight": 3,
+      "naAllowed": false,
+      "checks": "Control-session-loss detection and reporting, explicit reconnect semantics; any optional non-safety-rated operational response remains configurable.",
+      "test": "Drop the control session while hardware is active. Loss must be observable so the orchestrator can respond; reconnect behaviour (resume, hold, wait for clearance) must be documented; any context-free safe default must be optional and overridable. Floor: unattended hazardous instruments must not Fail unless a documented external mechanism (cell watchdog, interlock, power-cutoff, orchestrator) handles it.",
+      "effort": "M/L",
+      "grading": {
+        "pass": "Control-session loss is detected and observable through the API; explicit reconnect semantics (resume, hold or wait for clearance); any safe default is configurable and orchestrator-overridable.",
+        "partial": "Loss observable but no configurable safe default, or no explicit reconnect semantics; or a safe default the orchestrator cannot disable.",
+        "fail": "Session loss neither detected nor exposed, or an undocumented autonomous response on disconnect.",
+        "note": "Floor: unattended instruments with active physical hazards must not Fail unless a documented external mechanism handles the loss (cell-level watchdog, hardwired interlock, supervisory power-cutoff or orchestrator-side handling)."
+      }
+    },
+    {
+      "id": "C16",
+      "n": 16,
+      "name": "Error recovery taxonomy",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Fault transience, execution effect, post-error state and recovery class, reporting the limit of vendor knowledge where effect is unknown.",
+      "test": "Each error class carries four fields: transient vs permanent, execution-effect status, post-error device state, recovery class. Induce a transient, a hard fault and a mid-operation fault, plus one per other published category.",
+      "effort": "S",
+      "grading": {
+        "pass": "All four fields (transient/permanent, execution effect, post-error state, recovery class) on every induced error class and on one representative of each published top-level category.",
+        "partial": "A subset of fields, or full taxonomy on some classes only (e.g. the three induced classes but not other published categories).",
+        "fail": "Typed errors with no recovery taxonomy beyond identifier and message.",
+        "note": null
+      }
+    },
+    {
+      "id": "C17",
+      "n": 17,
+      "name": "Conformance and certification",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "Version-tied conformance evidence for both the communication protocol and the implemented device model.",
+      "test": "Both base-protocol and device-semantics evidence. OPC UA certified without a documented LADS NodeSet, or SiLA 2 without a documented versioned Feature set, caps at Partial.",
+      "effort": "S/M",
+      "grading": {
+        "pass": "Version-tied conformance evidence for the base protocol (certification, consortium test scenarios, or reproducible vendor evidence where no scheme exists) AND for the device companion spec / Feature set (documented LADS NodeSet, or versioned SiLA 2 Feature set with test evidence).",
+        "partial": "Base protocol only, or semantic layer incomplete/undocumented/version-mismatched. MUST carry a reason code: P-OLD (older version certified, with a published re-certification roadmap and target date), P-GAP (coverage gap), P-UNDOC (evidence not tied to shipped firmware or depth undocumented).",
+        "fail": "Self-declared compliance with no supporting evidence. Lack of a certification body for the protocol is not itself a Fail.",
+        "note": null
+      }
+    },
+    {
+      "id": "C18",
+      "n": 18,
+      "name": "Operating-system independence",
+      "tier": "important",
+      "weight": 2,
+      "naAllowed": false,
+      "checks": "OS-neutral network access or open-server-OS bindings, with host dependencies and support windows disclosed.",
+      "test": "Control path operable from a mainstream, automatable host. A stack tied to one proprietary desktop OS or to GUI automation is penalized.",
+      "effort": "S/M",
+      "grading": {
+        "pass": "OS-neutral network service reachable from any client OS (a documented vendor server on one OS is acceptable), or client bindings that run on an open server OS; supported OSes and support windows documented.",
+        "partial": "OS lock-in confined to a headless, scriptable server or edge component with no client-side GUI dependency; dependency and support window documented.",
+        "fail": "Requires a specific proprietary OS via GUI automation, an undocumented OS-locked component, or supported OSes undocumented.",
+        "note": null
+      }
+    },
+    {
+      "id": "C19",
+      "n": 19,
+      "name": "Automated load/unload",
+      "tier": "cell_integration",
+      "weight": 2,
+      "naAllowed": true,
+      "checks": "Automated load/unload, documented handoff and collision geometry, plus a machine-readable readiness or completion indication.",
+      "test": "Cell floor: at least Partial wherever a machine loads or unloads labware (readers, incubators, sealers, centrifuges, liquid handlers, stores, autosamplers). A Fail disqualifies from cell deployment. N/A for instruments that do not receive machine-loaded labware (inline pumps, flow cells, fixed sensors).",
+      "effort": "S",
+      "grading": {
+        "pass": "Automated load/unload with documented handoff position and instrument geometry (CAD or collision model), API-controlled (or documented passive) access and a machine-readable handoff-ready/complete signal; no manual step.",
+        "partial": "Automatable, API-addressable mechanism but without the readiness/complete signal, requiring a documented manual-assist step, or with incomplete geometry documentation.",
+        "fail": "A machine cannot load or unload the instrument without manual intervention.",
+        "note": "Cell floor: ≥ Partial wherever a machine loads/unloads labware; a Fail disqualifies from cell-integrated deployment, with no mitigation exception. N/A for instruments that do not receive machine-loaded labware (inline pumps, flow cells, fixed environmental sensors and similar); the cell total is computed over the rest."
+      }
+    },
+    {
+      "id": "C20",
+      "n": 20,
+      "name": "Access and motion-readiness coordination",
+      "tier": "cell_integration",
+      "weight": 2,
+      "naAllowed": true,
+      "checks": "Accurate, mutually consistent applicable access, motion and presence states, with a local robot-access indication where applicable.",
+      "test": "Door/lid/shutter, axis position and motion, clamp/gripper and labware-presence states, and a robot-access state that reports clear only when all are arm-safe. The vendor declares which categories apply; undeclared means all apply. Documenting latency is optional. These are automation primitives, not safety primitives.",
+      "effort": "S",
+      "grading": {
+        "pass": "All applicable door/lid/shutter, axis/motion, clamp and labware-presence states exposed, accurate and mutually consistent, plus a declared robot-access state that is “clear” only when all are arm-safe.",
+        "partial": "Only a subset of applicable categories exposed, or all exposed but the vendor’s applicability declaration absent.",
+        "fail": "No machine-readable readiness state.",
+        "note": "Vendor declares which categories apply, with a rationale; if undeclared, all categories are treated as applicable. Typical latency MAY be documented but is not required. These are automation primitives, not safety primitives."
+      }
+    },
+    {
+      "id": "C21",
+      "n": 21,
+      "name": "Safety-event participation",
+      "tier": "cell_integration",
+      "weight": 2,
+      "naAllowed": true,
+      "checks": "Where applicable, latched hardware-stop reporting and clearance behaviour, plus timed orchestrator-issued operational shutdown.",
+      "test": "No auto-resume after a hardware stop without explicit clearance; latched status on the normal channel; orchestrator shutdown command reaching a documented state in a documented interval. Labelling a non-certified signal as safety-rated is a Fail.",
+      "effort": "L",
+      "grading": {
+        "pass": "Every applicable sub-test: (a) hardware safety-event reporting (no auto-resume; latched status exposed) verified by asserting the real signal, and (b) orchestrator-issued operational shutdown to a documented state within a documented interval.",
+        "partial": "At least one applicable sub-test passes. Sub-test (a) evaluated via fallback evidence (fixture, simulator, FAT records, reference customer) caps the criterion at Partial; so does the power-interruption exception path unless the cell controller supplies the missing latched-state evidence.",
+        "fail": "No sub-test passes, or a non-certified signal presented as safety-rated (STO/SIL labelling).",
+        "note": "Criterion N/A for passive instruments (no actuation, hazardous energy, robot interaction or external stop function); verify via schematic, safety I/O declaration or integrator confirmation, else record as unverified. Their obligations move to C15 and C10. Sub-test (a) is N/A without an external safety-bus input (same verification; provisional if deployment not final)."
+      }
+    }
+  ]
+}

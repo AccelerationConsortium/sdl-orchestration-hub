@@ -1,0 +1,129 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "grades": {
+    "G": {
+      "label": "Pass",
+      "value": 1
+    },
+    "P": {
+      "label": "Partial",
+      "value": 0.5
+    },
+    "F": {
+      "label": "Fail",
+      "value": 0
+    },
+    "NA": {
+      "label": "N/A",
+      "value": null,
+      "note": "Excluded from the denominator. Allowed only for C7, C19, C20, C21."
+    }
+  },
+  "tiers": {
+    "critical": {
+      "criteria": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ],
+      "question": "Can the instrument be controlled programmatically and contractually at all?"
+    },
+    "important": {
+      "criteria": [
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C15",
+        "C16",
+        "C17",
+        "C18"
+      ],
+      "question": "Does the interface support robust autonomous operation?"
+    },
+    "cell_integration": {
+      "criteria": [
+        "C19",
+        "C20",
+        "C21"
+      ],
+      "question": "Can the instrument participate in robotic workcells? (cell-deployed only)"
+    }
+  },
+  "maxima": {
+    "standalone": 46,
+    "cellIntegrated": 52
+  },
+  "decisionOrder": [
+    {
+      "step": 1,
+      "name": "precondition",
+      "rule": "All cybersecurity/IT deliverables supplied (or isolated link formally accepted, or local control surfaces documented). Otherwise status = blocked."
+    },
+    {
+      "step": 2,
+      "name": "critical_floor",
+      "rule": "No Critical criterion may Fail; at most one may be Partial, and only with a written remediation commitment and a target date ≤ 12 months."
+    },
+    {
+      "step": 3,
+      "name": "important_floor",
+      "rule": "Failed Important criteria may total at most 4 weighted points; each Important Fail needs a documented gap-acceptance decision. Conditional floors: C7 ≥ Partial for hazardous/resource-blocking instruments; C15 ≠ Fail for unattended hazardous instruments unless a documented external mechanism (cell-level watchdog, hardwired interlock, supervisory power cutoff, orchestrator-side handling) is recorded. C17 Partial requires a reason code."
+    },
+    {
+      "step": 4,
+      "name": "cell_floor",
+      "rule": "Cell-deployed only: C19 ≥ Partial where a machine loads labware (a Fail disqualifies; no mitigation exception); optional buyer-defined local floors on C20/C21."
+    },
+    {
+      "step": 5,
+      "name": "weighted_total",
+      "rule": "Σ grade × weight over applicable criteria. Used only to rank instruments that cleared steps 1–4."
+    }
+  ],
+  "statuses": {
+    "blocked": "Precondition not met",
+    "not_eligible": "A floor is not met",
+    "incomplete": "Some criteria unrated",
+    "conditionally_eligible": "Floors met, but a commitment or gap-acceptance is missing",
+    "eligible": "All gates and floors cleared"
+  },
+  "special": [
+    "C21: if sub-test (a) is verified only by fallback evidence (and is not N/A), a Pass counts as Partial.",
+    "C1: a Pass via a third-party gateway is an accepted mitigation, not vendor compliance.",
+    "Weights are proposed defaults; deployments may tune them. The API reports default-weight results."
+  ],
+  "preconditionDeliverables": [
+    "Port and protocol list",
+    "Authentication and authorization model",
+    "Transport-encryption posture (risk-acceptance procedure documented for explicitly isolated networks)",
+    "Certificate and key lifecycle and rotation procedures",
+    "Credential rotation and emergency-revocation processes",
+    "Audit-log behaviour for control actions",
+    "Vulnerability-disclosure channel",
+    "Published security-update policy with target patch intervals",
+    "Default-account policy",
+    "Supported network-segmentation model"
+  ],
+  "rfpEvidencePack": [
+    "Completed scorecard",
+    "Interface documentation",
+    "Versioning policy",
+    "Authentication and authorization model",
+    "Simulator or test endpoint",
+    "Reference client",
+    "Conformance artifacts (where applicable)",
+    "Cybersecurity note",
+    "Result-retrieval example",
+    "Description of recovery behaviour after communication loss or process restart"
+  ]
+}

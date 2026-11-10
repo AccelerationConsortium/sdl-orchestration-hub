@@ -1,0 +1,21 @@
+id: robochem
+name: RoboChem-Flex / OmniPlatypus
+ref: '51'
+paper: https://doi.org/10.1038/s44160-026-01053-0
+org: Noël Group, Van ’t Hoff Institute for Molecular Sciences, University of Amsterdam
+city: Amsterdam
+country: Netherlands
+lat: 52.3547
+lng: 4.954
+website: https://hims.uva.nl
+repo: https://github.com/Noel-Research-Group/Robochem_Flex
+docs: ""
+logo: https://github.com/Noel-Research-Group.png?size=96
+family: bespoke
+mech: Custom BaseDevice abstraction with protocol- and vendor-specific subclasses
+standards: []
+notes: Common device interface exposes named parameters and associated metadata; device-specific implementations
+  support serial, TCP socket, Modbus and vendor-specific XML communication; USB-serial devices are auto-identified
+  from stored hardware identifiers.
+license: Apache-2.0
+verified: true

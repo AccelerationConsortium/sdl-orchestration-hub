@@ -1,6 +1,7 @@
 name: Contribute a device evaluation
 description: Submit a scorecard for an instrument you have evaluated. No Git needed; a maintainer will convert this into a devices/*.yml file.
 title: "[device]: <vendor> <model>"
+labels: ["submission", "device"]
 body:
   - type: markdown
     attributes:
@@ -29,11 +30,29 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: group
+    attributes:
+      label: Instrument group (optional)
+      options:
+        - Measurement and analysis
+        - Reaction hardware
+        - Sample handling and preparation
+        - Process sensing and control
+        - Labware-moving robots
+
   - type: input
     id: category
     attributes:
       label: Category (optional)
       placeholder: e.g. HPLC, plate reader, liquid handler
+
+  - type: input
+    id: tasks
+    attributes:
+      label: Tasks (optional)
+      description: What the instrument is used for, comma-separated. Shown in the website's instrument finder.
+      placeholder: e.g. absorbance, fluorescence, kinetic reads
 
   - type: input
     id: interface
@@ -42,6 +61,23 @@ body:
       placeholder: e.g. SiLA 2, OPC UA / LADS, REST, vendor SDK
     validations:
       required: true
+
+  - type: input
+    id: interfaces
+    attributes:
+      label: Other interfaces offered (optional)
+      description: Every other control interface the vendor offers for this model, comma-separated.
+      placeholder: e.g. REST + OpenAPI, vendor SDK
+
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: C1 endpoint architecture
+      options:
+        - Native endpoint
+        - Vendor edge-controller
+        - Third-party gateway
+        - Not sure
 
   - type: dropdown
     id: deployment

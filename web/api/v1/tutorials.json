@@ -1,0 +1,153 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "source": {
+    "name": "Device Integration Hackathon 2026",
+    "url": "https://sites.google.com/view/deviceintegrationhackathon/home",
+    "resources": "https://sites.google.com/view/deviceintegrationhackathon/home/links-and-resources",
+    "contact": "willi.gottstein@utoronto.ca"
+  },
+  "path": [
+    {
+      "step": "Set up",
+      "title": "Prepare your computer",
+      "items": [
+        {
+          "title": "Installation guide",
+          "url": "https://docs.unitelabs.io/connector-development/getting-started/installation/#prerequisites",
+          "kind": "Docs",
+          "by": "UniteLabs",
+          "desc": "Setup steps for building connectors with the Connector Development Kit (CDK)."
+        },
+        {
+          "title": "Hardware requirements and a complete minimal example",
+          "url": "https://docs.google.com/document/d/1TVBsz6kFL6aHarG8sddsYICyvp7qM-5MikkWJVkFVhQ/edit?usp=sharing",
+          "kind": "Google Doc",
+          "by": "Hackathon",
+          "desc": "The hardware you need, plus a fully worked minimal example."
+        }
+      ]
+    },
+    {
+      "step": "Learn",
+      "title": "Learn SiLA 2 and the CDK",
+      "items": [
+        {
+          "title": "Connector Development Kit documentation",
+          "url": "https://docs.unitelabs.io/connector-development/",
+          "kind": "Docs",
+          "by": "UniteLabs",
+          "desc": "A tutorial on SiLA basics and writing SiLA servers with the CDK, plus guides on configuration and error handling."
+        },
+        {
+          "title": "Tutorial connector",
+          "url": "https://gitlab.com/unitelabs/examples/tutorial",
+          "kind": "Code (GitLab)",
+          "by": "UniteLabs",
+          "desc": "A pre-written connector with all of the documentation's example code, for working through the tutorial interactively."
+        },
+        {
+          "title": "From manual to SiLA server (slides)",
+          "url": "https://docs.google.com/presentation/d/1ym9iJ2CFji4BOO8w0RxeLiL7oA1wouZbJY7tP0LjVQQ/edit?usp=sharing",
+          "kind": "Slides",
+          "by": "Hackathon",
+          "desc": "A practical guide to building a SiLA server with the Python CDK. The deep dive is in hidden slides for reference."
+        }
+      ]
+    },
+    {
+      "step": "Design",
+      "title": "Turn instrument documentation into SiLA Features",
+      "items": [
+        {
+          "title": "Intro to the SiLA Feature Generator (slides)",
+          "url": "https://drive.google.com/file/d/1YpGhqRno8xzIolZ0NM_3KmTyKgBmDnOh/view?usp=drive_link",
+          "kind": "Slides",
+          "by": "Hackathon",
+          "desc": "How to turn instrument documentation into downloadable SiLA 2 Feature XML definitions."
+        },
+        {
+          "title": "SiLA Feature XML Generator",
+          "url": "https://sila-feature-gen.pages.dev/",
+          "kind": "Tool",
+          "by": "Hackathon",
+          "desc": "Extracts and designs Feature XMLs from device documentation.",
+          "note": "Registered participants only.",
+          "extra": {
+            "title": "Registration form",
+            "url": "https://airtable.com/appYBjHgttvBuz3XR/paga3fOK3rkLzXhYc/form"
+          }
+        }
+      ]
+    },
+    {
+      "step": "Build",
+      "title": "Start your own connector",
+      "items": [
+        {
+          "title": "Connector Factory project template",
+          "url": "https://gitlab.com/unitelabs/cdk/connector-factory",
+          "kind": "Code (GitLab)",
+          "by": "UniteLabs",
+          "desc": "Boilerplate for starting a Python connector application."
+        },
+        {
+          "title": "Hackathon code repository",
+          "url": "https://gitlab.com/unitelabs/events/device-integration-hackathon-2026",
+          "kind": "Code (GitLab)",
+          "by": "Hackathon",
+          "desc": "Additional coding resources from the hackathon, for public use."
+        }
+      ]
+    }
+  ],
+  "tips": [
+    [
+      "Type it from day one",
+      "Even in a frugal setup, put device code behind a minimal typed interface with units, constraints and error objects, so wrapping it later as a SiLA 2 or LADS service is a refactor, not a rewrite."
+    ],
+    [
+      "Keep the wrapper thin",
+      "A connector exposes the instrument. Labware state, scheduling and coordination belong in the orchestrator."
+    ],
+    [
+      "Never block the event loop",
+      "Call blocking vendor SDKs, serial ports or COM/.NET code from worker threads or processes."
+    ],
+    [
+      "Map command lifecycles",
+      "Bridge Started / Running / Finished / Cancelled into the orchestrator's state machine so progress and recovery stay observable (C7, C10)."
+    ],
+    [
+      "Errors are data",
+      "Return structured errors with a stable identifier and context (C3, C16). The same holds for MCP servers: define types, units and output schemas deliberately."
+    ],
+    [
+      "Ship a simulator",
+      "A drop-in simulator with fault injection lets others build and test against your connector before touching hardware (C14)."
+    ]
+  ],
+  "refs": [
+    {
+      "title": "SiLA 2 open-source implementations",
+      "url": "https://gitlab.com/SiLA2",
+      "desc": "The SiLA Consortium's GitLab group: reference implementations in several languages."
+    },
+    {
+      "title": "LADS OPC UA",
+      "url": "https://github.com/opcua-lads",
+      "desc": "Open-source LADS examples and tooling from the OPC UA LADS community."
+    },
+    {
+      "title": "PyLabRobot",
+      "url": "https://github.com/PyLabRobot/pylabrobot",
+      "desc": "Hardware-agnostic Python interface for liquid handlers and accessories, with a browser simulator."
+    },
+    {
+      "title": "MCP Inspector",
+      "url": "https://github.com/modelcontextprotocol/inspector",
+      "desc": "Generic client for testing Model Context Protocol servers."
+    }
+  ]
+}

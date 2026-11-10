@@ -1,0 +1,36 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "ivoryos",
+    "name": "IvoryOS",
+    "organisation": "Hein Group, University of British Columbia",
+    "city": "Vancouver, BC",
+    "country": "Canada",
+    "region": "North America",
+    "location": {
+      "lat": 49.2606,
+      "lng": -123.246
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Dynamic function introspection (Flask)",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "Standard-agnostic by design: exposes any module via a dynamically generated web interface.",
+    "license": "MIT",
+    "links": {
+      "website": "https://ivoryos.ai",
+      "repository": "https://github.com/ivoryos-ai/IvoryOS",
+      "docs": "https://ivoryos.readthedocs.io",
+      "paper": "https://doi.org/10.1038/s41467-025-60514-w",
+      "logo": "https://github.com/ivoryos-ai.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "href": "/api/v1/tools/ivoryos.json",
+    "webUrl": "/#orchestrators/ivoryos"
+  }
+}

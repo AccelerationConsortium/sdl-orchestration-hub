@@ -1,0 +1,118 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "items": [
+    {
+      "id": "measurement",
+      "name": "Measurement and analysis",
+      "examples": "plate readers, HPLCs, spectrometers",
+      "types": [
+        "Plate reader",
+        "HPLC / UHPLC",
+        "Gas chromatograph",
+        "Mass spectrometer",
+        "NMR spectrometer",
+        "Spectrometer (UV-Vis, IR, Raman)",
+        "Microscope / imager",
+        "Flow cytometer",
+        "Sequencer",
+        "Electrochemical workstation"
+      ],
+      "tasks": [
+        "absorbance",
+        "fluorescence",
+        "luminescence",
+        "chromatography",
+        "mass spectrometry",
+        "NMR",
+        "spectroscopy",
+        "imaging",
+        "electrochemistry",
+        "cell analysis"
+      ]
+    },
+    {
+      "id": "reaction",
+      "name": "Reaction hardware",
+      "examples": "batch and flow reactors",
+      "types": [
+        "Batch reactor",
+        "Flow reactor",
+        "Photoreactor",
+        "Parallel synthesizer"
+      ],
+      "tasks": [
+        "synthesis",
+        "flow chemistry",
+        "photochemistry",
+        "heating / cooling"
+      ]
+    },
+    {
+      "id": "sample-handling",
+      "name": "Sample handling and preparation",
+      "examples": "liquid handlers, sealers, heater-shakers, centrifuges, autosamplers",
+      "types": [
+        "Liquid handler",
+        "Dispenser",
+        "Plate sealer / peeler",
+        "Heater-shaker",
+        "Centrifuge",
+        "Incubator",
+        "Autosampler",
+        "Automated store / plate hotel"
+      ],
+      "tasks": [
+        "liquid transfer",
+        "dispensing",
+        "sealing",
+        "mixing / shaking",
+        "centrifugation",
+        "incubation",
+        "sample injection",
+        "storage"
+      ]
+    },
+    {
+      "id": "process-control",
+      "name": "Process sensing and control",
+      "examples": "balances, sensors, pumps, valves, flow controllers, cameras",
+      "types": [
+        "Balance",
+        "pH / conductivity meter",
+        "Temperature / pressure sensor",
+        "Pump",
+        "Valve",
+        "Flow sensor / controller",
+        "Chiller / thermostat",
+        "Camera / vision sensor",
+        "Barcode / RFID reader"
+      ],
+      "tasks": [
+        "weighing",
+        "pH measurement",
+        "temperature control",
+        "pressure control",
+        "pumping",
+        "flow control",
+        "visual inspection",
+        "sample tracking"
+      ]
+    },
+    {
+      "id": "labware-robot",
+      "name": "Labware-moving robots",
+      "examples": "plate movers, robot arms, mobile manipulators",
+      "types": [
+        "Plate mover / robot arm",
+        "Mobile manipulator",
+        "Gantry / track"
+      ],
+      "tasks": [
+        "labware transport",
+        "pick and place"
+      ]
+    }
+  ]
+}

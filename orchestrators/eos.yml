@@ -1,0 +1,21 @@
+id: eos
+name: EOS
+ref: '39'
+paper: https://doi.org/10.1109/ICRA55743.2025.11128578
+org: UNC Robotics, University of North Carolina at Chapel Hill
+city: Chapel Hill, NC
+country: USA
+lat: 35.9049
+lng: -79.0469
+website: https://unc-robotics.github.io/eos/
+repo: https://github.com/UNC-Robotics/eos
+docs: https://unc-robotics.github.io/eos/
+logo: https://github.com/UNC-Robotics.png?size=96
+family: formal
+optional: true
+mech: Custom BaseDevice abstraction plus plugin system
+standards:
+- SiLA 2 (optional)
+notes: SilaDeviceMixin and optional sila2 dependency group; primary path remains the custom plugin model.
+license: BSD-3-Clause
+verified: true

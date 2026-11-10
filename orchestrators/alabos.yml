@@ -1,0 +1,19 @@
+id: alabos
+name: AlabOS
+ref: '34'
+paper: https://doi.org/10.1039/D4DD00129J
+org: Ceder Group, Lawrence Berkeley National Laboratory / UC Berkeley
+city: Berkeley, CA
+country: USA
+lat: 37.8755
+lng: -122.253
+website: https://github.com/CederGroupHub/alabos
+repo: https://github.com/CederGroupHub/alabos
+docs: https://cedergrouphub.github.io/alabos/
+logo: https://github.com/CederGroupHub.png?size=96
+family: bespoke
+mech: Custom BaseDevice abstract base class
+standards: []
+notes: Example devices wrap XML-RPC and HTTP inside the device class.
+license: MIT
+verified: true

@@ -1,0 +1,19 @@
+id: ares
+name: ARES OS 2.0
+ref: '35'
+paper: https://arxiv.org/abs/2604.03440
+org: Air Force Research Laboratory, Materials and Manufacturing Directorate
+city: Wright-Patterson AFB, Dayton, OH
+country: USA
+lat: 39.8266
+lng: -84.0486
+website: https://afrl-ares.github.io
+repo: https://github.com/AFRL-ARES/ARES
+docs: https://afrl-ares.github.io
+logo: https://github.com/AFRL-ARES.png?size=96
+family: bespoke
+mech: Custom plugin architecture
+standards: []
+notes: Devices, Analysis, and Planning plugin pattern.
+license: MIT
+verified: true

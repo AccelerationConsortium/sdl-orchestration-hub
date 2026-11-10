@@ -1,0 +1,117 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "name": "SDL Orchestration Hub API",
+  "version": "v1",
+  "docs": "/#api",
+  "llms": "/llms.txt",
+  "counts": {
+    "tools": 17,
+    "criteria": 21,
+    "scorecards": 1,
+    "scenarios": 5
+  },
+  "endpoints": [
+    {
+      "path": "/api/v1/tools.json",
+      "href": "/api/v1/tools.json",
+      "description": "All surveyed orchestrators with location, links, integration mechanism and standards.",
+      "schema": "/api/v1/schema/tool.schema.json"
+    },
+    {
+      "path": "/api/v1/tools/{id}.json",
+      "href": "/api/v1/tools/{id}.json",
+      "description": "One orchestrator by id.",
+      "schema": "/api/v1/schema/tool.schema.json"
+    },
+    {
+      "path": "/api/v1/criteria.json",
+      "href": "/api/v1/criteria.json",
+      "description": "Criteria C1–C21: tier, default weight, what each checks, how to test it, and the Pass/Partial/Fail rule.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/rules.json",
+      "href": "/api/v1/rules.json",
+      "description": "Scoring rules: grade values, tiers, maxima, the sequential decision order and floors, precondition deliverables, RFP evidence pack.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/scorecards.json",
+      "href": "/api/v1/scorecards.json",
+      "description": "Public instrument scorecards with results computed by score.js.",
+      "schema": "/api/v1/schema/evaluation.schema.json"
+    },
+    {
+      "path": "/api/v1/scorecards/{id}.json",
+      "href": "/api/v1/scorecards/{id}.json",
+      "description": "One public scorecard by id."
+    },
+    {
+      "path": "/api/v1/scenarios.json",
+      "href": "/api/v1/scenarios.json",
+      "description": "Deployment archetypes with recommended default integration boundary.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/instrument-groups.json",
+      "href": "/api/v1/instrument-groups.json",
+      "description": "Instrument groups (from the paper's scope statement) with suggested types and tasks, used to tag scorecards.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/tutorials.json",
+      "href": "/api/v1/tutorials.json",
+      "description": "Learning path and resources for building device connectors (2026 Device Integration Hackathon), plus the paper's advice for connector authors.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/standards.json",
+      "href": "/api/v1/standards.json",
+      "description": "Standards comparison: SiLA 2, OPC UA + LADS, typical REST, MCP.",
+      "schema": null
+    },
+    {
+      "path": "/api/v1/schema/evaluation.schema.json",
+      "href": "/api/v1/schema/evaluation.schema.json",
+      "description": "JSON Schema for an instrument evaluation (input to score.js and the web app's Import)."
+    },
+    {
+      "path": "/api/v1/schema/tool.schema.json",
+      "href": "/api/v1/schema/tool.schema.json",
+      "description": "JSON Schema for an orchestrator record."
+    },
+    {
+      "path": "/api/v1/submissions.json",
+      "href": "/api/v1/submissions.json",
+      "description": "Snapshot of open submission issues (orchestrators and device evaluations from the issue forms), raw and parsed. Refreshed by the Pages workflow; the site prefers the live GitHub API."
+    },
+    {
+      "path": "/issues.js",
+      "href": "/issues.js",
+      "description": "Issue-form parser (UMD). Node: require('./issues.js').parse(issue, { forms, criteria }). Browser: window.SDLIssues."
+    },
+    {
+      "path": "/score.js",
+      "href": "/score.js",
+      "description": "Scoring engine (UMD). Node: require('./score.js').evaluate(evaluation, { criteria }). Browser: window.SDLScore."
+    },
+    {
+      "path": "/api/v1/openapi.json",
+      "href": "/api/v1/openapi.json",
+      "description": "OpenAPI 3.1 description of these endpoints."
+    }
+  ],
+  "urlInterface": {
+    "orchestrator": "/#orchestrators/{toolId}",
+    "orchestrators": "/#orchestrators?view={map,cards,table}&q={text}&fam={formal,hal,agentic,bespoke}&std={standard,...}&region={region,...}&lic={licence,...}&req=1&repo=1&docs=1&verified=1&nopend=1",
+    "instruments": "/#instruments?q={task or type}&grp={group,...}&ifc={interface,...}&elig=1&cell=1&req={C7:P,C14:G,...}",
+    "scorecard": "/#scorecard",
+    "criterion": "/#scorecard/C{n}"
+  },
+  "submit": {
+    "newOrchestrator": "https://github.com/willigott/device-integration-scorecard/issues/new?template=new-orchestrator.yml",
+    "newScorecard": "https://github.com/willigott/device-integration-scorecard/issues/new?template=device-scorecard.yml"
+  }
+}

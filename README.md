@@ -27,6 +27,14 @@ among vendors that already clear the floors — **eligibility is decided by the 
 (Critical, Important, cell-integration), not by the total. See `scorecard.md` for the exact
 floor rules.
 
+- **[`web/`](web/)** — the **SDL Orchestration Hub** website: a landing page on workflow orchestration
+  and device integration, an orchestrator explorer (map, cards, table), deployment scenarios and
+  standards, an instrument finder with side-by-side comparison, the browsable criteria with a
+  step-by-step scoring wizard, tutorials for building device connectors, and a static JSON API.
+  Run it with `python3 -m http.server 4377 --directory web` and open http://localhost:4377.
+  See [`web/README.md`](web/README.md). Pushes to `main` publish it to GitHub Pages
+  (`.github/workflows/pages.yml`; enable Pages with source "GitHub Actions" in the repository settings).
+
 ## How it's built (why you don't edit the checklist directly)
 
 There is **one source of truth** and everything else is generated from it:
@@ -41,6 +49,12 @@ build/check_changelog.py     # CI helper: require a CHANGELOG entry on criteria 
 scorecard.md                 # GENERATED — do not edit by hand
 scorecard-template.csv       # GENERATED — do not edit by hand
 scorecard-template.xlsx      # GENERATED — do not edit by hand
+orchestrators/*.yml          # orchestrator registry shown on the web tool's map (schema/orchestrator.schema.json)
+build/build_web.py           # criteria/*.yml + meta.yml + devices/*.yml  ->  web/scorecard-data.js
+                             # orchestrators/*.yml                        ->  web/tools.js
+web/scorecard-data.js        # GENERATED — do not edit by hand
+web/tools.js                 # GENERATED — do not edit by hand
+web/                         # interactive web tool (static; see web/README.md)
 CHANGELOG.md                 # human-maintained history
 .github/workflows/ci.yml     # CI: validate + invariants + regenerate-check + changelog
 ```
@@ -74,9 +88,10 @@ environment once with `source .venv/bin/activate` and run them directly.
    uv run python build/generate.py            # rewrites scorecard.md + templates
    uv run python build/generate.py --check    # confirms nothing is stale
    uv run python build/generate.py --invariants
+   uv run python build/build_web.py            # refreshes web/scorecard-data.js
    ```
 4. Commit **both** the edited `criteria/CXX.yml` **and** the regenerated `scorecard.md` /
-   `scorecard-template.*`, and open a PR.
+   `scorecard-template.*` / `web/scorecard-data.js`, and open a PR.
 
 ### Adding a new criterion (a novel `Cxy`)
 
@@ -125,7 +140,8 @@ devices/<slug>.md         # GENERATED per-device card — do not edit
 devices/README.md         # GENERATED index of all contributed devices — do not edit
 ```
 
-1. Copy `devices/_template.yml` to `devices/<vendor>-<model>.yml` (lowercase, hyphenated).
+1. Copy `devices/_template.yml` to `devices/<vendor>-<model>.yml` (lowercase, hyphenated). Fill in the
+   optional `group`, `tasks` and `interfaces` fields too: the website's instrument finder filters on them.
 2. Grade each criterion **Pass / Partial / Fail** (or **N/A** where the criterion's
    `grade_options` allow it). Add a short `note` and an `evidence` link wherever you can.
 3. Record who you are (`evaluator`, may be a pseudonym), the `date`, the `scorecard_version`
@@ -134,13 +150,18 @@ devices/README.md         # GENERATED index of all contributed devices — do no
    ```bash
    uv run python build/score_device.py            # writes devices/<slug>.md + devices/README.md
    uv run python build/score_device.py --check     # confirms nothing is stale
+   uv run python build/build_web.py                # adds the device to the web tool
    ```
-5. Commit **both** your `devices/<vendor>-<model>.yml` and the regenerated `devices/*.md`, and
+5. Commit **both** your `devices/<vendor>-<model>.yml` and the regenerated `devices/*.md` /
+   `web/scorecard-data.js`, and
    open a PR. CI validates the file (schema + every criterion graded with a permitted grade) and
    recomputes the totals and floors.
 
-No Git? Open a **[device evaluation issue](../../issues/new?template=device-scorecard.yml)** and a
-maintainer will convert it into a `devices/*.yml` file.
+No Git? Open a **[device evaluation issue](../../issues/new?template=device-scorecard.yml)** (or use
+**Submit to public registry** in the web tool, which opens the same form prefilled) and a maintainer
+will convert it into a `devices/*.yml` file. Open submission issues, labelled `submission`, appear in
+the website's **Submissions** page, on the map and in the instrument finder as *pending* until they are merged and
+the issue is closed.
 
 Notes: evaluations are **contributor assessments, not endorsements**; a `verified: true` mark is
 set only by a maintainer who independently confirmed the evaluation, and the optional
@@ -156,6 +177,11 @@ not require a `CHANGELOG.md` entry (the changelog tracks the criteria set, not c
   and ids are contiguous.
 - **No stale outputs** — `scorecard.md` and `scorecard-template.csv` match what the generator
   produces from the current source (`generate.py --check`).
+- **Issue parser** — `web/scripts/test-issues.mjs` checks that issues from both submission forms
+  (prefilled by the web tool or filed directly on GitHub) parse into pending entries.
+- **Web tool in sync** — `web/scorecard-data.js` and `web/tools.js` match the criteria, device and
+  orchestrator files, every `orchestrators/*.yml` validates (`build_web.py --check`), and the web
+  API build reproduces the paper's Reader X totals.
 - **Changelog** — if any criterion or `meta.yml` changed, `CHANGELOG.md` must have an entry.
 
 ## Versioning and releases

@@ -1,0 +1,36 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "item": {
+    "id": "ares",
+    "name": "ARES OS 2.0",
+    "organisation": "Air Force Research Laboratory, Materials and Manufacturing Directorate",
+    "city": "Wright-Patterson AFB, Dayton, OH",
+    "country": "USA",
+    "region": "North America",
+    "location": {
+      "lat": 39.8266,
+      "lng": -84.0486
+    },
+    "family": "bespoke",
+    "familyLabel": "Bespoke conventions",
+    "standardRequired": false,
+    "integrationMechanism": "Custom plugin architecture",
+    "standards": [],
+    "standardsBase": [],
+    "notes": "Devices, Analysis, and Planning plugin pattern.",
+    "license": "MIT",
+    "links": {
+      "website": "https://afrl-ares.github.io",
+      "repository": "https://github.com/AFRL-ARES/ARES",
+      "docs": "https://afrl-ares.github.io",
+      "paper": "https://arxiv.org/abs/2604.03440",
+      "logo": "https://github.com/AFRL-ARES.png?size=96"
+    },
+    "verified": true,
+    "unverifiedFields": null,
+    "href": "/api/v1/tools/ares.json",
+    "webUrl": "/#orchestrators/ares"
+  }
+}

@@ -1,0 +1,68 @@
+name: web-pages
+
+# Publishes web/ to GitHub Pages. Enable Pages in the repository settings
+# (Settings → Pages → Source: GitHub Actions) before the first run.
+on:
+  push:
+    branches: [main]
+  # Refresh the submissions snapshot when submission issues change, and every 6 hours.
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies (locked)
+        run: uv sync --locked
+
+      - name: Export criteria and device data for the site
+        run: uv run python build/build_web.py
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      # API links and llms.txt are absolute when siteUrl is set; set it to the Pages URL
+      # for the deployed copy only, so the committed site still works locally.
+      - name: Build the static API against the Pages URL
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          sed -i "s#siteUrl: \"\"#siteUrl: \"${SITE_URL}\"#" web/config.js
+          node web/scripts/build-api.mjs
+
+      # Snapshot of open submission issues, the site's fallback when the live GitHub API is
+      # unavailable (e.g. while the repository is private).
+      - name: Snapshot open submission issues
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node web/scripts/fetch-submissions.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

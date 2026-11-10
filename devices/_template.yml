@@ -10,8 +10,12 @@
 device:
   vendor: Example Vendor
   model: Example Model 100
-  category: plate reader            # optional
+  category: plate reader            # optional: instrument type
+  group: measurement                # optional: measurement | reaction | sample-handling | process-control | labware-robot
+  tasks: [absorbance, fluorescence] # optional: what it is used for (shown in the web tool's instrument finder)
   interface: SiLA 2                 # protocol you evaluated
+  interfaces: [SiLA 2]              # optional: every control interface the vendor offers
+  architecture: Native endpoint     # C1 architecture: Native endpoint | Vendor edge-controller | Third-party gateway
   firmware_version: null            # optional
   product_url: null                 # optional
 
@@ -24,11 +28,13 @@ evaluation:
   # verified: false                 # set by maintainers only
 
 scores:
+  # Critical tier (C5 may be N/A)
   C1:  { grade: Fail, note: "", evidence: null }
   C2:  { grade: Fail }
   C3:  { grade: Fail }
   C4:  { grade: Fail }
   C5:  { grade: Fail }
+  # Important tier
   C6:  { grade: Fail }
   C7:  { grade: Fail }
   C8:  { grade: Fail }

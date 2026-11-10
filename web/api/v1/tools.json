@@ -1,0 +1,611 @@
+{
+  "api": "sdl-device-integration/v1",
+  "generated": "2026-11-10T18:35:10.772Z",
+  "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
+  "count": 17,
+  "items": [
+    {
+      "id": "alabos",
+      "name": "AlabOS",
+      "organisation": "Ceder Group, Lawrence Berkeley National Laboratory / UC Berkeley",
+      "city": "Berkeley, CA",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 37.8755,
+        "lng": -122.253
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom BaseDevice abstract base class",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "Example devices wrap XML-RPC and HTTP inside the device class.",
+      "license": "MIT",
+      "links": {
+        "website": "https://github.com/CederGroupHub/alabos",
+        "repository": "https://github.com/CederGroupHub/alabos",
+        "docs": "https://cedergrouphub.github.io/alabos/",
+        "paper": "https://doi.org/10.1039/D4DD00129J",
+        "logo": "https://github.com/CederGroupHub.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/alabos.json",
+      "webUrl": "/#orchestrators/alabos"
+    },
+    {
+      "id": "ares",
+      "name": "ARES OS 2.0",
+      "organisation": "Air Force Research Laboratory, Materials and Manufacturing Directorate",
+      "city": "Wright-Patterson AFB, Dayton, OH",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 39.8266,
+        "lng": -84.0486
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom plugin architecture",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "Devices, Analysis, and Planning plugin pattern.",
+      "license": "MIT",
+      "links": {
+        "website": "https://afrl-ares.github.io",
+        "repository": "https://github.com/AFRL-ARES/ARES",
+        "docs": "https://afrl-ares.github.io",
+        "paper": "https://arxiv.org/abs/2604.03440",
+        "logo": "https://github.com/AFRL-ARES.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/ares.json",
+      "webUrl": "/#orchestrators/ares"
+    },
+    {
+      "id": "bluesky",
+      "name": "Bluesky + Ophyd",
+      "organisation": "NSLS-II, Brookhaven National Laboratory",
+      "city": "Upton, NY",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 40.8687,
+        "lng": -72.8786
+      },
+      "family": "hal",
+      "familyLabel": "Hardware-abstraction layer",
+      "standardRequired": false,
+      "integrationMechanism": "Ophyd hardware-abstraction layer; Bluesky itself is protocol-agnostic",
+      "standards": [
+        "EPICS (most common)",
+        "Tango (via Ophyd sub-packages)",
+        "SCPI (via Ophyd sub-packages)",
+        "yaq (via Ophyd sub-packages)"
+      ],
+      "standardsBase": [
+        "EPICS",
+        "Tango",
+        "SCPI",
+        "yaq"
+      ],
+      "notes": "Reference deployment at NSLS-II uses EPICS via pyepics; Bluesky documentation disclaims direct hardware support.",
+      "license": "BSD-3-Clause",
+      "links": {
+        "website": "https://blueskyproject.io",
+        "repository": "https://github.com/bluesky/bluesky",
+        "docs": "https://blueskyproject.io",
+        "paper": "https://doi.org/10.1080/08940886.2019.1608121",
+        "logo": "https://github.com/bluesky.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/bluesky.json",
+      "webUrl": "/#orchestrators/bluesky"
+    },
+    {
+      "id": "chemios",
+      "name": "Chemios",
+      "organisation": "Chemios contributors (K. Felton)",
+      "city": "Raleigh, NC",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 35.7847,
+        "lng": -78.6821
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom pump and instrument classes",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "pyserial and minimalmodbus for direct hardware access.",
+      "license": "MIT",
+      "links": {
+        "website": "https://chemios.readthedocs.io",
+        "repository": "https://github.com/Chemios/chemios",
+        "docs": "https://chemios.readthedocs.io",
+        "paper": "https://github.com/Chemios/chemios",
+        "logo": "https://github.com/Chemios.png?size=96"
+      },
+      "verified": false,
+      "unverifiedFields": "Home institution and location inferred from the lead contributor; not confirmed by the project.",
+      "href": "/api/v1/tools/chemios.json",
+      "webUrl": "/#orchestrators/chemios"
+    },
+    {
+      "id": "chemos2",
+      "name": "ChemOS 2.0",
+      "organisation": "Aspuru-Guzik Group, University of Toronto / Acceleration Consortium",
+      "city": "Toronto, ON",
+      "country": "Canada",
+      "region": "North America",
+      "location": {
+        "lat": 43.66,
+        "lng": -79.3957
+      },
+      "family": "formal",
+      "familyLabel": "Formal standard",
+      "standardRequired": true,
+      "integrationMechanism": "SiLA 2 (required for all device drivers)",
+      "standards": [
+        "SiLA 2"
+      ],
+      "standardsBase": [
+        "SiLA 2"
+      ],
+      "notes": "All servers and clients built on the sila2 bindings; no alternative integration path.",
+      "license": "MIT",
+      "links": {
+        "website": "https://acceleration.utoronto.ca",
+        "repository": "https://github.com/malcolmsimgithub/ChemOS2.0",
+        "docs": null,
+        "paper": "https://doi.org/10.1016/j.matt.2024.04.022",
+        "logo": "https://github.com/aspuru-guzik-group.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/chemos2.json",
+      "webUrl": "/#orchestrators/chemos2"
+    },
+    {
+      "id": "eos",
+      "name": "EOS",
+      "organisation": "UNC Robotics, University of North Carolina at Chapel Hill",
+      "city": "Chapel Hill, NC",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 35.9049,
+        "lng": -79.0469
+      },
+      "family": "formal",
+      "familyLabel": "Formal standard",
+      "standardRequired": false,
+      "integrationMechanism": "Custom BaseDevice abstraction plus plugin system",
+      "standards": [
+        "SiLA 2 (optional)"
+      ],
+      "standardsBase": [
+        "SiLA 2"
+      ],
+      "notes": "SilaDeviceMixin and optional sila2 dependency group; primary path remains the custom plugin model.",
+      "license": "BSD-3-Clause",
+      "links": {
+        "website": "https://unc-robotics.github.io/eos/",
+        "repository": "https://github.com/UNC-Robotics/eos",
+        "docs": "https://unc-robotics.github.io/eos/",
+        "paper": "https://doi.org/10.1109/ICRA55743.2025.11128578",
+        "logo": "https://github.com/UNC-Robotics.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/eos.json",
+      "webUrl": "/#orchestrators/eos"
+    },
+    {
+      "id": "glas",
+      "name": "GLAS",
+      "organisation": "Swiss Cat+ West Hub, École Polytechnique Fédérale de Lausanne (EPFL)",
+      "city": "Lausanne",
+      "country": "Switzerland",
+      "region": "Europe",
+      "location": {
+        "lat": 46.5191,
+        "lng": 6.5668
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom hierarchical Node/Workflow architecture over REST",
+      "standards": [
+        "REST (scheduler interface)",
+        "ROS 2 (device/adapter layer)",
+        "RTDE (device/adapter layer)",
+        "TCP (device/adapter layer)",
+        "ADS (device/adapter layer)",
+        "Serial (device/adapter layer)",
+        "DLL (device/adapter layer)",
+        "Vendor-specific APIs (device/adapter layer)"
+      ],
+      "standardsBase": [
+        "REST",
+        "ROS 2",
+        "RTDE",
+        "TCP",
+        "ADS",
+        "Serial",
+        "DLL",
+        "Vendor-specific APIs"
+      ],
+      "notes": "Git-based Python framework with layered main and sub-schedulers; JSON task submission; protocol-agnostic device adapters; MySQL-backed task, node, workflow, state and log persistence; deployed at Swiss Cat+.",
+      "license": "MIT",
+      "links": {
+        "website": "https://swisscatplus.ch",
+        "repository": "https://github.com/swisscatplus/glas",
+        "docs": "https://github.com/swisscatplus/glas/wiki",
+        "paper": "https://doi.org/10.1039/D4DD00253A",
+        "logo": "https://github.com/swisscatplus.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/glas.json",
+      "webUrl": "/#orchestrators/glas"
+    },
+    {
+      "id": "helao",
+      "name": "HELAO-async",
+      "organisation": "High-Throughput Experimentation group (Gregoire), Caltech; with KIT / Helmholtz Institute Ulm",
+      "city": "Pasadena, CA",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 34.1377,
+        "lng": -118.1253
+      },
+      "family": "formal",
+      "familyLabel": "Formal standard",
+      "standardRequired": false,
+      "integrationMechanism": "Custom HelaoDriver abstract base class",
+      "standards": [
+        "OPC UA (declared dependency, asyncua)",
+        "Modbus (declared dependency, pymodbus)"
+      ],
+      "standardsBase": [
+        "OPC UA",
+        "Modbus"
+      ],
+      "notes": "Shipped drivers use vendor-specific protocols (Biologic, Gamry, Galil).",
+      "license": "MIT",
+      "links": {
+        "website": "https://github.com/High-Throughput-Experimentation/helao-async",
+        "repository": "https://github.com/High-Throughput-Experimentation/helao-async",
+        "docs": null,
+        "paper": "https://doi.org/10.1002/admi.202101987",
+        "logo": "https://github.com/High-Throughput-Experimentation.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/helao.json",
+      "webUrl": "/#orchestrators/helao"
+    },
+    {
+      "id": "ivoryos",
+      "name": "IvoryOS",
+      "organisation": "Hein Group, University of British Columbia",
+      "city": "Vancouver, BC",
+      "country": "Canada",
+      "region": "North America",
+      "location": {
+        "lat": 49.2606,
+        "lng": -123.246
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Dynamic function introspection (Flask)",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "Standard-agnostic by design: exposes any module via a dynamically generated web interface.",
+      "license": "MIT",
+      "links": {
+        "website": "https://ivoryos.ai",
+        "repository": "https://github.com/ivoryos-ai/IvoryOS",
+        "docs": "https://ivoryos.readthedocs.io",
+        "paper": "https://doi.org/10.1038/s41467-025-60514-w",
+        "logo": "https://github.com/ivoryos-ai.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/ivoryos.json",
+      "webUrl": "/#orchestrators/ivoryos"
+    },
+    {
+      "id": "madsci",
+      "name": "MADSci",
+      "organisation": "Argonne National Laboratory, Data Science and Learning Division",
+      "city": "Lemont, IL",
+      "country": "USA",
+      "region": "North America",
+      "location": {
+        "lat": 41.7183,
+        "lng": -87.9784
+      },
+      "family": "formal",
+      "familyLabel": "Formal standard",
+      "standardRequired": false,
+      "integrationMechanism": "Custom AbstractNode/RestNode module over REST",
+      "standards": [
+        "SiLA 2 (optional)"
+      ],
+      "standardsBase": [
+        "SiLA 2"
+      ],
+      "notes": "REST node modules wrap vendor protocols; ships a generated SiLA 2 example node and declares sila2 as an optional dependency.",
+      "license": "MIT",
+      "links": {
+        "website": "https://ad-sdl.github.io/MADSci/",
+        "repository": "https://github.com/AD-SDL/MADSci",
+        "docs": "https://ad-sdl.github.io/MADSci/",
+        "paper": "https://doi.org/10.21105/joss.09416",
+        "logo": "https://github.com/AD-SDL.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/madsci.json",
+      "webUrl": "/#orchestrators/madsci"
+    },
+    {
+      "id": "minerva",
+      "name": "MINERVA-OS",
+      "organisation": "Federal Institute for Materials Research and Testing (BAM), Division 6.7",
+      "city": "Berlin",
+      "country": "Germany",
+      "region": "Europe",
+      "location": {
+        "lat": 52.43,
+        "lng": 13.53
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom ABC hierarchy",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "pyserial and pythonnet for proprietary instruments.",
+      "license": "MIT",
+      "links": {
+        "website": "https://www.bam.de",
+        "repository": "https://github.com/BAMresearch/MAPz_at_BAM/tree/main/Minerva",
+        "docs": null,
+        "paper": "https://doi.org/10.1021/acsnano.4c17504",
+        "logo": "https://github.com/BAMresearch.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/minerva.json",
+      "webUrl": "/#orchestrators/minerva"
+    },
+    {
+      "id": "nimo",
+      "name": "NIMO",
+      "organisation": "National Institute for Materials Science (NIMS), Center for Basic Research on Materials",
+      "city": "Tsukuba",
+      "country": "Japan",
+      "region": "Asia",
+      "location": {
+        "lat": 36.066,
+        "lng": 140.13
+      },
+      "family": "agentic",
+      "familyLabel": "Model-facing (MCP)",
+      "standardRequired": false,
+      "integrationMechanism": "MCP",
+      "standards": [
+        "MCP (information-exchange layer)"
+      ],
+      "standardsBase": [
+        "MCP"
+      ],
+      "notes": "Device integration provided by the NIMO Controller; MCP connects a language-model agent to the NIMO decision engine and to laboratory devices. MCP is a governed model-facing tool protocol with JSON Schema typing, but without a shared laboratory-device vocabulary.",
+      "license": "MIT",
+      "links": {
+        "website": "https://github.com/NIMS-DA/nimo",
+        "repository": "https://github.com/NIMS-DA/nimo",
+        "docs": null,
+        "paper": "https://arxiv.org/abs/2605.15227",
+        "logo": "https://github.com/NIMS-DA.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/nimo.json",
+      "webUrl": "/#orchestrators/nimo"
+    },
+    {
+      "id": "ochra",
+      "name": "OChRA",
+      "organisation": "OChRA team (Open Chemistry Robotics and Automation)",
+      "city": "Liverpool",
+      "country": "UK",
+      "region": "Europe",
+      "location": {
+        "lat": 53.406,
+        "lng": -2.966
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom station/device adapters over REST (pydantic models)",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "Layered lab and per-station FastAPI servers; device operations dispatched by method name; MongoDB persistence; early-stage prototype (v0.0.1).",
+      "license": "MIT",
+      "links": {
+        "website": "https://ochra-lab.github.io/ochra/",
+        "repository": "https://github.com/OChRA-lab/ochra",
+        "docs": "https://ochra-lab.github.io/ochra/",
+        "paper": "https://github.com/OChRA-lab/ochra",
+        "logo": "https://github.com/OChRA-lab.png?size=96"
+      },
+      "verified": false,
+      "unverifiedFields": "The project publishes no affiliation; location placed at the host of its 2025 AIchemy workshop.",
+      "href": "/api/v1/tools/ochra.json",
+      "webUrl": "/#orchestrators/ochra"
+    },
+    {
+      "id": "octopus",
+      "name": "OCTOPUS",
+      "organisation": "Korea Institute of Science and Technology (KIST), Computational Science Research Center",
+      "city": "Seoul",
+      "country": "Republic of Korea",
+      "region": "Asia",
+      "location": {
+        "lat": 37.601,
+        "lng": 127.046
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom resource-allocation and scheduling framework",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "JSON job scripts; aiohttp transport between master and module nodes.",
+      "license": "Not specified",
+      "links": {
+        "website": "https://github.com/KIST-CSRC/Octopus",
+        "repository": "https://github.com/KIST-CSRC/Octopus",
+        "docs": null,
+        "paper": "https://doi.org/10.1038/s41467-024-54067-7",
+        "logo": "https://github.com/KIST-CSRC.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/octopus.json",
+      "webUrl": "/#orchestrators/octopus"
+    },
+    {
+      "id": "place",
+      "name": "PLACE",
+      "organisation": "Physical Acoustics Lab, University of Auckland",
+      "city": "Auckland",
+      "country": "New Zealand",
+      "region": "Oceania",
+      "location": {
+        "lat": -36.8523,
+        "lng": 174.7691
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom Instrument base class with plugin-per-vendor",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "Each vendor device implemented as a separate plugin.",
+      "license": "LGPL-3.0",
+      "links": {
+        "website": "https://place.auckland.ac.nz",
+        "repository": "https://github.com/PALab/place",
+        "docs": "https://place.auckland.ac.nz",
+        "paper": "https://doi.org/10.1177/2211068214553022",
+        "logo": "https://github.com/PALab.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/place.json",
+      "webUrl": "/#orchestrators/place"
+    },
+    {
+      "id": "robochem",
+      "name": "RoboChem-Flex / OmniPlatypus",
+      "organisation": "Noël Group, Van ’t Hoff Institute for Molecular Sciences, University of Amsterdam",
+      "city": "Amsterdam",
+      "country": "Netherlands",
+      "region": "Europe",
+      "location": {
+        "lat": 52.3547,
+        "lng": 4.954
+      },
+      "family": "bespoke",
+      "familyLabel": "Bespoke conventions",
+      "standardRequired": false,
+      "integrationMechanism": "Custom BaseDevice abstraction with protocol- and vendor-specific subclasses",
+      "standards": [],
+      "standardsBase": [],
+      "notes": "Common device interface exposes named parameters and associated metadata; device-specific implementations support serial, TCP socket, Modbus and vendor-specific XML communication; USB-serial devices are auto-identified from stored hardware identifiers.",
+      "license": "Apache-2.0",
+      "links": {
+        "website": "https://hims.uva.nl",
+        "repository": "https://github.com/Noel-Research-Group/Robochem_Flex",
+        "docs": null,
+        "paper": "https://doi.org/10.1038/s44160-026-01053-0",
+        "logo": "https://github.com/Noel-Research-Group.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/robochem.json",
+      "webUrl": "/#orchestrators/robochem"
+    },
+    {
+      "id": "unilabos",
+      "name": "UniLabOS",
+      "organisation": "DP Technology / DeepModeling community",
+      "city": "Beijing",
+      "country": "China",
+      "region": "Asia",
+      "location": {
+        "lat": 39.99,
+        "lng": 116.33
+      },
+      "family": "formal",
+      "familyLabel": "Formal standard",
+      "standardRequired": false,
+      "integrationMechanism": "ROS 2 (primary communication fabric)",
+      "standards": [
+        "ROS 2 (primary)",
+        "OPC UA (adapter module)",
+        "Modbus (adapter module)"
+      ],
+      "standardsBase": [
+        "ROS 2",
+        "OPC UA",
+        "Modbus"
+      ],
+      "notes": "Dedicated device_comms/opcua_client/ module; asyncua and pymodbus declared dependencies.",
+      "license": "GPL-3.0",
+      "links": {
+        "website": "https://blogs.deepmodeling.com/Uni-Lab_30_12_2025/",
+        "repository": "https://github.com/deepmodeling/Uni-Lab-OS",
+        "docs": null,
+        "paper": "https://arxiv.org/abs/2512.21766",
+        "logo": "https://github.com/deepmodeling.png?size=96"
+      },
+      "verified": true,
+      "unverifiedFields": null,
+      "href": "/api/v1/tools/unilabos.json",
+      "webUrl": "/#orchestrators/unilabos"
+    }
+  ],
+  "excluded": [
+    {
+      "name": "FireWorks",
+      "why": "Computational-workflow manager for HPC jobs."
+    },
+    {
+      "name": "AiiDA",
+      "why": "Computational-workflow manager for HPC jobs."
+    },
+    {
+      "name": "FINALES2",
+      "why": "Inter-lab federation broker."
+    },
+    {
+      "name": "XDL",
+      "why": "Procedure-level description language that compiles to platform-specific execution."
+    }
+  ]
+}

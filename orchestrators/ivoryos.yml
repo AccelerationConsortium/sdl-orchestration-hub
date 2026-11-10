@@ -1,0 +1,19 @@
+id: ivoryos
+name: IvoryOS
+ref: '42'
+paper: https://doi.org/10.1038/s41467-025-60514-w
+org: Hein Group, University of British Columbia
+city: Vancouver, BC
+country: Canada
+lat: 49.2606
+lng: -123.246
+website: https://ivoryos.ai
+repo: https://github.com/ivoryos-ai/IvoryOS
+docs: https://ivoryos.readthedocs.io
+logo: https://github.com/ivoryos-ai.png?size=96
+family: bespoke
+mech: Dynamic function introspection (Flask)
+standards: []
+notes: 'Standard-agnostic by design: exposes any module via a dynamically generated web interface.'
+license: MIT
+verified: true

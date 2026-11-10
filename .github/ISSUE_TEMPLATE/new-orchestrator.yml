@@ -1,0 +1,50 @@
+name: Propose an orchestrator
+description: Add an open-source SDL orchestrator to the map and the Orchestrators table.
+title: "[Orchestrator] "
+labels: ["submission", "orchestrator"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Inclusion criteria (from the paper): an open-source licence with public source; an explicit device-integration layer that commands physical instruments; evidence of use in at least one self-driving-lab deployment. The JSON block at the bottom is filled in automatically when you submit from the website.
+  - type: input
+    id: name
+    attributes: { label: Name, placeholder: "e.g. MyLabOS" }
+    validations: { required: true }
+  - type: input
+    id: org
+    attributes: { label: Institution / group }
+    validations: { required: true }
+  - type: input
+    id: location
+    attributes: { label: "City, country", placeholder: "Toronto, Canada" }
+  - type: input
+    id: coords
+    attributes: { label: "Latitude, longitude", placeholder: "43.66, -79.39" }
+    validations: { required: true }
+  - type: dropdown
+    id: family
+    attributes:
+      label: Integration family
+      options: ["Formal standard", "Hardware-abstraction layer", "Model-facing (MCP)", "Bespoke conventions"]
+    validations: { required: true }
+  - type: input
+    id: standards
+    attributes: { label: Underlying standards, placeholder: "SiLA 2 (optional), OPC UA" }
+  - type: textarea
+    id: mech
+    attributes: { label: Primary device-integration mechanism, description: "How does it talk to instruments? (base classes, plugins, REST nodes, SiLA 2 servers…)" }
+    validations: { required: true }
+  - type: input
+    id: links
+    attributes: { label: "Links (website, repository, docs, paper)" }
+    validations: { required: true }
+  - type: input
+    id: license
+    attributes: { label: Licence, placeholder: MIT }
+  - type: textarea
+    id: evidence
+    attributes: { label: Evidence of SDL deployment, description: Paper or project page showing use in a self-driving lab. }
+  - type: textarea
+    id: json
+    attributes: { label: Machine-readable record, description: "Record for orchestrators/<id>.yml (schema: schema/orchestrator.schema.json). JSON is fine; a maintainer converts it to YAML.", render: json }
