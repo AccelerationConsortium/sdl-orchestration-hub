@@ -221,6 +221,7 @@ function renderOrch(arg, params) {
       </tbody></table></div>`;
       $$(".more", res).forEach(b => b.onclick = () => { const c = b.previousElementSibling, open = !c.classList.contains("open"); c.classList.toggle("open", open); b.setAttribute("aria-expanded", String(open)); b.textContent = open ? "Less" : "More"; });
       $$("[data-clear]", res).forEach(b => b.onclick = clearAll);
+      if (list.length && H.highlight(res, of.q)) H.revealMarks(res);
     }
     $$("[data-onmap]", res).forEach(b => b.onclick = () => { of.selected = b.dataset.onmap; setView("map", false); window.scrollTo({ top: $(".explorer").offsetTop - 16, behavior: smooth() }); });
     syncChrome();

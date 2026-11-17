@@ -152,6 +152,7 @@ function drawFind(all, counts) {
     res.innerHTML = `${registryNote}
       ${hit.length ? `<ul class="igrid">${hit.map(i => card(i)).join("")}</ul>` : `<div class="empty"><p>No instrument meets every requirement.${list.length ? " Loosen a requirement, or look at the near misses below." : " No scored instruments are included — tick a source on the left, or score one."}</p><div class="btn-row">${activeCount() ? `<button class="btn" id="iclear2">Clear requirements</button>` : ""}<a class="btn pri" href="#score/new">Score an instrument</a></div></div>`}
       ${out.length ? `<details class="outs" ${fi.showOut || !hit.length ? "open" : ""}><summary>${out.length} instrument${out.length === 1 ? " doesn’t" : "s don’t"} meet your requirements</summary><ul class="igrid muted">${out.map(i => card(i)).join("")}</ul></details>` : ""}`;
+    H.highlight(res, fi.q);
     const c2 = $("#iclear2"); if (c2) c2.onclick = clearAll;
     const od = $("details.outs", res); if (od) od.addEventListener("toggle", () => { fi.showOut = od.open; });
     wireCards(res);

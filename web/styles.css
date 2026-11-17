@@ -142,6 +142,8 @@ main:focus{outline:none}
 .hint{font-size:var(--fs-sm);color:var(--mute);line-height:1.5}
 .meta{font-size:var(--fs-sm);color:var(--mute);line-height:1.45}
 .reqmark{color:var(--accent-text)}
+/* search matches: dark text on yellow in both themes */
+mark{background:#ffe066;color:#111;border-radius:2px;padding:0 1px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 
 /* ---------- surfaces ---------- */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:var(--sp-5);box-shadow:var(--shadow)}

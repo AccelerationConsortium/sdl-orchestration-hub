@@ -87,7 +87,10 @@ function renderOverview(arg) {
     $("#clist").innerHTML = n ? tiers.map(t => `<div class="ctier t${t}"><h3 class="ctier-h">${TIER[t]}</h3>${tierCrit(t).filter(hit).map(critRow).join("")}</div>`).join("")
       : `<div class="empty"><p>No criteria match “${esc(cv.q)}”.</p><button class="btn" id="cclear">Clear search</button></div>`;
     const cc = $("#cclear"); if (cc) cc.onclick = () => { cv.q = ""; $("#cq").value = ""; drawList(); };
-    $$("details.crow-d", $("#clist")).forEach(d => d.addEventListener("toggle", () => { if (d.open) history.replaceState(null, "", `#scorecard/${d.id}`); }));
+    if (n && H.highlight($("#clist"), cv.q)) {
+      $$("details", $("#clist")).forEach(d => { const body = d.classList.contains("crow-d") ? $(".crow-body", d) : d; if (!d.open && [...body.children].some(ch => ch.tagName !== "SUMMARY" && $("mark", ch))) { d.dataset.auto = "1"; d.open = true; } });
+    }
+    $$("details.crow-d", $("#clist")).forEach(d => d.addEventListener("toggle", () => { if (d.dataset.auto) { delete d.dataset.auto; return; } if (d.open) history.replaceState(null, "", `#scorecard/${d.id}`); }));
   };
   const setTier = t => { cv.tier = t; $$("[data-tier]", view).forEach(b => { const on = b.dataset.tier === t; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); }); $$("[data-tierpick]", view).forEach(b => { const on = b.dataset.tierpick === t; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); }); drawList(); };
   drawList();

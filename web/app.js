@@ -169,6 +169,32 @@ if (dlg) {
   $("#dlg-x").onclick = () => dlg.close();
 }
 
+/* ---------- search highlighting ---------- */
+// Wraps case-insensitive matches of the search text in <mark> inside root (skipping controls and
+// screen-reader-only text). Queries shorter than `min` characters are not highlighted, so typing the
+// first letters does not light up the whole page. Returns the number of matches.
+function highlight(root, q, min = 3) {
+  q = String(q || "").trim();
+  if (!root || q.length < min) return 0;
+  const pat = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  const test = new RegExp(pat, "i"), re = new RegExp(pat, "gi");
+  const skip = "mark,script,style,textarea,input,select,option,button,.sr-only,[aria-hidden='true']";
+  const nodes = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => test.test(n.nodeValue) && !n.parentElement.closest(skip) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
+  while (w.nextNode()) nodes.push(w.currentNode);
+  let count = 0;
+  for (const n of nodes) {
+    const s = n.nodeValue, f = document.createDocumentFragment(); let last = 0;
+    s.replace(re, (m, i) => { f.append(s.slice(last, i)); const mk = document.createElement("mark"); mk.textContent = m; f.append(mk); last = i + m.length; count++; return m; });
+    f.append(s.slice(last)); n.replaceWith(f);
+  }
+  return count;
+}
+// Opens clamped "More" text that contains a highlighted match, so the match is visible.
+function revealMarks(root) {
+  $$(".clamp.is-long", root).forEach(c => { if (!$("mark", c)) return; c.classList.add("open"); const b = c.nextElementSibling; if (b?.classList.contains("more")) { b.setAttribute("aria-expanded", "true"); b.textContent = "Less"; } });
+}
+
 /* ---------- toast (polite status messages) ---------- */
 let toastT = null;
 function toast(msg) {
@@ -365,7 +391,7 @@ Object.assign(H, {
   $, $$, esc, view, SITE_NAME, GL, GICON, TIER, FAMILY, NA_OK, CRIT, GROUPS, groupName, reduced, smooth,
   store, save, uid, blank, allTools, toolById, evalById, nameOf, wOf, effectiveGrade, evaluate, tone, PUBLIC, PENDING, loadSubmissions,
   gradedCount, applicableCount, pendingTag, icon, extLink, gradePill, verdictPill, pageHead, REGION, regionOf, stdBase, uniq,
-  logoImg, familyTags, place, toolLinks, toolFlag, toolDetail, openDialog, closeDialog, toast, routes, parseHash, route, go, isDark, onTheme,
+  logoImg, familyTags, place, toolLinks, toolFlag, toolDetail, openDialog, closeDialog, toast, highlight, revealMarks, routes, parseHash, route, go, isDark, onTheme,
   REPO, SITE_BASE, toolIssue, toDeviceYAML, deviceGrades, scorecardIssue, openIssue, slugify, toCSV, download, keep
 });
 Object.defineProperty(H, "page", { get: () => page, enumerable: true });
