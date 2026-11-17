@@ -42,7 +42,7 @@ access for the Leaflet library and CARTO/OpenStreetMap tiles.)
 | `#standards` | Four questions → one of five deployment archetypes, plus the standards comparison. `#scenarios` still works. | Tables 4, 5 |
 | `#instruments` | Instrument finder: filter scored instruments by task/type, group, interface, workcell use, eligibility and minimum grades per criterion (with presets); **Compare** tab for a shortlist (`#compare` still works). | Tables 6, 7; scope statement |
 | `#scorecard` | The criteria, browsable (search, tier filter, deep links `#scorecard/C7`), how the verdict is reached, your saved evaluations, weights, offline downloads. | Tables 6, 7; Fig. 5; Note S1 |
-| `#score/<id>` | Step-by-step evaluation wizard: instrument → deployment → security precondition → Critical → Important → Cell integration → review & share. Criteria one at a time (keys 1–4 grade, ←/→ move) or all on one page; live verdict beside it. `#score/new` starts one. | Note S1, Fig. 5 |
+| `#score/<id>` | Step-by-step evaluation wizard: instrument → deployment → security precondition → Critical → Important → Cell integration → review & share. Criteria one at a time (click the description that fits) or all on one page; live verdict beside it. `#score/new` starts one. | Note S1, Fig. 5 |
 | `#tutorials` | Learning path for building device connectors (2026 Device Integration Hackathon resources), the paper's advice for connector authors, reference implementations. | Scenario guidance; hackathon site |
 | `#submissions`, `#api`, `#about` | Open submissions, API docs, background and glossary. | — |
 

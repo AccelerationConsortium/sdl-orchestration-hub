@@ -613,8 +613,6 @@ ul.req li>span{display:block;color:var(--mute)}
 .stage-nav{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);padding:var(--sp-3) var(--sp-6);border-top:1px solid var(--line);background:var(--panel-2);border-radius:0 0 var(--radius) var(--radius)}
 .stage-nav .btn{max-width:48%;overflow:hidden}
 .stage-nav .btn span{overflow:hidden;text-overflow:ellipsis}
-.kbd-hint{font-size:var(--fs-xs);color:var(--mute);display:inline-flex;gap:4px;align-items:center;white-space:nowrap}
-@media (max-width:899px){.kbd-hint{display:none}}
 @media (max-width:639px){.stage-head,.stage-body,.stage-nav{padding-left:var(--sp-4);padding-right:var(--sp-4)}.stage-nav .btn{flex:1;max-width:none}.mode-seg{margin-left:0}}
 .fs{border:0;padding:0;margin:0;display:grid;gap:var(--sp-4);min-width:0}
 .fs>legend{font-size:var(--fs-md);font-weight:700;padding:0;margin-bottom:var(--sp-3);display:flex;gap:var(--sp-2);align-items:baseline}
@@ -674,8 +672,6 @@ ul.req li>span{display:block;color:var(--mute)}
 .gopt:hover{border-color:var(--ink)}
 .gopt.G{border-left-color:var(--pass-fill)}.gopt.P{border-left-color:var(--part-fill)}.gopt.F{border-left-color:var(--fail-fill)}.gopt.NA{border-left-color:var(--na-fill)}
 .gopt-h{display:flex;align-items:center;gap:var(--sp-2);font-weight:700;font-size:var(--fs-base)}
-.gopt-h kbd{margin-left:auto}
-@media (max-width:899px){.gopt-h kbd{display:none}}
 .gopt-ic{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-2);font-size:var(--fs-sm)}
 .gopt-d{font-size:var(--fs-sm);line-height:1.5;color:var(--mute)}
 .gopt:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
@@ -918,7 +914,7 @@ body[data-page=score] .toast{bottom:84px}
 
 /* ---------- print (evaluation report) ---------- */
 @media print{
-  .top,.skiplink,.wiz-nav,.minibar,.stage-nav,.mode-seg,.btn,.toast,.filter-rail,.cstrip,.kbd-hint,#map,.legend,.mchips,.share{display:none!important}
+  .top,.skiplink,.wiz-nav,.minibar,.stage-nav,.mode-seg,.btn,.toast,.filter-rail,.cstrip,#map,.legend,.mchips,.share{display:none!important}
   body{background:#fff;color:#000}
   main{padding:0}
   .wiz-grid{display:block}.wiz-side{position:static;margin-top:16px}

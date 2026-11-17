@@ -300,7 +300,6 @@ function drawMain(e) {
   $("#wiz-main").innerHTML = `<div class="stage">${head}<div class="stage-body">${body}</div>
     <footer class="stage-nav">
       ${prev ? `<button class="btn" id="nav-prev">${icon("back", 14)} <span>${esc(prev.label)}</span></button>` : "<span></span>"}
-      ${isTier && mode() === "one" && !(st.id === "X" && !x.cell) ? `<span class="kbd-hint" aria-hidden="true"><kbd>1</kbd>–<kbd>${NA_OK.size ? 4 : 3}</kbd> grade · <kbd>←</kbd> <kbd>→</kbd> move</span>` : ""}
       ${next ? `<button class="btn pri" id="nav-next"><span>${esc(next.label)}</span> ${icon("arrow", 14)}</button>` : `<button class="btn pri" id="nav-print">${icon("print", 14)} Print / save as PDF</button>`}
     </footer></div>`;
   const m = $("#wiz-main");
@@ -442,8 +441,8 @@ function drawPanel(e) {
     <p class="cp-checks">${esc(c.checks)}</p>
     <div class="cp-test"><p class="field-label">${icon("flask", 14)} How to test</p><p>${esc(c.hint)}</p></div>
     <fieldset class="gradeset"><legend>Which description fits? <span class="meta">Pick one</span></legend>
-      ${gradeOptions(c).map(([k, d], j) => `<label class="gopt ${k}"><input type="radio" name="g-${c.n}" value="${k}" ${cur === k ? "checked" : ""}>
-        <span class="gopt-h"><span class="gopt-ic" aria-hidden="true">${GICON[k]}</span>${GL[k]}<kbd aria-hidden="true">${j + 1}</kbd></span><span class="gopt-d">${esc(d)}</span></label>`).join("")}
+      ${gradeOptions(c).map(([k, d]) => `<label class="gopt ${k}"><input type="radio" name="g-${c.n}" value="${k}" ${cur === k ? "checked" : ""}>
+        <span class="gopt-h"><span class="gopt-ic" aria-hidden="true">${GICON[k]}</span>${GL[k]}</span><span class="gopt-d">${esc(d)}</span></label>`).join("")}
       ${cur ? `<button class="linkbtn" id="gclear">Clear grade</button>` : ""}
     </fieldset>
     ${g.note ? `<p class="cp-note"><b>Note</b> ${esc(g.note)}</p>` : ""}
@@ -578,23 +577,6 @@ function wireReview(e) {
   $("#csv2").onclick = () => download(`${H.slugify(nameOf(e)) || "evaluation"}_scorecard.csv`, toCSV([e]), "text/csv");
   $("#print2").onclick = () => window.print();
 }
-
-/* Keyboard shortcuts in the one-at-a-time layout: 1–4 grade, ←/→ previous/next. */
-document.addEventListener("keydown", ev => {
-  if (H.page !== "score" || !W || ev.altKey || ev.ctrlKey || ev.metaKey) return;
-  const t = ev.target, tag = t.tagName;
-  if (document.querySelector("dialog[open]")) return;
-  if (tag === "TEXTAREA" || tag === "SELECT" || (tag === "INPUT" && !["radio", "checkbox"].includes(t.type)) || t.isContentEditable) return;
-  const st = STAGES[W.stage];
-  if (!["C", "I", "X"].includes(st.id) || mode() !== "one" || !$("#cpanel")) return;
-  if (/^[1-4]$/.test(ev.key)) {
-    const c = CRIT.find(c => c.n === W.cur), opts = gradeOptions(c), o = opts[+ev.key - 1]; if (!o) return;
-    ev.preventDefault();
-    const r = $(`input[name="g-${c.n}"][value="${o[0]}"]`, $("#cpanel")); if (r) { r.checked = true; setGrade(W, c.n, o[0], $("#cpanel")); }
-  } else if ((ev.key === "ArrowRight" || ev.key === "ArrowLeft") && t.type !== "radio") {
-    ev.preventDefault(); move(W, ev.key === "ArrowRight" ? 1 : -1);
-  }
-});
 
 H.routes.score = { render: renderWizard, title: (arg) => { const e = evalById(arg); return e ? `${nameOf(e)} · Scorecard` : "Score an instrument"; } };
 })(window.SDLHub);
