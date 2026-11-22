@@ -180,7 +180,7 @@ for (const s of scorecards) write(`scorecards/${s.id}.json`, meta({ item: s }));
 endpoints.push({ path: `/api/${VERSION}/scorecards/{id}.json`, href: href("scorecards/{id}.json"), description: "One public scorecard by id." });
 add("scenarios.json", meta({ count: SCENARIOS.length, items: SCENARIOS.map(s => ({ id: s.id, name: s.name, profile: s.profile, recommendation: s.rec, why: s.why, tradeoffs: s.tradeoff, recommendedStandards: (s.stdCols || []).map(i => STANDARDS.cols[i]) })), precedence: ["multisite", "robotics", "regulated", "instrument count (few → frugal, many → shared)"] }), "Deployment archetypes with recommended default integration boundary.");
 add("instrument-groups.json", meta({ items: INSTRUMENT_GROUPS }), "Instrument groups (from the paper's scope statement) with suggested types and tasks, used to tag scorecards.");
-add("tutorials.json", meta(TUTORIALS), "Learning path and resources for building device connectors (2026 Device Integration Hackathon), plus the paper's advice for connector authors.");
+add("tutorials.json", meta(TUTORIALS), "Learning path for building device connectors with SiLA 2 in Python (2026 Device Integration Hackathon), other implementations and standards such as OPC UA LADS, and the paper's advice for connector authors.");
 add("standards.json", meta({ interfaces: STANDARDS.cols, criteria: STANDARDS.rows.map(([name, vals]) => ({ criterion: name, ratings: Object.fromEntries(STANDARDS.cols.map((c, i) => [c, vals[i]])) })), note: STANDARDS.note }), "Standards comparison: SiLA 2, OPC UA + LADS, typical REST, MCP.");
 write("schema/evaluation.schema.json", evaluationSchema);
 write("schema/tool.schema.json", toolSchema);

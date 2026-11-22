@@ -10,14 +10,14 @@ const KIND_ICON = { "Docs": "book", "Google Doc": "doc", "Slides": "slides", "To
 function renderTutorials() {
   const T = window.TUTORIALS;
   view.innerHTML = `
-  ${pageHead("Tutorials", "Learn to build a device connector: the piece of software that exposes an instrument to any orchestrator through a standard interface such as SiLA 2. The learning path below collects the resources from the 2026 Device Integration Hackathon.",
+  ${pageHead("Tutorials", "Learn to build a device connector: the piece of software that exposes an instrument to any orchestrator through a standard interface. The learning path below covers one route, SiLA 2 in Python with the open-source Connector Development Kit (CDK) from UniteLabs, and collects the resources from the 2026 Device Integration Hackathon. Other implementations and standards are listed under Other options.",
     `${extLink(T.source.url, "Hackathon website", "btn")}`)}
   <section class="tut-intro">
     <div class="card fit">
       <h2 class="card-title">Where a connector fits</h2>
       <ol class="ministack" aria-label="Simplified stack">
         <li><b>Orchestrator</b><span>schedules experiments, tracks labware</span></li>
-        <li class="hl"><b>Standard interface</b><span>SiLA 2 Features: typed commands, properties, errors</span></li>
+        <li class="hl"><b>Standard interface</b><span>here SiLA 2 Features: typed commands, properties, errors</span></li>
         <li class="hl"><b>Your connector</b><span>maps the standard onto the vendor’s commands</span></li>
         <li><b>Instrument</b><span>vendor protocol over serial, USB or network</span></li>
       </ol>
@@ -34,7 +34,8 @@ function renderTutorials() {
     </div>
   </section>
 
-  <h2 class="section-title">Learning path</h2>
+  <h2 class="section-title">Learning path: SiLA 2 in Python</h2>
+  <p class="note-card scope-note"><b>One route of several.</b> This path uses the UniteLabs Connector Development Kit, a Python implementation of SiLA 2. You can also build a SiLA 2 connector with another implementation, such as the SiLA Consortium’s own Python package or its C# library, or use a different standard such as OPC UA LADS. <a href="#other-options">See other options</a>.</p>
   <ol class="path">${T.path.map((s, i) => `
     <li class="path-step">
       <div class="path-head"><span class="path-n" aria-hidden="true">${i + 1}</span><div><p class="eyebrow">${esc(s.step)}</p><h3>${esc(s.title)}</h3></div></div>
@@ -44,7 +45,6 @@ function renderTutorials() {
           <div class="res-body">
             <p class="res-t"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}<span class="sr-only"> (${esc(r.kind)}, opens in a new tab)</span></a> ${icon("ext", 12)}</p>
             <p class="res-d">${esc(r.desc)}${r.note ? ` <b>${esc(r.note)}</b>` : ""}${r.extra ? ` ${extLink(r.extra.url, r.extra.title)}.` : ""}</p>
-            <p class="res-meta"><span class="tag">${esc(r.kind)}</span><span class="tag">${esc(r.by)}</span></p>
           </div></li>`).join("")}</ul>
     </li>`).join("")}
   </ol>
@@ -52,21 +52,23 @@ function renderTutorials() {
   <h2 class="section-title">Advice from the paper for connector authors</h2>
   <ul class="tips">${T.tips.map(([t, d]) => `<li class="tip"><b>${esc(t)}</b><span>${esc(d)}</span></li>`).join("")}</ul>
 
-  <div class="grid2 tut-foot">
-    <div class="card"><h2 class="card-title">Reference implementations and generic clients</h2><p class="hint">Named in the paper; useful for testing a connector from the outside.</p>
-      <ul class="plain-links">${T.refs.map(r => `<li>${extLink(r.url, r.title)}<span class="meta"> — ${esc(r.desc)}</span></li>`).join("")}</ul></div>
-    <div class="card"><h2 class="card-title">Next steps</h2>
-      <ul class="plain-links">
-        <li><a href="#score/new">Score your instrument’s interface</a><span class="meta"> — the scorecard shows what the interface still lacks for autonomous use.</span></li>
-        <li><a href="#orchestrators?view=table&amp;std=SiLA%202">Orchestrators that support SiLA 2</a></li>
-        <li><a href="#standards">Is SiLA 2 the right default for your lab?</a></li>
-        <li>${extLink(T.source.resources, "All hackathon links and resources")}</li>
-        <li>Questions about the materials: <a href="mailto:${esc(T.source.contact)}">${esc(T.source.contact)}</a></li>
-      </ul></div>
-  </div>
-  <p class="hint disclosure">Several resources are maintained by UniteLabs, which develops open-source connector frameworks. One of the paper’s co-authors co-founded UniteLabs; see the competing-interests statement in the paper. Listing a resource is not an endorsement, and connectors can be built with any SiLA 2 implementation.</p>`;
+  <section class="other-opts" id="other-options" aria-labelledby="h-other" tabindex="-1">
+    <h2 class="section-title" id="h-other">Other options</h2>
+    <p class="hint">Not covered by the learning path above. Which standard suits your lab is a separate question: see <a href="#standards">Standards</a>.</p>
+    <div class="opt-grid">${T.others.map(g => `
+      <div class="card"><h3 class="card-title">${esc(g.title)}</h3><p class="hint">${esc(g.desc)}</p>
+        <ul class="plain-links">${g.links.map(r => `<li>${extLink(r.url, r.title)}<span class="meta"> — ${esc(r.desc)}</span></li>`).join("")}</ul></div>`).join("")}
+    </div>
+  </section>
+  <p class="hint disclosure">Several resources are maintained by UniteLabs, which develops open-source connector frameworks. One of the paper’s co-authors co-founded UniteLabs; see the competing-interests statement in the paper. Listing a resource is not an endorsement, and connectors can be built with any SiLA 2 implementation or another standard.</p>`;
 }
 H.routes.tutorials = { render: renderTutorials, title: "Tutorials" };
+// "See other options" scrolls within the page; the router uses the hash for pages, so handle it here.
+document.addEventListener("click", ev => {
+  const a = ev.target.closest?.('a[href="#other-options"]'); if (!a) return;
+  const t = document.getElementById("other-options"); if (!t) return;
+  ev.preventDefault(); t.scrollIntoView({ behavior: H.smooth(), block: "start" }); t.focus({ preventScroll: true });
+});
 
 /* =====================================================================
    SUBMISSIONS
@@ -198,7 +200,7 @@ function renderAbout() {
     ["Standards", "#standards", "Answer four questions about your lab and get a recommended default integration standard, with trade-offs."],
     ["Instruments", "#instruments", "Find instruments for a task by filtering on interface and the criteria that matter to you; compare a shortlist."],
     ["Scorecard", "#scorecard", "Browse the 21 criteria, then check an instrument’s control interface step by step before you buy it."],
-    ["Tutorials", "#tutorials", "Build a device connector with SiLA 2: a learning path from the 2026 Device Integration Hackathon."]
+    ["Tutorials", "#tutorials", "Build a device connector: a learning path for SiLA 2 in Python from the 2026 Device Integration Hackathon, plus other implementations and standards."]
   ];
   const terms = [
     ["Self-driving lab (SDL)", "A lab where software plans experiments, runs instruments and reads results in a closed loop, with little or no human input per run."],

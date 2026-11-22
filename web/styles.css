@@ -847,11 +847,15 @@ details.outs>summary{margin-bottom:var(--sp-3)}
 .res-t .ic{color:var(--mute)}
 .res-d{font-size:var(--fs-sm);line-height:1.5;color:var(--mute)}
 .res-d b{color:var(--ink);font-weight:600}
-.res-meta{display:flex;gap:4px;flex-wrap:wrap}
 .tips{list-style:none;padding:0;display:grid;gap:var(--sp-3);grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
 .tip{display:grid;gap:var(--sp-1);padding:var(--sp-4);background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--radius-sm);font-size:var(--fs-sm);line-height:1.5}
 .tip b{font-size:var(--fs-base)}
 .tip span{color:var(--mute)}
+.scope-note{margin:0 0 var(--sp-4)}
+.other-opts{margin-top:var(--sp-8);scroll-margin-top:var(--sp-4)}.other-opts:focus{outline:none}
+.other-opts>.hint{margin:calc(-1 * var(--sp-2)) 0 var(--sp-4)}
+.opt-grid{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start}
+.opt-grid .card-title{margin-bottom:var(--sp-1)}.opt-grid .hint{margin-bottom:var(--sp-3)}
 .disclosure{margin-top:var(--sp-6);padding-top:var(--sp-4);border-top:1px solid var(--line)}
 
 /* ---------- ABOUT / API ---------- */

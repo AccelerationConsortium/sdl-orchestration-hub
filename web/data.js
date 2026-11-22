@@ -234,11 +234,23 @@ window.TUTORIALS = {
     ["Errors are data", "Return structured errors with a stable identifier and context (C3, C16). The same holds for MCP servers: define types, units and output schemas deliberately."],
     ["Ship a simulator", "A drop-in simulator with fault injection lets others build and test against your connector before touching hardware (C14)."]
   ],
-  /* Reference implementations and generic clients named in the paper. */
-  refs: [
-    { title: "SiLA 2 open-source implementations", url: "https://gitlab.com/SiLA2", desc: "The SiLA Consortium's GitLab group: reference implementations in several languages." },
-    { title: "LADS OPC UA", url: "https://github.com/opcua-lads", desc: "Open-source LADS examples and tooling from the OPC UA LADS community." },
-    { title: "PyLabRobot", url: "https://github.com/PyLabRobot/pylabrobot", desc: "Hardware-agnostic Python interface for liquid handlers and accessories, with a browser simulator." },
-    { title: "MCP Inspector", url: "https://github.com/modelcontextprotocol/inspector", desc: "Generic client for testing Model Context Protocol servers." }
+  /* Routes the learning path does not cover: other SiLA 2 implementations, OPC UA LADS, and other approaches. */
+  others: [
+    { title: "SiLA 2 with other implementations", desc: "The same standard without the UniteLabs CDK.", links: [
+      { title: "sila2 (Python)", url: "https://sila2.gitlab.io/sila_python", desc: "The SiLA Consortium's own Python implementation, installed with pip install sila2." },
+      { title: "sila_csharp (.NET)", url: "https://gitlab.com/SiLA2/sila_csharp", desc: "The SiLA Consortium's C# implementation." },
+      { title: "All SiLA 2 open-source implementations", url: "https://gitlab.com/SiLA2", desc: "The SiLA Consortium's GitLab group, with implementations in several languages." }
+    ] },
+    { title: "OPC UA LADS", desc: "An alternative standard: the OPC UA companion specification for laboratory and analytical devices (OPC 30500).", links: [
+      { title: "LADS community on GitHub", url: "https://github.com/opcua-lads", desc: "A suggested learning path with introductory videos, recorded talks and examples." },
+      { title: "LADS workshop", url: "https://github.com/opcua-lads/workshop", desc: "A sample luminescence-reader server in Node.js/TypeScript, with slides." },
+      { title: "Simulated LADS servers", url: "https://github.com/opcua-lads/lads-server-collection", desc: "Viscometer, pH meter, freezer and balance servers to build and test against." },
+      { title: "lads-client-py", url: "https://github.com/opcua-lads/lads-client-py", desc: "A Python client library with a Streamlit viewer." },
+      { title: "The specification", url: "https://reference.opcfoundation.org/LADS/v100/docs/", desc: "OPC 30500-1, free to read online." }
+    ] },
+    { title: "Other approaches and test clients", desc: "Without a device-integration standard, or for model-facing interfaces.", links: [
+      { title: "PyLabRobot", url: "https://github.com/PyLabRobot/pylabrobot", desc: "Hardware-agnostic Python interface for liquid handlers and accessories, with a browser simulator." },
+      { title: "MCP Inspector", url: "https://github.com/modelcontextprotocol/inspector", desc: "Generic client for testing Model Context Protocol servers." }
+    ] }
   ]
 };

@@ -177,7 +177,7 @@
     },
     "/api/v1/tutorials.json": {
       "get": {
-        "summary": "Learning path and resources for building device connectors (2026 Device Integration Hackathon), plus the paper's advice for connector authors.",
+        "summary": "Learning path for building device connectors with SiLA 2 in Python (2026 Device Integration Hackathon), other implementations and standards such as OPC UA LADS, and the paper's advice for connector authors.",
         "operationId": "tutorials",
         "responses": {
           "200": {
