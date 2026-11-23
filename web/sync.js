@@ -1,9 +1,9 @@
 /* Aligns the site with the repository's source of truth (window.SCORECARD_SOURCE, generated
    from criteria/*.yml, meta.yml and devices/*.yml by build/build_web.py). Loaded after
    data.js, grading.js and scorecards.js, before score.js and app.js.
-   - Criterion name, tier, weight, effort and permitted grades come from the YAML files.
-     The site's short "checks"/"hint"/Pass-Partial-Fail paraphrases stay; the full YAML
-     text is attached as c.full for display.
+   - Criterion name, tier, weight, effort, permitted grades and the "What it checks" line
+     (YAML summary = paper Table 7) come from the YAML files. The site's short test hints and
+     Pass-Partial-Fail paraphrases stay; the full YAML text is attached as c.full for display.
    - devices/*.yml evaluations are added to the public scorecards. */
 (function () {
   "use strict";
@@ -16,6 +16,7 @@
     const src = byN.get(c.n);
     if (!src) continue;
     Object.assign(c, { name: src.name, tier: src.tier, w: src.w, full: src });
+    if (src.summary) c.checks = String(src.summary).trim().replace(/\.?$/, ".");
     if (window.GRADING[c.n]) window.GRADING[c.n].effort = src.effort;
   }
   window.NA_OK = S.criteria.filter(c => c.gradeOptions.includes("NA")).map(c => c.n);

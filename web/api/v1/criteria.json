@@ -1,6 +1,6 @@
 {
   "api": "sdl-device-integration/v1",
-  "generated": "2026-11-22T18:55:39.579Z",
+  "generated": "2026-11-23T01:54:15.557Z",
   "framework": "Autonomous-readiness criteria for SDL instrument interfaces",
   "count": 21,
   "items": [
@@ -16,7 +16,7 @@
       "effort": "M/L",
       "grading": {
         "pass": "Reconnect mode and identifier mechanism documented well enough to implement without trial and error; for edge controllers, items (a)–(e) documented and acceptable (OS support ≥5 yr, watchdog, failure-mode table, licensing under C4, instrument-side response per C15).",
-        "partial": "Reconnect documented but ambiguous (“best-effort”, “graceful”) or without saying how client correlates state; or edge controller falls short on one element (e.g. shorter support window, licence server single point of failure).",
+        "partial": "Reconnect documented but ambiguous (“best-effort”, “graceful”) or without saying how client correlates state; or edge controller falls short on one or more elements (e.g. shorter support window, licence server single point of failure).",
         "fail": "No reconnect documentation; or undocumented, unsupported, GUI-bound or contractually restricted gateway.",
         "note": "Record architecture separately: Native endpoint / Vendor edge-controller / Third-party gateway."
       }
@@ -28,13 +28,13 @@
       "tier": "critical",
       "weight": 3,
       "naAllowed": false,
-      "checks": "Typed inputs and outputs; machine-readable units, constraints, precision and resolution; runtime validation of declared constraints.",
-      "test": "Introspect a parameter and a return value that carry units: expect type, unit, range, resolution and nullability/enum in the contract. Units must come from a declared vocabulary (UCUM, QUDT, SiLA FDL, OPC UA EUInformation/UNECE). Then send an out-of-range value or invalid enum: expect a typed error. Silent coercion or truncation is Partial.",
+      "checks": "Typed inputs and outputs; machine-readable units, constraints, precision and resolution; runtime validation and reported defaults.",
+      "test": "Introspect a parameter and a return value that carry units: expect type, unit, range, precision/resolution and nullability/enum in the contract. Units must come from a declared vocabulary (UCUM, QUDT, SiLA FDL, OPC UA EUInformation/UNECE). Send an out-of-range value or invalid enum: expect a typed error; silent coercion or truncation is Partial. Omit a parameter that has a declared default: the applied value must be reported back. Send an unrecognized parameter: expect a typed error, not a silently substituted value.",
       "effort": "S",
       "grading": {
-        "pass": "Declared types for all parameters and returns; units from a declared vocabulary; machine-readable precision/resolution and constraints (ranges, enums, nullability), plus rounding where the format has a field for it; invalid input rejected with a typed error.",
-        "partial": "Types and units present but precision/resolution or some constraints not machine-readable (e.g. only in free-text docs), or constraints not enforced at runtime (invalid input silently coerced, truncated or accepted).",
-        "fail": "Free-text or absent units; types or units only in docs; no declared types; no machine-readable contract.",
+        "pass": "Declared types for all parameters and returns; units from a declared vocabulary; machine-readable precision/resolution and constraints (ranges, enums, nullability); invalid input rejected with a typed error. Machine-readable rounding is recommended where the format has a field for it but does not affect the grade.",
+        "partial": "Types and units present but precision/resolution or some constraints not machine-readable (e.g. only in free-text docs), or constraints not enforced at runtime (invalid input silently coerced, truncated or accepted); or a declared default applied without reporting the value used.",
+        "fail": "Free-text or absent units; types or units only in docs; no declared types; no machine-readable contract; or an undeclared value silently substituted with no error and no report.",
         "note": null
       }
     },
@@ -83,8 +83,8 @@
       "test": "Retrieve a representative result from a non-vendor host with headless, licence-compliant tooling. The payload and its metadata (IDs, status, units, timestamps, quality flags) must be bound to the execution ID, inline or via separate properties. Encrypted proprietary formats readable only in vendor software fail.",
       "effort": "S",
       "grading": {
-        "pass": "Headless retrieval of the result data itself (the measurement payload) with all applicable mandatory metadata, linked to the control interface.",
-        "partial": "Headless path with the traceability set (execution ID, instrument ID, status, start timestamp with zone, units) and ≤2 other applicable fields missing.",
+        "pass": "Headless retrieval of the operation outcome (the measurement payload where the operation produces one; otherwise execution status, applied parameters and device-observed effects) with all applicable mandatory metadata, linked to the control interface.",
+        "partial": "Headless path with the traceability set (execution ID, instrument ID, status, start timestamp with zone, plus units where the result carries a physical quantity) and ≤2 other applicable fields missing.",
         "fail": "GUI-only or manual-export-only retrieval; encrypted or proprietary format readable only in vendor software; traceability IDs not obtainable and bindable to the result.",
         "note": null
       }
@@ -147,7 +147,7 @@
       "tier": "important",
       "weight": 2,
       "naAllowed": false,
-      "checks": "Atomic locking or documented single-controller exclusion, with ownership, lease and reconnect behaviour and gated clearing where provided.",
+      "checks": "Atomic locking or documented single-controller exclusion, with ownership, lease and reconnect behavior and gated clearing where provided.",
       "test": "Documented atomic lock acquisition, lock-state and ownership visibility, lease/reconnect behaviour, role-gated administrative clear. Persistent audit log is left to the integration layer.",
       "effort": "M",
       "grading": {
@@ -164,8 +164,8 @@
       "tier": "important",
       "weight": 2,
       "naAllowed": false,
-      "checks": "Named operational states (idle, busy, error, maintenance, awaiting intervention) and machine-readable recovery transitions.",
-      "test": "Read the state after cold boot, initialization, a long operation and an induced failure; each must be a fixed state code. Recovery transitions must be machine-readable; a PDF-only table does not pass.",
+      "checks": "Named operational states and machine-readable recovery transitions, consistent with command-driven and internal activity.",
+      "test": "Read the state after cold boot, initialization, a long operation and an induced failure; each must be a fixed state code. A busy state must match a command in progress or a distinguishable internal activity (warm-up, self-calibration, maintenance), not idle whenever no external command runs. Recovery transitions must be machine-readable; a PDF-only table does not pass.",
       "effort": "S",
       "grading": {
         "pass": "Named operational states exposed through the API and recovery transitions documented in machine-readable form.",
@@ -249,12 +249,12 @@
       "tier": "important",
       "weight": 3,
       "naAllowed": false,
-      "checks": "Control-session-loss detection and reporting, explicit reconnect semantics; any optional non-safety-rated operational response remains configurable.",
-      "test": "Drop the control session while hardware is active. Loss must be observable so the orchestrator can respond; reconnect behaviour (resume, hold, wait for clearance) must be documented; any context-free safe default must be optional and overridable. Floor: unattended hazardous instruments must not Fail unless a documented external mechanism (cell watchdog, interlock, power-cutoff, orchestrator) handles it.",
+      "checks": "Control-session-loss detection and reporting; any optional non-safety-rated operational response remains configurable.",
+      "test": "Drop the control session during a long-running operation. The instrument must detect the loss within the configured interval and expose a control-session-lost status through the API (on reconnect or through a side channel). A safe default is optional; if the vendor offers one, the orchestrator must be able to enable and disable it. Reconnect behavior is graded under C1. Floor: unattended hazardous instruments must not Fail unless a documented external mechanism (cell watchdog, interlock, power cutoff, orchestrator) handles it.",
       "effort": "M/L",
       "grading": {
-        "pass": "Control-session loss is detected and observable through the API; explicit reconnect semantics (resume, hold or wait for clearance); any safe default is configurable and orchestrator-overridable.",
-        "partial": "Loss observable but no configurable safe default, or no explicit reconnect semantics; or a safe default the orchestrator cannot disable.",
+        "pass": "Control-session loss is detected and observable through the API. A safe default is optional; if the vendor provides one, it is configurable and orchestrator-overridable.",
+        "partial": "A vendor-provided safe default that the orchestrator cannot disable or override.",
         "fail": "Session loss neither detected nor exposed, or an undocumented autonomous response on disconnect.",
         "note": "Floor: unattended instruments with active physical hazards must not Fail unless a documented external mechanism handles the loss (cell-level watchdog, hardwired interlock, supervisory power-cutoff or orchestrator-side handling)."
       }
@@ -266,11 +266,11 @@
       "tier": "important",
       "weight": 2,
       "naAllowed": false,
-      "checks": "Fault transience, execution effect, post-error state and recovery class, reporting the limit of vendor knowledge where effect is unknown.",
-      "test": "Each error class carries four fields: transient vs permanent, execution-effect status, post-error device state, recovery class. Induce a transient, a hard fault and a mid-operation fault, plus one per other published category.",
+      "checks": "Fault transience, execution effect, post-error state and recovery class, with physical motion flagged where applicable.",
+      "test": "Each error class carries four fields: transient vs permanent, execution-effect status, post-error device state, recovery class. Induce a transient, a hard fault and a mid-operation fault, plus one per other published category. Where a recovery action moves the device, it must be flagged as involving physical motion.",
       "effort": "S",
       "grading": {
-        "pass": "All four fields (transient/permanent, execution effect, post-error state, recovery class) on every induced error class and on one representative of each published top-level category.",
+        "pass": "All four fields (transient/permanent, execution effect, post-error state, recovery class) on every induced error class and on one representative of each published top-level category; where a recovery action moves the device, it is flagged as involving physical motion.",
         "partial": "A subset of fields, or full taxonomy on some classes only (e.g. the three induced classes but not other published categories).",
         "fail": "Typed errors with no recovery taxonomy beyond identifier and message.",
         "note": null
@@ -322,9 +322,9 @@
       "effort": "S",
       "grading": {
         "pass": "Automated load/unload with documented handoff position and instrument geometry (CAD or collision model), API-controlled (or documented passive) access and a machine-readable handoff-ready/complete signal; no manual step.",
-        "partial": "Automatable, API-addressable mechanism but without the readiness/complete signal, requiring a documented manual-assist step, or with incomplete geometry documentation.",
+        "partial": "Automatable, API-addressable mechanism but without the handoff-ready/load-complete signal, or with incomplete geometry documentation, or needing manual assistance only at setup or commissioning (unattended thereafter).",
         "fail": "A machine cannot load or unload the instrument without manual intervention.",
-        "note": "Cell floor: ≥ Partial wherever a machine loads/unloads labware; a Fail disqualifies from cell-integrated deployment, with no mitigation exception. N/A for instruments that do not receive machine-loaded labware (inline pumps, flow cells, fixed environmental sensors and similar); the cell total is computed over the rest."
+        "note": "Cell floor: ≥ Partial wherever a machine loads/unloads labware; a Fail disqualifies from cell-integrated deployment regardless of the total. N/A for instruments that do not receive machine-loaded labware (inline pumps, flow cells, fixed environmental sensors and similar); the cell total is computed over the rest."
       }
     },
     {
@@ -340,7 +340,7 @@
       "grading": {
         "pass": "All applicable door/lid/shutter, axis/motion, clamp and labware-presence states exposed, accurate and mutually consistent, plus a declared robot-access state that is “clear” only when all are arm-safe.",
         "partial": "Only a subset of applicable categories exposed, or all exposed but the vendor’s applicability declaration absent.",
-        "fail": "No machine-readable readiness state.",
+        "fail": "No machine-readable readiness state, or an inaccurate or self-contradictory one, in particular a robot-access state that reports “clear” while the door, axes or mechanisms are not arm-safe.",
         "note": "Vendor declares which categories apply, with a rationale; if undeclared, all categories are treated as applicable. Typical latency MAY be documented but is not required. These are automation primitives, not safety primitives."
       }
     },
@@ -351,12 +351,12 @@
       "tier": "cell_integration",
       "weight": 2,
       "naAllowed": true,
-      "checks": "Where applicable, latched hardware-stop reporting and clearance behaviour, plus timed orchestrator-issued operational shutdown.",
+      "checks": "Where applicable, latched hardware-stop reporting and clearance behavior, plus timed orchestrator-issued operational shutdown.",
       "test": "No auto-resume after a hardware stop without explicit clearance; latched status on the normal channel; orchestrator shutdown command reaching a documented state in a documented interval. Labelling a non-certified signal as safety-rated is a Fail.",
       "effort": "L",
       "grading": {
         "pass": "Every applicable sub-test: (a) hardware safety-event reporting (no auto-resume; latched status exposed) verified by asserting the real signal, and (b) orchestrator-issued operational shutdown to a documented state within a documented interval.",
-        "partial": "At least one applicable sub-test passes. Sub-test (a) evaluated via fallback evidence (fixture, simulator, FAT records, reference customer) caps the criterion at Partial; so does the power-interruption exception path unless the cell controller supplies the missing latched-state evidence.",
+        "partial": "At least one applicable sub-test passes. Sub-test (a) evaluated via fallback evidence (fixture, simulator, FAT records, reference customer) caps the criterion at Partial; so does the power-interruption exception path unless the workcell controller supplies the missing latched-state evidence.",
         "fail": "No sub-test passes, or a non-certified signal presented as safety-rated (STO/SIL labelling).",
         "note": "Criterion N/A for passive instruments (no actuation, hazardous energy, robot interaction or external stop function); verify via schematic, safety I/O declaration or integrator confirmation, else record as unverified. Their obligations move to C15 and C10. Sub-test (a) is N/A without an external safety-bus input (same verification; provisional if deployment not final)."
       }

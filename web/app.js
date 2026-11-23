@@ -31,7 +31,7 @@ function blank(over = {}) {
     endpoint: "SiLA 2", arch: "Native endpoint", date: new Date().toISOString().slice(0, 10),
     ctx: { cell: false, hazard: false, unattended: false, networked: true, isolated: false, isoAccepted: false, surfaceDoc: false, c20local: false, c21local: false },
     cyber: window.CYBER.map(() => false), grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {}, annotDate: {},
-    mit: {}, c15noReconnect: false, c15fixedDefault: false, c21fallback: false, c21aNA: false, c21powerPath: false, c21naVerified: false, reqChecks: {},
+    mit: {}, c15fixedDefault: false, c21fallback: false, c21aNA: false, c21powerPath: false, c21naVerified: false, reqChecks: {},
     scorecardVersion: window.SCORECARD_VERSION || "", evidence: window.EVIDENCE.map(() => false), created: new Date().toISOString()
   }, over);
 }

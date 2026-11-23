@@ -138,13 +138,9 @@
       },
       "description": "C17 P-OLD re-certification roadmap target date"
     },
-    "c15noReconnect": {
-      "type": "boolean",
-      "description": "C15 reconnect semantics not explicit (caps C15 at Partial)"
-    },
     "c15fixedDefault": {
       "type": "boolean",
-      "description": "C15 safe default not configurable/overridable (caps C15 at Partial)"
+      "description": "C15 vendor safe default cannot be disabled or overridden by the orchestrator (caps C15 at Partial)"
     },
     "c21fallback": {
       "type": "boolean"

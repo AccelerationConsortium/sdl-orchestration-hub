@@ -17,7 +17,7 @@
 
   // Fill missing fields so partial evaluations (e.g. written by an agent) can be scored.
   function normalize(e, cyberCount = 10, evidenceCount = 10) {
-    const o = Object.assign({ vendor: "", endpoint: "", arch: "Native endpoint", orch: "", date: "", grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {}, annotDate: {}, mit: {}, c15noReconnect: false, c15fixedDefault: false, c21fallback: false, c21aNA: false, c21powerPath: false, c21naVerified: false }, e || {});
+    const o = Object.assign({ vendor: "", endpoint: "", arch: "Native endpoint", orch: "", date: "", grades: {}, notes: {}, remed: {}, remedDate: {}, gap: {}, annot: {}, annotDate: {}, mit: {}, c15fixedDefault: false, c21fallback: false, c21aNA: false, c21powerPath: false, c21naVerified: false }, e || {});
     o.ctx = Object.assign({}, CTX_DEFAULT, o.ctx || {});
     o.cyber = Array.isArray(o.cyber) ? o.cyber.slice(0, cyberCount).concat(Array(Math.max(0, cyberCount - o.cyber.length)).fill(false)) : Array(cyberCount).fill(false);
     o.evidence = Array.isArray(o.evidence) ? o.evidence : Array(evidenceCount).fill(false);
@@ -27,7 +27,7 @@
     let g = e.grades[c.n];
     if (c.n === 21 && g === "G" && e.c21fallback && !e.c21aNA) g = "P";   // fallback evidence caps C21 at Partial
     if (c.n === 21 && g === "G" && e.c21powerPath && !e.c21aNA) g = "P";  // power-interruption exception path without cell-controller latched-state evidence
-    if (c.n === 15 && g === "G" && (e.c15noReconnect || e.c15fixedDefault)) g = "P";   // C15 Pass needs explicit reconnect semantics and an overridable safe default
+    if (c.n === 15 && g === "G" && e.c15fixedDefault) g = "P";   // a vendor safe default the orchestrator cannot disable or override caps C15 at Partial
     return g;
   }
   function evaluate(raw, { criteria, weights = {}, cyberCount = 10 } = {}) {
@@ -79,7 +79,7 @@
     }
     if (!cF.length && cP.length <= 1) R("ok", "Critical floor met.");
 
-    if (e.grades[15] === "G" && (e.c15noReconnect || e.c15fixedDefault)) R("warn", "C15 capped at Partial: reconnect semantics not explicit, or the safe default cannot be configured or overridden by the orchestrator.");
+    if (e.grades[15] === "G" && e.c15fixedDefault) R("warn", "C15 capped at Partial: the vendor’s safe default cannot be disabled or overridden by the orchestrator.");
 
     // Step 3 — Important floor and conditional floors
     const iF = CRIT.filter(c => c.tier === "I" && g(c.n) === "F");
@@ -97,7 +97,7 @@
       for (const n of [20, 21]) if (x["c" + n + "local"] && g(n) === "F") { out.inelig = true; R("bad", `Local floor: C${n} must be at least Partial.`); }
       if (g(19) !== "F") R("ok", "Cell-integration floor met.");
       if (e.c21fallback && !e.c21aNA && e.grades[21] === "G") R("warn", "C21 capped at Partial: sub-test (a) was verified with fallback evidence, not by asserting the hardware safety signal.");
-      if (e.c21powerPath && !e.c21aNA && e.grades[21] === "G") R("warn", "C21 capped at Partial: power-interruption exception path without latched-state evidence from the cell controller.");
+      if (e.c21powerPath && !e.c21aNA && e.grades[21] === "G") R("warn", "C21 capped at Partial: power-interruption exception path without latched-state evidence from the workcell controller.");
       if (e.grades[21] === "NA" && !e.c21naVerified) R("warn", "C21 N/A is unverified: confirm no safety-event source with a schematic, safety I/O declaration or integrator; evaluate the instrument under C15 and C10.");
     }
 
