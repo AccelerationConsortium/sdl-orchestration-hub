@@ -1,7 +1,7 @@
 /* SDL Orchestration Hub — Tutorials, Submissions, API, About. */
 (function (H) {
 "use strict";
-const { $, $$, esc, view, icon, extLink, pageHead, store, evaluate, nameOf, PUBLIC, PENDING, loadSubmissions, tone, openIssue, scorecardIssue, REPO, SITE_BASE, NA_OK, CRIT } = H;
+const { $, $$, esc, view, icon, extLink, pageHead, store, evaluate, nameOf, PUBLIC, PENDING, loadSubmissions, tone, openIssue, scorecardIssue, REPO, SUBMIT, SITE_BASE, NA_OK, CRIT } = H;
 
 /* =====================================================================
    TUTORIALS
@@ -74,6 +74,7 @@ document.addEventListener("click", ev => {
    SUBMISSIONS
    ===================================================================== */
 function renderSubmissions() {
+  if (!SUBMIT) { view.innerHTML = `${pageHead("Submissions", "Submissions through GitHub issues are turned off for now.")}<div class="empty"><p>You can still score instruments and add orchestrators in this browser, and export them as files.</p></div>`; return; }
   const P = PENDING, when = t => t ? new Date(t).toLocaleString() : "";
   const src = P.source === "loading" ? "Loading open issues…"
     : P.source === "live" ? `Live from GitHub (open issues, fetched ${when(P.at)}).`

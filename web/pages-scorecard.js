@@ -4,7 +4,7 @@
 (function (H) {
 "use strict";
 const { $, $$, esc, view, icon, extLink, pageHead, GL, GICON, TIER, NA_OK, CRIT, GROUPS, groupName, store, save, uid, blank, evalById, nameOf, wOf,
-  effectiveGrade, evaluate, tone, gradePill, verdictPill, gradedCount, applicableCount, allTools, openDialog, closeDialog, toast, openIssue,
+  effectiveGrade, evaluate, tone, gradePill, verdictPill, gradedCount, applicableCount, allTools, openDialog, closeDialog, toast, openIssue, SUBMIT,
   scorecardIssue, toDeviceYAML, toCSV, download, keep, smooth, REPO } = H;
 const TIER_Q = {
   C: "Can the instrument be controlled programmatically and contractually at all?",
@@ -565,8 +565,8 @@ function reviewStage(e) {
         <p class="hint">Tick what the vendor has supplied. Ask for endpoint-specific evidence, not general statements of API availability.</p>
         <div class="subchecks">${window.EVIDENCE.map((c, i) => `<label class="chk"><input type="checkbox" data-ev="${i}" ${e.evidence[i] ? "checked" : ""}><span>${esc(c)}</span></label>`).join("")}</div></div>
       <div class="rv-block share"><h3>Share or export</h3>
-        <p class="hint"><b>Submit to the public registry</b> opens a prefilled GitHub issue that maintainers review; publish only what your vendor contract allows. The YAML file is the repository’s <code>devices/</code> format for a pull request.</p>
-        <div class="btn-row"><button class="btn pri" id="submitsc">Submit to public registry ${icon("ext", 14)}</button><button class="btn" id="devyml">${icon("download", 14)} devices/*.yml</button><button class="btn" id="json1">${icon("download", 14)} JSON</button><button class="btn" id="csv2">${icon("download", 14)} CSV</button><button class="btn" id="print2">${icon("print", 14)} Print / PDF</button></div>
+        <p class="hint">${SUBMIT ? "<b>Submit to the public registry</b> opens a prefilled GitHub issue that maintainers review; publish only what your vendor contract allows. " : ""}The YAML file is the repository’s <code>devices/</code> format for a pull request.</p>
+        <div class="btn-row">${SUBMIT ? `<button class="btn pri" id="submitsc">Submit to public registry ${icon("ext", 14)}</button>` : ""}<button class="btn" id="devyml">${icon("download", 14)} devices/*.yml</button><button class="btn" id="json1">${icon("download", 14)} JSON</button><button class="btn" id="csv2">${icon("download", 14)} CSV</button><button class="btn" id="print2">${icon("print", 14)} Print / PDF</button></div>
         <p class="hint"><a href="#instruments?view=compare">Compare it with other instruments</a></p></div>
     </div>`;
 }
@@ -574,7 +574,7 @@ function wireReview(e) {
   const m = $("#wiz-main");
   $$("[data-jump]", m).forEach(b => b.onclick = () => { const c = CRIT.find(c => c.n === +b.dataset.jump); goStage(e, STAGES.findIndex(s => s.id === c.tier), { crit: c.n }); });
   $$("[data-ev]", m).forEach(i => i.onchange = () => { e.evidence[+i.dataset.ev] = i.checked; touch(e); $(".ev-count", m).textContent = `${e.evidence.filter(Boolean).length} / ${window.EVIDENCE.length}`; });
-  $("#submitsc").onclick = () => openIssue(scorecardIssue(e));
+  if (SUBMIT) $("#submitsc").onclick = () => openIssue(scorecardIssue(e));
   $("#devyml").onclick = () => { const { name, text, todo } = toDeviceYAML(e); download(name, text, "text/yaml"); if (todo.length) openDialog({ title: "Exported — a few things to fill in", html: `<p>${esc(name)} was downloaded. Before submitting it, fill in:</p><ul class="rv-list">${todo.map(t => `<li>${esc(t)}</li>`).join("")}</ul><p class="hint">Then run <code>uv run python build/score_device.py --check</code>.</p>` }); };
   $("#json1").onclick = () => download(`${H.slugify(nameOf(e)) || "evaluation"}.json`, JSON.stringify(e, null, 2), "application/json");
   $("#csv2").onclick = () => download(`${H.slugify(nameOf(e)) || "evaluation"}_scorecard.csv`, toCSV([e]), "text/csv");

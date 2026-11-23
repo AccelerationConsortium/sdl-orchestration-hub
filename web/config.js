@@ -5,5 +5,7 @@
 window.SITE = {
   repo: "AccelerationConsortium/sdl-orchestration-hub",
   siteUrl: "",
-  apiVersion: "v1"
+  apiVersion: "v1",
+  // false hides GitHub-issue submissions: submit buttons, pending items and the Submissions page.
+  submissions: false
 };

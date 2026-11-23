@@ -2,7 +2,7 @@
 (function (H) {
 "use strict";
 const { $, $$, esc, view, icon, extLink, pageHead, FAMILY, store, save, allTools, toolById, logoImg, familyTags, place,
-  toolLinks, toolFlag, toolDetail, regionOf, stdBase, uniq, PENDING, PUBLIC, CRIT, openDialog, closeDialog, toast, openIssue, toolIssue, download, isDark, smooth } = H;
+  toolLinks, toolFlag, toolDetail, regionOf, stdBase, uniq, PENDING, PUBLIC, CRIT, openDialog, closeDialog, toast, openIssue, toolIssue, SUBMIT, download, isDark, smooth } = H;
 
 /* =====================================================================
    HOME
@@ -79,7 +79,7 @@ const ORCH_TOGGLES = [
   { key: "repo", label: "Has public repository", match: t => !!t.repo },
   { key: "docs", label: "Has documentation", match: t => !!t.docs },
   { key: "verified", label: "Hide entries with unverified fields", match: t => t.verified !== false },
-  { key: "nopend", label: "Hide pending submissions", match: t => !t.pending }
+  ...(SUBMIT ? [{ key: "nopend", label: "Hide pending submissions", match: t => !t.pending }] : [])
 ];
 const VIEWS = [["cards", "Cards", "grid"], ["map", "Map", "map"], ["table", "Table", "table"]];
 const of = { q: "", sel: {}, tog: {}, view: null, selected: null, railOpen: false, qs: null };
@@ -364,7 +364,7 @@ function drawAddForm(t) {
   t = t || { id: "", name: "", org: "", city: "", country: "", lat: "", lng: "", website: "", repo: "", docs: "", paper: "", logo: "", family: "bespoke", mech: "", standards: [], notes: "", license: "" };
   const f = (k, label, ph = "", type = "text", req = false) => `<label class="field"><span class="field-label">${label}${req ? ' <span class="reqmark" aria-hidden="true">*</span>' : ""}</span><input type="${type}" data-k="${k}" value="${esc(t[k])}" placeholder="${esc(ph)}" step="any" ${req ? 'aria-required="true"' : ""}></label>`;
   const body = openDialog({ title: "Propose an orchestrator", wide: true, html: `
-    <p class="hint">Open-source, with an explicit layer that commands physical instruments, and used in at least one self-driving lab. <b>Submit via GitHub</b> opens a prefilled issue for the maintainers; <b>Save in this browser</b> adds it to your own map only. Fields marked <span class="reqmark">*</span> are required.</p>
+    <p class="hint">Open-source, with an explicit layer that commands physical instruments, and used in at least one self-driving lab. ${SUBMIT ? "<b>Submit via GitHub</b> opens a prefilled issue for the maintainers; " : ""}<b>Save in this browser</b> adds it to your own map only. Fields marked <span class="reqmark">*</span> are required.</p>
     <div class="formgrid">
       ${f("name", "Name", "e.g. MyLabOS", "text", true)}${f("org", "Institution / group", "", "text", true)}${f("city", "City")}${f("country", "Country")}
       ${f("lat", "Latitude", "e.g. 43.66", "number", true)}${f("lng", "Longitude", "e.g. -79.39", "number", true)}
@@ -376,11 +376,11 @@ function drawAddForm(t) {
       <label class="field span-all"><span class="field-label">Notes</span><textarea data-k="notes">${esc(t.notes)}</textarea></label>
     </div>
     <p class="form-error" id="tool-err" role="alert" hidden></p>
-    <div class="actions"><button class="btn pri" id="issuetool">Submit via GitHub ${icon("ext", 14)}</button><button class="btn" id="savetool">Save in this browser</button>${store.tools.length ? `<button class="btn" id="exporttools">${icon("download", 14)} Export my added tools</button>` : ""}</div>` });
+    <div class="actions">${SUBMIT ? `<button class="btn pri" id="issuetool">Submit via GitHub ${icon("ext", 14)}</button>` : ""}<button class="btn${SUBMIT ? "" : " pri"}" id="savetool">Save in this browser</button>${store.tools.length ? `<button class="btn" id="exporttools">${icon("download", 14)} Export my added tools</button>` : ""}</div>` });
   $('[data-k="standards"]', body).value = (t.standards || []).join(", ");
   const read = () => { const o = {}; $$("[data-k]", body).forEach(i => o[i.dataset.k] = i.value.trim()); return o; };
   const err = msg => { const e = $("#tool-err"); e.textContent = msg; e.hidden = !msg; };
-  $("#issuetool").onclick = () => { const o = read(); if (!o.name || !o.org) return err("Name and institution are required."); err(""); openIssue(toolIssue(o)); };
+  if (SUBMIT) $("#issuetool").onclick = () => { const o = read(); if (!o.name || !o.org) return err("Name and institution are required."); err(""); openIssue(toolIssue(o)); };
   const ex = $("#exporttools"); if (ex) ex.onclick = () => download("my-tools.json", JSON.stringify(store.tools.map(({ user, ...o }) => o), null, 2), "application/json");
   $("#savetool").onclick = () => {
     const o = Object.assign(read(), { user: true, verified: false, unverified: "Added locally; not part of the curated survey." });

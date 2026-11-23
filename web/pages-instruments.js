@@ -4,7 +4,7 @@
    example), pending submissions, and the evaluations saved in this browser. */
 (function (H) {
 "use strict";
-const { $, $$, esc, view, icon, extLink, pageHead, GL, GICON, TIER, CRIT, GROUPS, groupName, store, PUBLIC, PENDING, nameOf, evaluate, effectiveGrade,
+const { $, $$, esc, view, icon, extLink, pageHead, GL, GICON, TIER, CRIT, GROUPS, groupName, store, PUBLIC, PENDING, SUBMIT, nameOf, evaluate, effectiveGrade,
   tone, gradePill, verdictPill, openDialog, toCSV, download, REPO, wOf, smooth } = H;
 const RANK = { G: 2, P: 1, F: 0 };
 const MIN_LABEL = { P: "Partial or better", G: "Pass" };
@@ -117,7 +117,7 @@ function drawFind(all, counts) {
           </details></fieldset>
         <fieldset class="fgroup"><legend class="field-label">Include</legend>
           <label class="chk"><input type="checkbox" data-src="pub" ${fi.src.includes("pub") ? "checked" : ""}><span>Public registry <span class="meta">${counts.nPub}</span></span></label>
-          <label class="chk"><input type="checkbox" data-src="pend" ${fi.src.includes("pend") ? "checked" : ""}><span>Pending submissions <span class="meta">${counts.nPend}</span></span></label>
+          ${SUBMIT ? `<label class="chk"><input type="checkbox" data-src="pend" ${fi.src.includes("pend") ? "checked" : ""}><span>Pending submissions <span class="meta">${counts.nPend}</span></span></label>` : ""}
           <label class="chk"><input type="checkbox" data-src="mine" ${fi.src.includes("mine") ? "checked" : ""}><span>My evaluations <span class="meta">${counts.nMine}</span></span></label></fieldset>
       </div>
       <div class="filter-actions"><span class="count" id="icount" aria-live="polite"></span><button class="linkbtn" id="iclear" hidden>Clear all</button></div>

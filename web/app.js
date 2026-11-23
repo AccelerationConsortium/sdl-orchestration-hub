@@ -61,6 +61,7 @@ const applicableCount = e => CRIT.filter(c => c.tier !== "X" || e.ctx.cell).leng
 /* ---------- pending submissions (open issues from the issue forms) ----------
    Live GitHub API first (cached 10 min per tab), then the build-time snapshot api/v1/submissions.json. */
 const REPO = (window.SITE || {}).repo || "";
+const SUBMIT = !!REPO && (window.SITE || {}).submissions !== false;   // GitHub-issue submissions on/off (config.js)
 const FORMS = (window.SCORECARD_SOURCE || {}).issueForms || {};
 const PENDING = { tools: [], evals: [], items: [], source: "loading", at: null, error: null };
 const SUBS_TTL = 10 * 60 * 1000, SUBS_KEY = "sdl-subs-live";
@@ -73,6 +74,7 @@ async function fetchLiveIssues() {
   return { issues, at: new Date().toISOString() };
 }
 async function loadSubmissions({ force = false } = {}) {
+  if (!SUBMIT) { PENDING.source = "off"; return; }
   if (!window.SDLIssues || !REPO) { PENDING.source = "none"; PENDING.error = "issue parser or repository not configured"; return; }
   if (force) try { sessionStorage.removeItem(SUBS_KEY); } catch (e) {}
   let got = null, liveErr = null;
@@ -392,12 +394,13 @@ Object.assign(H, {
   store, save, uid, blank, allTools, toolById, evalById, nameOf, wOf, effectiveGrade, evaluate, tone, PUBLIC, PENDING, loadSubmissions,
   gradedCount, applicableCount, pendingTag, icon, extLink, gradePill, verdictPill, pageHead, REGION, regionOf, stdBase, uniq,
   logoImg, familyTags, place, toolLinks, toolFlag, toolDetail, openDialog, closeDialog, toast, highlight, revealMarks, routes, parseHash, route, go, isDark, onTheme,
-  REPO, SITE_BASE, toolIssue, toDeviceYAML, deviceGrades, scorecardIssue, openIssue, slugify, toCSV, download, keep
+  REPO, SUBMIT, SITE_BASE, toolIssue, toDeviceYAML, deviceGrades, scorecardIssue, openIssue, slugify, toCSV, download, keep
 });
 Object.defineProperty(H, "page", { get: () => page, enumerable: true });
 window.__sdl = { evaluate, blank, store };
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!SUBMIT) $$('[data-tab="submissions"]').forEach(a => { a.hidden = true; });
   route();
   loadSubmissions().then(() => { const R = routes[page]; if (R && R.onSubmissions) R.onSubmissions(); });
 });
