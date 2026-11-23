@@ -28,13 +28,13 @@ evaluation:
   # verified: false                 # set by maintainers only
 
 scores:
-  # Critical tier (C5 may be N/A)
+  # Critical tier
   C1:  { grade: Fail, note: "", evidence: null }
   C2:  { grade: Fail }
   C3:  { grade: Fail }
   C4:  { grade: Fail }
   C5:  { grade: Fail }
-  # Important tier
+  # Important tier (C7 may be N/A)
   C6:  { grade: Fail }
   C7:  { grade: Fail }
   C8:  { grade: Fail }

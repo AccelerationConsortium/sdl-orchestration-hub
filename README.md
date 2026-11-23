@@ -1,82 +1,207 @@
-# Device Integration Scorecard
+# SDL Orchestration Hub
 
-A procurement checklist for evaluating whether a laboratory instrument's **control interface**
-is ready for autonomous (self-driving-lab) integration. It turns the criteria from the
-accompanying paper into a usable, fillable tool: 21 criteria (C1–C21), each graded
-**Fail / Partial / Pass** (some also **N/A**), weighted, and gated by three pass floors.
+An open resource for choosing and connecting the software and instruments of a **self-driving
+laboratory (SDL)**. It covers **workflow orchestration**, the software that composes instrument and
+robot operations into experiments, and beneath it **device integration**, the way that software
+talks to each instrument.
 
-> This is the **living** version of the scorecard. The paper's supplement is a frozen snapshot;
-> this repository is where the criteria evolve. Paper (preprint):
-> [Talking to instruments: device-integration standards for self-driving laboratories](https://doi.org/10.26434/chemrxiv.15009990/v2),
-> ChemRxiv, 2026, doi:10.26434/chemrxiv.15009990/v2.
+Use it to:
 
-## Using the scorecard
+- **find orchestration software** that suits your lab,
+- **choose a device-integration standard** for your setting,
+- **find and evaluate instruments** whose control interface is ready for autonomous use, and
+- **build a connector** for an instrument that does not have one yet.
 
-Pick whichever fits your workflow:
+**Website:** <https://accelerationconsortium.github.io/sdl-orchestration-hub/>, published from this
+repository. To run it on your own computer, see [Run the website locally](#run-the-website-locally).
 
-- **[`scorecard.md`](scorecard.md)** — the full checklist. Each criterion lists its requirements
-  as **MUST / SHOULD / MAY** bullets with checkboxes, followed by a **Grade** block
-  (Fail / Partial / Pass / N/A) and the grading rubric. Copy it per vendor and tick the boxes.
-- **[`scorecard-template.xlsx`](scorecard-template.xlsx)** — a fillable sheet: choose a grade
-  from a dropdown and it computes the weighted **standalone** (C1–C18) and **cell-integrated**
-  (C1–C21) totals and flags whether each floor is met.
-- **[`scorecard-template.csv`](scorecard-template.csv)** — a plain-text equivalent.
+The hub is the companion to the paper
+[*Talking to instruments: device-integration standards for self-driving laboratories*](https://doi.org/10.26434/chemrxiv.15009990/v2)
+(ChemRxiv preprint, 2026). The paper and its supplement are a frozen snapshot; this repository is
+the living version, where the scorecard criteria and the orchestrator data are maintained.
 
-**How scoring works.** Grade × weight is summed. But the number is only a *ranking* figure
-among vendors that already clear the floors — **eligibility is decided by the floors**
-(Critical, Important, cell-integration), not by the total. See `scorecard.md` for the exact
-floor rules.
+## The big picture
 
-- **[`web/`](web/)** — the **SDL Orchestration Hub** website: a landing page on workflow orchestration
-  and device integration, an orchestrator explorer (map, cards, table), deployment scenarios and
-  standards, an instrument finder with side-by-side comparison, the browsable criteria with a
-  step-by-step scoring wizard, tutorials for building device connectors, and a static JSON API.
-  Run it with `python3 -m http.server 4377 --directory web` and open http://localhost:4377.
-  See [`web/README.md`](web/README.md). Pushes to `main` publish it to GitHub Pages
-  (`.github/workflows/pages.yml`; enable Pages with source "GitHub Actions" in the repository settings).
+Self-driving labs are growing from single-instrument prototypes into multi-instrument, multi-site
+platforms. Whether they scale is now decided less by algorithms or robots than by the software layer
+that orchestrates many different devices.
 
-## How it's built (why you don't edit the checklist directly)
+The paper describes device integration as a five-layer model. The hub concentrates on the top
+three layers:
 
-There is **one source of truth** and everything else is generated from it:
+| Layer | What it does | Examples | In the hub |
+|---|---|---|---|
+| 5 · Orchestration | Composes device operations into experiments and workflows: scheduling, labware state, recovery, audit | ChemOS 2.0, Bluesky, MADSci, AlabOS … | Orchestrator survey |
+| 4 · Information exchange | Defines what messages carry: typed commands, properties, state, events and errors | SiLA 2, OPC UA + LADS, REST + OpenAPI, MCP tool contracts | Standards guidance and the scorecard |
+| 3 · Consumer / client | Turns workflow intent into concrete device calls | SiLA / OPC UA clients, vendor SDKs, PyLabRobot backends, connectors | Tutorials |
+| 2 · Communication protocol | Message framing, addressing and request/response semantics | gRPC, HTTP, Modbus, OPC UA binary | Precondition |
+| 1 · Transport | Moves bytes between two endpoints | USB, RS-232/485, Ethernet, TCP/IP | Precondition |
 
-```
-criteria/C1.yml … C21.yml    # SOURCE OF TRUTH: one file per criterion
-meta.yml                     # SOURCE OF TRUTH: tiers, totals/maxima, pass floors
-schema/criterion.schema.json # the contract each criterion file must satisfy
-build/generate.py            # criteria/*.yml + meta.yml  ->  the files below
-build/validate.py            # schema-validates every criterion file
-build/check_changelog.py     # CI helper: require a CHANGELOG entry on criteria changes
-scorecard.md                 # GENERATED — do not edit by hand
-scorecard-template.csv       # GENERATED — do not edit by hand
-scorecard-template.xlsx      # GENERATED — do not edit by hand
-orchestrators/*.yml          # orchestrator registry shown on the web tool's map (schema/orchestrator.schema.json)
-build/build_web.py           # criteria/*.yml + meta.yml + devices/*.yml  ->  web/scorecard-data.js
-                             # orchestrators/*.yml                        ->  web/tools.js
-web/scorecard-data.js        # GENERATED — do not edit by hand
-web/tools.js                 # GENERATED — do not edit by hand
-web/                         # interactive web tool (static; see web/README.md)
-CHANGELOG.md                 # human-maintained history
-.github/workflows/ci.yml     # CI: validate + invariants + regenerate-check + changelog
-```
+## What you can do with it
 
-Editing `scorecard.md` (or the templates) directly will be **overwritten** and CI will fail.
-Edit the `criteria/*.yml` source and regenerate.
+### Find orchestration software
+
+A survey of **17 open-source orchestrators** used in self-driving labs. For each one you see who
+develops it and where, how it connects to instruments, which device-integration standards it
+supports, its licence, and links to its code, documentation and paper where available. The
+orchestrators fall into
+four families by how they talk to instruments: a formal standard, a hardware-abstraction layer, a
+model-facing interface (MCP), or bespoke conventions. Filter by family, standard, region or licence,
+and browse them as cards, on a map or in a comparison table.
+
+### Choose an integration standard
+
+Answer four questions about your lab and get one of five typical deployment settings, each with the
+paper's recommended starting point and its trade-offs:
+
+- frugal or single-group academic SDL
+- multi-instrument shared academic SDL
+- regulated industrial or pharma lab
+- robotics-heavy SDL
+- multi-site or cross-institutional SDL
+
+A side-by-side comparison of SiLA 2, OPC UA + LADS, typical vendor REST APIs and MCP shows how they
+differ in discoverability, semantics, typing, introspection and composability.
+
+### Find suitable instruments
+
+The instrument finder lists instruments that have been scored. Filter by the task you need to do
+(for example fluorescence), the kind of instrument, the interface it offers, whether it has to work
+inside a robotic workcell, and the minimum grade you require on the criteria that matter to you.
+Compare a shortlist side by side.
+
+### Evaluate an instrument before you buy it
+
+The **Device Integration Scorecard** checks whether an instrument's control interface is ready for
+autonomous, orchestrated use. It has **21 criteria (C1–C21)** in three tiers:
+
+- **Critical:** can the instrument be controlled programmatically and contractually at all?
+- **Important:** does the interface support robust autonomous operation? Gaps here raise
+  integration and operating cost but can be overcome.
+- **Cell integration:** can the instrument take part in a robotic workcell? Scored only for
+  cell-integrated deployments.
+
+Each criterion is graded **Pass, Partial or Fail**, and a few can also be **N/A**. A cybersecurity
+and IT baseline is a deployment precondition: it is not scored, but missing it blocks procurement.
+**Floors decide eligibility:** any Critical Fail, more than one Critical Partial, or more than four
+weighted points of failed Important criteria disqualify the instrument, whatever its total. For
+cell-integrated use, automated load and unload (C19) must also reach at least Partial wherever a
+machine loads the instrument. The weighted total, out of 46 for a standalone instrument and 52 for
+a cell-integrated one, only ranks instruments that clear the floors.
+
+You can score an instrument step by step in the website's wizard, or offline with
+[`scorecard.md`](scorecard.md), the fillable [`scorecard-template.xlsx`](scorecard-template.xlsx)
+or [`scorecard-template.csv`](scorecard-template.csv). The full rules are in
+[`scorecard.md`](scorecard.md).
+
+### Learn to build a device connector
+
+A learning path for building a SiLA 2 connector in Python, based on the 2026 Device Integration
+Hackathon, with pointers to other SiLA 2 implementations, OPC UA LADS and other approaches, and
+the paper's advice for connector authors.
+
+### Use the data in your own tools
+
+The website's data (orchestrators, standards, deployment settings, criteria, scorecards and
+tutorials) is also available as static JSON (`api/v1/` on the site) and as an `llms.txt` guide,
+for scripts and AI agents. See [`web/README.md`](web/README.md).
 
 ## Contributing
 
-All changes go through a pull request. CI checks every PR (see below), so if the checks pass,
-the change is consistent by construction.
+You do not need Git for most contributions.
 
-### One-time setup
+- **Add an orchestrator.** Use **Propose a tool** on the website's Orchestrators page, or open a
+  [new orchestrator issue](../../issues/new?template=new-orchestrator.yml). The paper's inclusion
+  criteria apply: an open-source licence with public source, a device-integration layer that
+  commands physical instruments, and use in at least one self-driving-lab deployment. To correct an
+  existing entry, open an issue.
+- **Share an instrument evaluation.** Score the instrument in the website's wizard and choose
+  **Submit to public registry**, or open a
+  [device evaluation issue](../../issues/new?template=device-scorecard.yml). Open submissions
+  appear on the website as *pending* until a maintainer reviews and merges them.
+  Evaluations are contributor assessments, not endorsements; vendors have a right of reply.
+- **Propose a change to the criteria.** Open an issue describing the change, or a pull request
+  following the steps in [For developers and maintainers](#for-developers-and-maintainers).
 
-This project uses [uv](https://docs.astral.sh/uv/). No manual pip installs:
+## How to cite
+
+If you use the hub or the scorecard, please cite the paper:
+
+> Gottstein, W., Bromig, L., et al., Pablo-García, S. *Talking to instruments: device-integration
+> standards for self-driving laboratories.* ChemRxiv (2026).
+> [doi:10.26434/chemrxiv.15009990/v2](https://doi.org/10.26434/chemrxiv.15009990/v2)
+
+```bibtex
+@article{gottstein_talking_2026,
+  title   = {Talking to instruments: device-integration standards for self-driving laboratories},
+  author  = {Gottstein, Willi and Bromig, Lukas and others and Pablo-Garc{\'i}a, Sergio},
+  journal = {ChemRxiv},
+  year    = {2026},
+  doi     = {10.26434/chemrxiv.15009990/v2},
+  url     = {https://doi.org/10.26434/chemrxiv.15009990/v2}
+}
+```
+
+---
+
+## For developers and maintainers
+
+The rest of this file covers how the repository is organised and how changes are checked.
+
+### Repository layout
+
+Each kind of content has **one source of truth**; everything else is generated from it. Editing a
+generated file by hand is overwritten on the next build, and CI fails.
+
+```
+criteria/C1.yml … C21.yml     # SOURCE: one file per criterion
+meta.yml                      # SOURCE: tiers, totals/maxima, pass floors
+devices/*.yml                 # SOURCE: contributed instrument evaluations (devices/_template.yml to start)
+orchestrators/*.yml           # SOURCE: orchestrator registry (orchestrators/_excluded.yml: projects the paper excludes)
+schema/                       # JSON schemas for criteria, devices and orchestrators
+
+build/validate.py             # schema-validates every criterion file
+build/generate.py             # criteria + meta.yml  ->  scorecard.md, scorecard-template.csv/.xlsx
+build/score_device.py         # devices/*.yml       ->  devices/<slug>.md, devices/README.md
+build/build_web.py            # criteria, meta.yml, devices  ->  web/scorecard-data.js
+                              # orchestrators/*.yml          ->  web/tools.js
+build/check_changelog.py      # CI helper: require a CHANGELOG entry when criteria change
+
+scorecard.md                  # GENERATED
+scorecard-template.csv/.xlsx  # GENERATED
+devices/*.md                  # GENERATED (per-device cards and index)
+web/scorecard-data.js         # GENERATED
+web/tools.js                  # GENERATED
+web/api/v1/, web/llms.txt     # GENERATED by web/scripts/build-api.mjs
+
+web/                          # the website (static, no build step; see web/README.md)
+CHANGELOG.md                  # human-maintained history of the criteria set
+.github/ISSUE_TEMPLATE/       # issue forms for orchestrators and device evaluations
+.github/workflows/ci.yml      # checks on pull requests and pushes to main
+.github/workflows/pages.yml   # publishes web/ to GitHub Pages
+```
+
+### Setup
+
+This project uses [uv](https://docs.astral.sh/uv/); no manual pip installs:
 
 ```bash
 uv sync      # creates .venv from pyproject.toml + uv.lock (pyyaml, jsonschema, openpyxl)
 ```
 
-Run commands with `uv run` (e.g. `uv run python build/generate.py`), or activate the
-environment once with `source .venv/bin/activate` and run them directly.
+Run commands with `uv run` (for example `uv run python build/generate.py`), or activate the
+environment once with `source .venv/bin/activate` and run them directly. The website's API build
+and tests also need [Node.js](https://nodejs.org/).
+
+### Run the website locally
+
+```bash
+python3 -m http.server 4377 --directory web
+```
+
+Then open http://localhost:4377. The map needs internet access for its library and map tiles.
+Page-by-page documentation, the API and the file structure of the site are in
+[`web/README.md`](web/README.md).
 
 ### Editing an existing criterion
 
@@ -84,16 +209,16 @@ environment once with `source .venv/bin/activate` and run them directly.
 2. Add a line under **`## Unreleased`** in `CHANGELOG.md` describing the change.
 3. Regenerate and self-check:
    ```bash
-   uv run python build/validate.py            # schema
-   uv run python build/generate.py            # rewrites scorecard.md + templates
-   uv run python build/generate.py --check    # confirms nothing is stale
+   uv run python build/validate.py               # schema
+   uv run python build/generate.py               # rewrites scorecard.md + templates
+   uv run python build/generate.py --check       # confirms nothing is stale
    uv run python build/generate.py --invariants
-   uv run python build/build_web.py            # refreshes web/scorecard-data.js
+   uv run python build/build_web.py              # refreshes web/scorecard-data.js
    ```
 4. Commit **both** the edited `criteria/CXX.yml` **and** the regenerated `scorecard.md` /
-   `scorecard-template.*` / `web/scorecard-data.js`, and open a PR.
+   `scorecard-template.*` / `web/scorecard-data.js`, and open a pull request.
 
-### Adding a new criterion (a novel `Cxy`)
+### Adding a new criterion
 
 1. Create `criteria/C22.yml` (next free number) following the schema. Template:
    ```yaml
@@ -117,95 +242,85 @@ environment once with `source .venv/bin/activate` and run them directly.
    ```
 2. **If the new criterion changes the totals**, update `meta.yml`: add its weight to the relevant
    `totals.*.max` and, if it introduces a new tier or floor, update `tiers` / `floors`.
-   CI enforces that the sum of criterion weights equals the declared maxima, so this step is
-   not optional — a mismatch fails the build.
+   CI checks that the criterion weights add up to the declared maxima, so a mismatch fails the build.
 3. Add a **`## Unreleased`** entry in `CHANGELOG.md` (a new criterion is at least a *minor* bump).
 4. Regenerate and self-check (same commands as above), commit the new source file, the updated
-   `meta.yml`, and the regenerated outputs, and open a PR.
+   `meta.yml` and the regenerated outputs, and open a pull request.
 
-Removing or renumbering a criterion works the same way: change the source, update `meta.yml`
-maxima, regenerate. Ids must stay contiguous `C1..Cn` (an invariant CI checks).
+Removing or renumbering a criterion works the same way: change the source, update the `meta.yml`
+maxima, regenerate. Ids must stay contiguous `C1..Cn` (CI checks this).
 
-### Contributing a device evaluation
+### Adding a device evaluation by pull request
 
-Beyond the criteria themselves, you can contribute a filled-in scorecard for an instrument you
-have evaluated. These live under `devices/` and are separate from the criteria source of truth.
-You assign grades; the tooling computes the weighted totals and floor checks, so the numbers are
-correct by construction.
+Evaluations submitted through the issue form are converted by a maintainer. To add one directly:
 
-```
-devices/_template.yml     # copy this to start
-devices/<vendor>-<model>.yml   # your evaluation (source)
-devices/<slug>.md         # GENERATED per-device card — do not edit
-devices/README.md         # GENERATED index of all contributed devices — do not edit
-```
-
-1. Copy `devices/_template.yml` to `devices/<vendor>-<model>.yml` (lowercase, hyphenated). Fill in the
-   optional `group`, `tasks` and `interfaces` fields too: the website's instrument finder filters on them.
+1. Copy `devices/_template.yml` to `devices/<vendor>-<model>.yml` (lowercase, hyphenated). Fill in
+   the optional `group`, `tasks` and `interfaces` fields too: the instrument finder filters on them.
 2. Grade each criterion **Pass / Partial / Fail** (or **N/A** where the criterion's
    `grade_options` allow it). Add a short `note` and an `evidence` link wherever you can.
 3. Record who you are (`evaluator`, may be a pseudonym), the `date`, the `scorecard_version`
-   you scored against, the `deployment` (standalone or cell-integrated), and the `evidence_basis`.
+   you scored against, the `deployment` (standalone or cell-integrated) and the `evidence_basis`.
 4. Regenerate and self-check:
    ```bash
    uv run python build/score_device.py            # writes devices/<slug>.md + devices/README.md
-   uv run python build/score_device.py --check     # confirms nothing is stale
-   uv run python build/build_web.py                # adds the device to the web tool
+   uv run python build/score_device.py --check    # confirms nothing is stale
+   uv run python build/build_web.py               # adds the device to the website
    ```
 5. Commit **both** your `devices/<vendor>-<model>.yml` and the regenerated `devices/*.md` /
-   `web/scorecard-data.js`, and
-   open a PR. CI validates the file (schema + every criterion graded with a permitted grade) and
-   recomputes the totals and floors.
+   `web/scorecard-data.js`, and open a pull request. CI validates the file (schema, and every
+   criterion graded with a permitted grade) and recomputes the totals and floors.
 
-No Git? Open a **[device evaluation issue](../../issues/new?template=device-scorecard.yml)** (or use
-**Submit to public registry** in the web tool, which opens the same form prefilled) and a maintainer
-will convert it into a `devices/*.yml` file. Open submission issues, labelled `submission`, appear in
-the website's **Submissions** page, on the map and in the instrument finder as *pending* until they are merged and
-the issue is closed.
+You assign the grades; the tooling computes the weighted totals and floor checks. A
+`verified: true` mark is set only by a maintainer who independently confirmed the evaluation, and
+the optional `vendor_response` field gives vendors a right of reply. Each evaluation is pinned to
+the `scorecard_version` it was scored against, since criteria evolve. Device evaluations do not
+need a `CHANGELOG.md` entry; the changelog tracks the criteria set, not contributed data.
 
-Notes: evaluations are **contributor assessments, not endorsements**; a `verified: true` mark is
-set only by a maintainer who independently confirmed the evaluation, and the optional
-`vendor_response` field gives vendors a right of reply. Each evaluation is pinned to the
-`scorecard_version` it was scored against, since criteria evolve over time. Device evaluations do
-not require a `CHANGELOG.md` entry (the changelog tracks the criteria set, not contributed data).
+### Adding or updating an orchestrator by pull request
 
-### What CI enforces on every PR
+Create or edit `orchestrators/<id>.yml` (one file per tool, validated against
+`schema/orchestrator.schema.json`), then run `uv run python build/build_web.py` to refresh
+`web/tools.js`. The fields are described in [`web/README.md`](web/README.md#adding-a-tool).
 
-- **Schema** — every `criteria/*.yml` validates against `schema/criterion.schema.json`
-  (and its `id` matches its filename).
-- **Invariants** — criterion weights sum to the declared standalone/cell-integrated maxima,
+### Submissions on the website
+
+Open issues from either form carry the `submission` label. The website shows them on its
+**Submissions** page, on the map and in the instrument finder as *pending* until they are merged
+and the issue is closed. The Pages workflow also refreshes a snapshot of open submissions when an
+issue changes and every 6 hours.
+
+### What CI checks
+
+Every pull request and every push to `main` runs `.github/workflows/ci.yml`:
+
+- **Schema:** every `criteria/*.yml` validates against `schema/criterion.schema.json`, and its `id`
+  matches its file name.
+- **Invariants:** criterion weights add up to the declared standalone and cell-integrated maxima,
   and ids are contiguous.
-- **No stale outputs** — `scorecard.md` and `scorecard-template.csv` match what the generator
+- **No stale outputs:** `scorecard.md` and `scorecard-template.csv` match what the generator
   produces from the current source (`generate.py --check`).
-- **Issue parser** — `web/scripts/test-issues.mjs` checks that issues from both submission forms
-  (prefilled by the web tool or filed directly on GitHub) parse into pending entries.
-- **Web tool in sync** — `web/scorecard-data.js` and `web/tools.js` match the criteria, device and
-  orchestrator files, every `orchestrators/*.yml` validates (`build_web.py --check`), and the web
-  API build reproduces the paper's Reader X totals.
-- **Changelog** — if any criterion or `meta.yml` changed, `CHANGELOG.md` must have an entry.
+- **Device evaluations:** every `devices/*.yml` validates and its generated card is up to date
+  (`score_device.py --check`).
+- **Website in sync:** `web/scorecard-data.js` and `web/tools.js` match the criteria, device and
+  orchestrator files, every `orchestrators/*.yml` validates (`build_web.py --check`), and the API
+  build reproduces the paper's Reader X example totals.
+- **Issue parser:** `web/scripts/test-issues.mjs` checks that issues from both submission forms
+  parse into pending entries.
+- **Changelog:** on pull requests, if any criterion or `meta.yml` changed, `CHANGELOG.md` must have
+  an entry.
 
-## Versioning and releases
+### Publishing the website
+
+Pushes to `main` publish `web/` to GitHub Pages through `.github/workflows/pages.yml`. Pages must be
+enabled once in the repository settings, with **GitHub Actions** as the source.
+
+### Versioning and releases
 
 Versions describe the **criteria set** (see `CHANGELOG.md` for the bump rules). To cut a release,
-move the `## Unreleased` entries under a new version heading, tag it, and (optionally) archive the
+move the `## Unreleased` entries under a new version heading, tag it, and optionally archive the
 tag to Zenodo for a citable DOI.
 
 ## License
 
 Content (criteria, scoring model, generated checklists): **CC BY 4.0**. Code under `build/`:
-**MIT**. See [`LICENSE`](LICENSE). If you use the scorecard, please cite the accompanying paper:
-
-> Gottstein, W., Bromig, L., et al., Pablo-García, S. *Talking to instruments: device-integration
-> standards for self-driving laboratories.* ChemRxiv (2026).
-> [doi:10.26434/chemrxiv.15009990/v2](https://doi.org/10.26434/chemrxiv.15009990/v2)
-
-```bibtex
-@article{gottstein_talking_2026,
-  title   = {Talking to instruments: device-integration standards for self-driving laboratories},
-  author  = {Gottstein, Willi and Bromig, Lukas and others and Pablo-Garc{\'i}a, Sergio},
-  journal = {ChemRxiv},
-  year    = {2026},
-  doi     = {10.26434/chemrxiv.15009990/v2},
-  url     = {https://doi.org/10.26434/chemrxiv.15009990/v2}
-}
-```
+**MIT**. See [`LICENSE`](LICENSE).
